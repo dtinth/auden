@@ -33,7 +33,8 @@ function App() {
               <React.Fragment>
                 <Box pad="small" direction="row" border="bottom" align="center">
                   <Text>
-                    Hello, <strong>{user.displayName}</strong>
+                    Hi,{' '}
+                    <strong>{String(user.displayName).split(/\s+/)[0]}</strong>!
                   </Text>
                   <Text margin={{ left: 'auto' }}>
                     <ActionButton
