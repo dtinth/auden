@@ -1,0 +1,7 @@
+path / {
+  write() { isAdmin() }
+  read() { isAdmin() }
+}
+isAdmin() {
+  root.admins[auth.uid] == true
+}
