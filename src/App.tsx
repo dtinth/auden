@@ -11,7 +11,7 @@ import {
 } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import { useFirebaseAuth } from 'fiery'
+import { useFirebaseAuth, useFirebaseDatabase, Data } from 'fiery'
 import firebase from 'firebase'
 
 const theme = deepMerge(generate(24, 6), dark, {
@@ -21,7 +21,6 @@ const theme = deepMerge(generate(24, 6), dark, {
     }
   }
 })
-console.log(theme)
 
 function App() {
   return (
@@ -29,29 +28,7 @@ function App() {
       <ErrorBoundary>
         <Suspense fallback={<Loading />}>
           <AuthenticationWall>
-            {user => (
-              <React.Fragment>
-                <Box pad="small" direction="row" border="bottom" align="center">
-                  <Text>
-                    Hi,{' '}
-                    <strong>{String(user.displayName).split(/\s+/)[0]}</strong>!
-                  </Text>
-                  <Text margin={{ left: 'auto' }}>
-                    <ActionButton
-                      plain
-                      label="Sign out"
-                      color="neutral-3"
-                      onClick={async () => {
-                        if (confirm('Surely?')) await firebase.auth().signOut()
-                      }}
-                    />
-                  </Text>
-                </Box>
-                <Suspense fallback={<Loading />}>
-                  <Main user={user} />
-                </Suspense>
-              </React.Fragment>
-            )}
+            {user => <ProtectedArea user={user} />}
           </AuthenticationWall>
         </Suspense>
       </ErrorBoundary>
@@ -66,6 +43,69 @@ function Loading() {
         Loading...
       </Text>
     </Layer>
+  )
+}
+
+function ProtectedArea(props: { user: firebase.User }) {
+  const { user } = props
+  return (
+    <React.Fragment>
+      <TopBar user={user} />
+      <Suspense fallback={<Loading />}>
+        <Main user={user} />
+      </Suspense>
+    </React.Fragment>
+  )
+}
+
+function Λ(props: { f: () => JSX.Element | null }) {
+  return props.f()
+}
+
+function λ(f: () => JSX.Element | null) {
+  return <Λ f={f} />
+}
+
+function InlineLoadingContext({ children }: { children: ReactNode }) {
+  return (
+    <InlineErrorBoundary>
+      <Suspense fallback={'...'}>{children}</Suspense>
+    </InlineErrorBoundary>
+  )
+}
+
+function TopBar(props: { user: firebase.User }) {
+  const { user } = props
+  return (
+    <Box pad="small" direction="row" border="bottom" align="center">
+      <Text>
+        Hi, <strong>{String(user.displayName).split(/\s+/)[0]}</strong>!
+        <small>
+          {' '}
+          <InlineLoadingContext>
+            {λ(() => {
+              const adminState = useFirebaseDatabase(
+                firebase
+                  .database()
+                  .ref('/admins')
+                  .child(user.uid)
+              )
+              return adminState.unstable_read() ? <small> (admin)</small> : null
+            })}
+          </InlineLoadingContext>
+        </small>
+      </Text>
+      <Text margin={{ left: 'auto' }}>
+        <ActionButton
+          plain
+          label="Sign out"
+          color="neutral-3"
+          onClick={async () => {
+            if (confirm('Surely?')) await firebase.auth().signOut()
+          }}
+        />
+      </Text>
+    </Box>
   )
 }
 
@@ -121,11 +161,6 @@ function ActionButton(props: ButtonProps & JSX.IntrinsicElements['button']) {
   )
 }
 
-function A() {
-  throw new Promise(resolve => {})
-  return <div />
-}
-
 class ErrorBoundary extends React.Component<{}, { error?: Error }> {
   constructor(props: {}) {
     super(props)
@@ -145,6 +180,32 @@ class ErrorBoundary extends React.Component<{}, { error?: Error }> {
           </Heading>
           <Text size="large">{String(this.state.error)}</Text>
         </Box>
+      )
+    }
+    return this.props.children
+  }
+}
+
+class InlineErrorBoundary extends React.Component<{}, { error?: Error }> {
+  constructor(props: {}) {
+    super(props)
+    this.state = {}
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { error }
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <Text color="status-error">
+          <Button
+            plain
+            label=":("
+            onClick={() => window.alert(this.state.error)}
+          />
+        </Text>
       )
     }
     return this.props.children
