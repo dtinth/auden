@@ -2,20 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import firebase from 'firebase'
 import './index.css'
-import App from './App'
+import { App } from './core/app'
 import * as serviceWorker from './serviceWorker'
+import { config } from './config'
 
-// Initialize Firebase
-var config = {
-  apiKey: 'AIzaSyDWaXE2bSrgg1AL4TG1rZmFC2NyUQ2_D2A',
-  authDomain: 'ingage-platform-demo.firebaseapp.com',
-  databaseURL: 'https://ingage-platform-demo.firebaseio.com',
-  projectId: 'ingage-platform-demo',
-  storageBucket: 'ingage-platform-demo.appspot.com',
-  messagingSenderId: '13020059910'
-}
-firebase.initializeApp(config)
-
+firebase.initializeApp(config.firebase)
 Object.assign(global, { firebase })
 
 ReactDOM.render(<App />, document.getElementById('root'))

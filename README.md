@@ -29,22 +29,21 @@ The hackable audience engagement platform for...
 
 ### Scene
 
-Everything is organized into “scenes,” which represents a situation in an event.
+Everything is organized into “scenes,” which represents a type of situation in
+an event.
 
-- For example, you can have a scene for a quiz, for a survey, for voting, for
-  announcements, and an idle scene when there’s nothing interesting going on.
+For example, you can have a scene for a quiz, for a survey, for voting, for
+announcements, and an idle scene when there’s nothing interesting going on.
 
-Each scene has a type (e.g. poll, quiz, clock, questions), and each scene has
-its own state. This allows for, e.g. multiple scenes of the same type.
+Each scene has:
+
+- A state schema and security rules, stored in `database.rules.bolt`,
+  representing how data in that scene looks like. It has to be deployed to
+  Firebase.
+- A state, stored in Firebase.
+- A presentation display, for projecting to a large screen.
+- A audience UI to let audience engage with the event from their mobile phone
+  (or desktop).
+- A backstage UI to manipulate the scene.
 
 That can be one active scene at a given time.
-
-### Scene type
-
-Each scene type has:
-
-- A state schema, represent how data in that scene is like.
-- A set of security rules (which has to be deployed to Firebase).
-- A presentation display, for projecting to a large screen.
-- A mobile UI for participants to use from their mobile phone (or desktop).
-- A backstage UI to manipulate the scene.

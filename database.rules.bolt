@@ -8,10 +8,19 @@ path /admins/{uid} {
   read() { isCurrentUser(uid) }
 }
 
+// User can write to their own profile
+path /profiles/{uid} is Profile {
+  read() { true }
+  write() { isCurrentUser(uid) }
+}
+type Profile {
+  displayName: String
+}
+
 path /scenes {
   path /quiz {
-    // Everyone can read what the current question is
-    path /currentQuestion is String {
+    // Everyone can read the current state of quiz
+    path /state {
       read() { true }
     }
     // Audience can read information about current question only.
@@ -23,9 +32,9 @@ path /scenes {
       read() { isCurrentUser(uid) }
       write() { isCurrentUser(uid) && this.parent().parent().parent().currentQuestion == qid }
     }
-    // Audience has points but must be assigned by admin.
-    path /points/{uid} is String {
-      read() { isCurrentUser(uid) }
+    // Audience has points, but must be assigned by admin.
+    path /scores {
+      read() { true }
     }
   }
 }

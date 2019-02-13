@@ -11,18 +11,20 @@ import {
 } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import { useFirebaseAuth, useFirebaseDatabase, Data } from 'fiery'
+import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
+import { ErrorBoundary, InlineLoadingContext, ErrorMessage } from '../ui'
+import { HashRouter, Route, Switch } from 'react-router-dom'
 
 const theme = deepMerge(generate(24, 6), dark, {
   global: {
     font: {
-      family: `-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif`
+      family: 'inherit'
     }
   }
 })
 
-function App() {
+export function App() {
   return (
     <Grommet theme={theme} full>
       <ErrorBoundary>
@@ -66,14 +68,6 @@ function λ(f: () => JSX.Element | null) {
   return <Λ f={f} />
 }
 
-function InlineLoadingContext({ children }: { children: ReactNode }) {
-  return (
-    <InlineErrorBoundary>
-      <Suspense fallback={'...'}>{children}</Suspense>
-    </InlineErrorBoundary>
-  )
-}
-
 function TopBar(props: { user: firebase.User }) {
   const { user } = props
   return (
@@ -82,7 +76,7 @@ function TopBar(props: { user: firebase.User }) {
         Hi, <strong>{String(user.displayName).split(/\s+/)[0]}</strong>!
         <small>
           {' '}
-          <InlineLoadingContext>
+          <InlineLoadingContext description="check admin status">
             {λ(() => {
               const adminState = useFirebaseDatabase(
                 firebase
@@ -110,7 +104,37 @@ function TopBar(props: { user: firebase.User }) {
 }
 
 function Main(props: { user: firebase.User }) {
-  return <div>Hey!</div>
+  return (
+    <HashRouter>
+      <Switch>
+        <Route exact path="/" component={AudienceRoot} />
+        <Route exact path="/display" component={DisplayRoot} />
+        <Route exact path="/admin" render={() => <AdminRoot />} />
+        <Route
+          exact
+          path="/admin/:scene"
+          render={props => <AdminRoot scene={props.match.params.scene} />}
+        />
+        <Route component={NoMatch} />
+      </Switch>
+    </HashRouter>
+  )
+}
+
+function AudienceRoot() {
+  return <div>Audience view</div>
+}
+
+function DisplayRoot() {
+  return <div>Display view</div>
+}
+
+function AdminRoot(props: { scene?: string }) {
+  return <div>Admin view</div>
+}
+
+function NoMatch() {
+  return <ErrorMessage message="Route not matched T_T" />
 }
 
 function AuthenticationWall(props: {
@@ -160,56 +184,3 @@ function ActionButton(props: ButtonProps & JSX.IntrinsicElements['button']) {
     <Button {...props} onClick={onClick} disabled={props.disabled || running} />
   )
 }
-
-class ErrorBoundary extends React.Component<{}, { error?: Error }> {
-  constructor(props: {}) {
-    super(props)
-    this.state = {}
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { error }
-  }
-
-  render() {
-    if (this.state.error) {
-      return (
-        <Box background="status-error" pad="medium">
-          <Heading level="1" margin={{ top: 'none', bottom: 'small' }}>
-            Error :(
-          </Heading>
-          <Text size="large">{String(this.state.error)}</Text>
-        </Box>
-      )
-    }
-    return this.props.children
-  }
-}
-
-class InlineErrorBoundary extends React.Component<{}, { error?: Error }> {
-  constructor(props: {}) {
-    super(props)
-    this.state = {}
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { error }
-  }
-
-  render() {
-    if (this.state.error) {
-      return (
-        <Text color="status-error">
-          <Button
-            plain
-            label=":("
-            onClick={() => window.alert(this.state.error)}
-          />
-        </Text>
-      )
-    }
-    return this.props.children
-  }
-}
-
-export default App
