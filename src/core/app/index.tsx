@@ -1,22 +1,19 @@
 import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import {
-  Box,
-  Button,
-  ButtonProps,
-  Grommet,
-  Heading,
-  Layer,
-  Paragraph,
-  Text
-} from 'grommet'
+import { Box, Grommet, Heading, Paragraph, Text } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import React, { ReactNode, Suspense, useState } from 'react'
+import React, { ReactNode, Suspense } from 'react'
 import λ from 'react-lambda'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import { IConfig } from '../model'
-import { ErrorBoundary, ErrorMessage, InlineLoadingContext } from '../ui'
+import {
+  ActionButton,
+  ErrorBoundary,
+  ErrorMessage,
+  InlineLoadingContext,
+  Loading
+} from '../ui'
 import { AdminRoot } from './AdminRoot'
 import { ConfigContext } from './ConfigContext'
 
@@ -44,16 +41,6 @@ export function App(props: { config: IConfig }) {
   )
 }
 
-function Loading() {
-  return (
-    <Layer modal={false} responsive={false}>
-      <Text size="xxlarge" color="light-6">
-        Loading...
-      </Text>
-    </Layer>
-  )
-}
-
 function ProtectedArea(props: { user: firebase.User }) {
   const { user } = props
   return (
@@ -72,7 +59,7 @@ function TopBar(props: { user: firebase.User }) {
     <Box pad="small" direction="row" border="bottom" align="center">
       <Text>
         Hi, <strong>{String(user.displayName).split(/\s+/)[0]}</strong>!
-        <small>
+        <span style={{ fontSize: '0.75em' }}>
           {' '}
           <InlineLoadingContext description="check admin status">
             {λ(() => {
@@ -82,10 +69,10 @@ function TopBar(props: { user: firebase.User }) {
                   .ref('/admins')
                   .child(user.uid)
               )
-              return adminState.unstable_read() ? <small> (admin)</small> : null
+              return <span>{adminState.unstable_read() ? '(admin)' : ''}</span>
             })}
           </InlineLoadingContext>
-        </small>
+        </span>
       </Text>
       <Text margin={{ left: 'auto' }}>
         <ActionButton
@@ -107,11 +94,20 @@ function Main(props: { user: firebase.User }) {
       <Switch>
         <Route exact path="/" component={AudienceRoot} />
         <Route exact path="/display" component={DisplayRoot} />
-        <Route exact path="/admin" render={() => <AdminRoot />} />
+        <Route
+          exact
+          path="/admin"
+          render={props => <AdminRoot history={props.history} />}
+        />
         <Route
           exact
           path="/admin/:scene"
-          render={props => <AdminRoot scene={props.match.params.scene} />}
+          render={props => (
+            <AdminRoot
+              sceneName={props.match.params.scene}
+              history={props.history}
+            />
+          )}
         />
         <Route component={NoMatch} />
       </Switch>
@@ -158,23 +154,5 @@ function AuthenticationWall(props: {
         </Box>
       )}
     </React.Fragment>
-  )
-}
-
-function ActionButton(props: ButtonProps & JSX.IntrinsicElements['button']) {
-  const [running, setRunning] = useState(false)
-  const onClick = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    setRunning(true)
-    try {
-      if (props.onClick) await props.onClick(e)
-    } catch (e) {
-      window.alert(`Error: ${e}`)
-    } finally {
-      setRunning(false)
-    }
-  }
-  return (
-    <Button {...props} onClick={onClick} disabled={props.disabled || running} />
   )
 }

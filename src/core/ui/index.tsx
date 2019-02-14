@@ -1,8 +1,14 @@
-import { Box, Button, Heading, Text } from 'grommet'
+import { Box, Button, Heading, Text, Layer, ButtonProps } from 'grommet'
 import Noty from 'noty'
 import 'noty/lib/noty.css'
 import 'noty/lib/themes/mint.css'
-import React, { ReactNode, Suspense } from 'react'
+import React, {
+  ReactNode,
+  Suspense,
+  useState,
+  useMemo,
+  useCallback
+} from 'react'
 
 export function flashError(text: string) {
   new Noty({ text, type: 'error' }).show()
@@ -82,5 +88,77 @@ export function InlineLoadingContext(props: {
     <InlineErrorBoundary description={props.description}>
       <Suspense fallback={'...'}>{props.children}</Suspense>
     </InlineErrorBoundary>
+  )
+}
+
+export function Loading() {
+  return (
+    <Layer modal={false} responsive={false}>
+      <Text size="xxlarge" color="light-6">
+        Loading...
+      </Text>
+    </Layer>
+  )
+}
+
+export function LoadingContext(props: { children: ReactNode }) {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Loading />}>{props.children}</Suspense>
+    </ErrorBoundary>
+  )
+}
+
+export async function handlePromise<T>(
+  description: string,
+  promise: Promise<T>
+): Promise<T> {
+  try {
+    return await promise
+  } catch (error) {
+    flashError(`Failed to ${description}: ${error}`)
+    throw error
+  }
+}
+
+export function useActionRunner(): [
+  boolean,
+  <T>(
+    description: string,
+    f: () => Promise<T>,
+    successMessage?: string
+  ) => Promise<T>
+] {
+  const [running, setRunning] = useState(false)
+  const run = useCallback(async (s, f, m) => {
+    let failed = false
+    setRunning(true)
+    try {
+      return await f()
+    } catch (e) {
+      failed = true
+      flashError(`Failed to ${s}: ${e}`)
+      throw e
+    } finally {
+      if (!failed && m) flashSuccess(m)
+      setRunning(false)
+    }
+  }, [])
+  return [running, run]
+}
+
+export function ActionButton(
+  props: ButtonProps & JSX.IntrinsicElements['button']
+) {
+  const [running, run] = useActionRunner()
+  const onClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (props.onClick) {
+      const onClick = props.onClick
+      run('run', () => onClick(e))
+    }
+  }
+  return (
+    <Button {...props} onClick={onClick} disabled={props.disabled || running} />
   )
 }
