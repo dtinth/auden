@@ -1,4 +1,11 @@
-import React, { useState, Suspense, ReactNode, useCallback } from 'react'
+import React, {
+  useState,
+  Suspense,
+  ReactNode,
+  useCallback,
+  createContext,
+  useContext
+} from 'react'
 import {
   Grommet,
   Text,
@@ -15,6 +22,8 @@ import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
 import { ErrorBoundary, InlineLoadingContext, ErrorMessage } from '../ui'
 import { HashRouter, Route, Switch } from 'react-router-dom'
+import { IConfig, ISceneContext } from '../model'
+import { ConfigContext } from './ConfigContext'
 
 const theme = deepMerge(generate(24, 6), dark, {
   global: {
@@ -24,17 +33,19 @@ const theme = deepMerge(generate(24, 6), dark, {
   }
 })
 
-export function App() {
+export function App(props: { config: IConfig }) {
   return (
-    <Grommet theme={theme} full>
-      <ErrorBoundary>
-        <Suspense fallback={<Loading />}>
-          <AuthenticationWall>
-            {user => <ProtectedArea user={user} />}
-          </AuthenticationWall>
-        </Suspense>
-      </ErrorBoundary>
-    </Grommet>
+    <ConfigContext.Provider value={props.config}>
+      <Grommet theme={theme} full>
+        <ErrorBoundary>
+          <Suspense fallback={<Loading />}>
+            <AuthenticationWall>
+              {user => <ProtectedArea user={user} />}
+            </AuthenticationWall>
+          </Suspense>
+        </ErrorBoundary>
+      </Grommet>
+    </ConfigContext.Provider>
   )
 }
 

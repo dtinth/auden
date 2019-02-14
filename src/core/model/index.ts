@@ -11,3 +11,7 @@ export interface IConfig {
   firebase: any
   scenes: IScene[]
 }
+
+export interface ISceneContext {
+  dataRef: firebase.database.Reference
+}

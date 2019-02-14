@@ -17,6 +17,11 @@ type Profile {
   displayName: String
 }
 
+// Anyone can see which scene is active
+path /currentScene is String {
+  read() { true }
+}
+
 path /scenes {
   path /quiz {
     // Everyone can read the current state of quiz
