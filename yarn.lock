@@ -10041,6 +10041,11 @@ react-is@^16.8.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.1.tgz#a80141e246eb894824fb4f2901c0c50ef31d4cdb"
   integrity sha512-ioMCzVDWvCvKD8eeT+iukyWrBGrA3DiFYkXfBsVYIRdaREZuBjENG+KjrikavCLasozqRWTwFUagU/O4vPpRMA==
 
+react-lambda@^1.0.0-rc.0:
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/react-lambda/-/react-lambda-1.0.0-rc.0.tgz#65ac47e2b1dce4f1f12e198748e5f7e4f4a8a4c8"
+  integrity sha512-aqrWBbp4igwpUHdiRfhl+pxHtfnQXUswp2LPOQq+wcIHcT4PHAuKxd6qBbZNaCwVqwnPLlQfB1Zs0lKsC8VzQA==
+
 react-lifecycles-compat@^3.0.2:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"

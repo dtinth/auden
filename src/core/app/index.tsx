@@ -1,28 +1,23 @@
-import React, {
-  useState,
-  Suspense,
-  ReactNode,
-  useCallback,
-  createContext,
-  useContext
-} from 'react'
+import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
+import firebase from 'firebase'
 import {
-  Grommet,
-  Text,
   Box,
   Button,
+  ButtonProps,
+  Grommet,
   Heading,
-  Paragraph,
   Layer,
-  ButtonProps
+  Paragraph,
+  Text
 } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
-import firebase from 'firebase'
-import { ErrorBoundary, InlineLoadingContext, ErrorMessage } from '../ui'
+import React, { ReactNode, Suspense, useState } from 'react'
+import λ from 'react-lambda'
 import { HashRouter, Route, Switch } from 'react-router-dom'
-import { IConfig, ISceneContext } from '../model'
+import { IConfig } from '../model'
+import { ErrorBoundary, ErrorMessage, InlineLoadingContext } from '../ui'
+import { AdminRoot } from './AdminRoot'
 import { ConfigContext } from './ConfigContext'
 
 const theme = deepMerge(generate(24, 6), dark, {
@@ -69,14 +64,6 @@ function ProtectedArea(props: { user: firebase.User }) {
       </Suspense>
     </React.Fragment>
   )
-}
-
-function Λ(props: { f: () => JSX.Element | null }) {
-  return props.f()
-}
-
-function λ(f: () => JSX.Element | null) {
-  return <Λ f={f} />
 }
 
 function TopBar(props: { user: firebase.User }) {
@@ -138,10 +125,6 @@ function AudienceRoot() {
 
 function DisplayRoot() {
   return <div>Display view</div>
-}
-
-function AdminRoot(props: { scene?: string }) {
-  return <div>Admin view</div>
 }
 
 function NoMatch() {
