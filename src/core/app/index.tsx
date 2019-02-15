@@ -13,12 +13,12 @@ import {
   ErrorMessage,
   InlineLoadingContext,
   Loading,
-  LoadingContext,
   handlePromise
 } from '../ui'
 import { AdminRoot } from './AdminRoot'
-import { ConfigContext, useConfig } from './ConfigContext'
-import { SceneContext } from './SceneContext'
+import { ConfigContext } from './ConfigContext'
+import { AudienceRoot } from './AudienceRoot'
+import { DisplayRoot } from './DisplayRoot'
 
 export * from './FirebaseDataUtils'
 
@@ -117,53 +117,6 @@ function Main(props: { user: firebase.User }) {
         <Route component={NoMatch} />
       </Switch>
     </HashRouter>
-  )
-}
-
-function AudienceRoot() {
-  return <div>Audience view</div>
-}
-
-function DisplayRoot() {
-  const config = useConfig()
-  const dataRef = firebase.database().ref('/currentScene')
-  const dataState = useFirebaseDatabase(dataRef)
-  const currentScene = dataState.unstable_read()
-  const scene = config.scenes.filter(s => s.name === currentScene)[0]
-  if (!scene)
-    return <ErrorMessage message={`Cannot find scene “${currentScene}”`} />
-  if (!scene.presentationComponent)
-    return (
-      <Box pad="large">
-        <Text size="xlarge" color="light-6">
-          (No presentation component registered for scene “{currentScene}”.)
-        </Text>
-      </Box>
-    )
-  const PresentationComponent = scene.presentationComponent
-  const sceneContext = {
-    dataRef: firebase
-      .database()
-      .ref('/scenes')
-      .child(scene.name)
-  }
-  return (
-    <SceneContext.Provider value={sceneContext}>
-      <LoadingContext>
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            background: '#000'
-          }}
-        >
-          <PresentationComponent />
-        </div>
-      </LoadingContext>
-    </SceneContext.Provider>
   )
 }
 
