@@ -3,7 +3,7 @@ import firebase from 'firebase'
 import { Box, Grommet, Heading, Paragraph, Text } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import React, { ReactNode, Suspense } from 'react'
+import React, { ReactNode, Suspense, useEffect } from 'react'
 import λ from 'react-lambda'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import { IConfig } from '../model'
@@ -12,10 +12,15 @@ import {
   ErrorBoundary,
   ErrorMessage,
   InlineLoadingContext,
-  Loading
+  Loading,
+  LoadingContext,
+  handlePromise
 } from '../ui'
 import { AdminRoot } from './AdminRoot'
-import { ConfigContext } from './ConfigContext'
+import { ConfigContext, useConfig } from './ConfigContext'
+import { SceneContext } from './SceneContext'
+
+export * from './FirebaseDataUtils'
 
 const theme = deepMerge(generate(24, 6), dark, {
   global: {
@@ -120,7 +125,46 @@ function AudienceRoot() {
 }
 
 function DisplayRoot() {
-  return <div>Display view</div>
+  const config = useConfig()
+  const dataRef = firebase.database().ref('/currentScene')
+  const dataState = useFirebaseDatabase(dataRef)
+  const currentScene = dataState.unstable_read()
+  const scene = config.scenes.filter(s => s.name === currentScene)[0]
+  if (!scene)
+    return <ErrorMessage message={`Cannot find scene “${currentScene}”`} />
+  if (!scene.presentationComponent)
+    return (
+      <Box pad="large">
+        <Text size="xlarge" color="light-6">
+          (No presentation component registered for scene “{currentScene}”.)
+        </Text>
+      </Box>
+    )
+  const PresentationComponent = scene.presentationComponent
+  const sceneContext = {
+    dataRef: firebase
+      .database()
+      .ref('/scenes')
+      .child(scene.name)
+  }
+  return (
+    <SceneContext.Provider value={sceneContext}>
+      <LoadingContext>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            background: '#000'
+          }}
+        >
+          <PresentationComponent />
+        </div>
+      </LoadingContext>
+    </SceneContext.Provider>
+  )
 }
 
 function NoMatch() {
@@ -135,7 +179,30 @@ function AuthenticationWall(props: {
   return (
     <React.Fragment>
       {me ? (
-        props.children(me)
+        λ(() => {
+          const profileRef = firebase
+            .database()
+            .ref('/profiles')
+            .child(me.uid)
+          const profileState = useFirebaseDatabase(profileRef)
+          const profile = profileState.unstable_read()
+          useEffect(() => {
+            if (!profile) {
+              handlePromise(
+                'create profile',
+                profileRef.set({
+                  displayName: me.displayName
+                }),
+                'User profile created.'
+              )
+            }
+          }, [profile])
+          return profile ? (
+            <React.Fragment>{props.children(me)}</React.Fragment>
+          ) : (
+            <Loading message="Creating profile..." />
+          )
+        })
       ) : (
         <Box pad="medium">
           <Heading level="1">You must sign in to continue</Heading>

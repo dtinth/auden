@@ -91,11 +91,11 @@ export function InlineLoadingContext(props: {
   )
 }
 
-export function Loading() {
+export function Loading(props: { message?: string }) {
   return (
     <Layer modal={false} responsive={false}>
       <Text size="xxlarge" color="light-6">
-        Loading...
+        {props.message || 'Loading'}...
       </Text>
     </Layer>
   )
@@ -104,20 +104,35 @@ export function Loading() {
 export function LoadingContext(props: { children: ReactNode }) {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<Loading />}>{props.children}</Suspense>
+      <Suspense
+        fallback={
+          <Box pad="medium">
+            <Text size="xxlarge" color="light-6">
+              Loading...
+            </Text>
+          </Box>
+        }
+      >
+        {props.children}
+      </Suspense>
     </ErrorBoundary>
   )
 }
 
 export async function handlePromise<T>(
   description: string,
-  promise: Promise<T>
+  promise: Promise<T>,
+  successMessage?: string
 ): Promise<T> {
+  let failed = false
   try {
     return await promise
   } catch (error) {
+    failed = true
     flashError(`Failed to ${description}: ${error}`)
     throw error
+  } finally {
+    if (!failed && successMessage) flashSuccess(successMessage)
   }
 }
 
@@ -130,17 +145,17 @@ export function useActionRunner(): [
   ) => Promise<T>
 ] {
   const [running, setRunning] = useState(false)
-  const run = useCallback(async (s, f, m) => {
+  const run = useCallback(async (description, f, successMessage) => {
     let failed = false
     setRunning(true)
     try {
       return await f()
     } catch (e) {
       failed = true
-      flashError(`Failed to ${s}: ${e}`)
+      flashError(`Failed to ${description}: ${e}`)
       throw e
     } finally {
-      if (!failed && m) flashSuccess(m)
+      if (!failed && successMessage) flashSuccess(successMessage)
       setRunning(false)
     }
   }, [])
@@ -148,14 +163,18 @@ export function useActionRunner(): [
 }
 
 export function ActionButton(
-  props: ButtonProps & JSX.IntrinsicElements['button']
+  props: ButtonProps &
+    JSX.IntrinsicElements['button'] & {
+      description?: string
+      successMessage?: string
+    }
 ) {
   const [running, run] = useActionRunner()
   const onClick = async (e: React.MouseEvent) => {
     e.preventDefault()
     if (props.onClick) {
       const onClick = props.onClick
-      run('run', () => onClick(e))
+      run(props.description || 'run', () => onClick(e), props.successMessage)
     }
   }
   return (

@@ -15,14 +15,25 @@ export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
       'import questions',
       async () => {
         const result = toml.parse(ref.current!.value)
+        const output = {} as any
         let qs = 0
-        for (const key of Object.keys(result)) {
+        let i = 1
+        for (const q of result.questions) {
+          const key = `question${i++}`
+          let j = 1
           try {
-            const q = result[key]
             let correct = 0
-            q.text = md.renderInline(q.text)
+            output[key] = {
+              ...q,
+              text: md.renderInline(q.text),
+              answers: {}
+            }
             for (const a of q.answers) {
-              a.text = md.renderInline(a.text)
+              output[key].answers[`answer${j++}`] = {
+                ...a,
+                text: md.renderInline(a.text),
+                correct: !!a.correct
+              }
               if (a.correct) correct++
             }
             if (!correct) {
@@ -36,7 +47,7 @@ export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
         if (!qs) {
           throw new Error('No questions found.')
         }
-        await props.import(result)
+        await props.import(output)
       },
       'Done importing questions!'
     )
@@ -45,7 +56,9 @@ export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
     <form onSubmit={submit}>
       <Box>
         <TextArea ref={ref} />
-        <Button disabled={running} type="submit" label="Import" />
+        <Box margin={{ top: 'xsmall' }}>
+          <Button disabled={running} type="submit" label="Import" />
+        </Box>
       </Box>
     </form>
   )
