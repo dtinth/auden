@@ -77,8 +77,8 @@ export function QuizQuestionList() {
                   currentQuestion.questionId === entry.key
                 ) {
                   return (
-                    <Text>
-                      Active{' '}
+                    <Box direction="row" align="baseline">
+                      <Text margin={{ right: 'small' }}>Active</Text>
                       <ActionCheckbox
                         label="Reveal answer"
                         checked={currentQuestion.answerRevealed}
@@ -90,7 +90,7 @@ export function QuizQuestionList() {
                             .set(e.target.checked)
                         }
                       />
-                    </Text>
+                    </Box>
                   )
                 }
                 return <Text>—</Text>
@@ -114,20 +114,26 @@ export function QuizQuestionList() {
             header: 'Answers',
             render: entry => (
               <InlineLoadingContext description="load answers">
-                {λ(() => {
-                  const answersState = useFirebaseDatabase(
-                    context.dataRef.child('answers').child(entry.key)
-                  )
-                  const answers = answersState.unstable_read()
-                  return <span>{firebaseToEntries(answers).length}</span>
-                })}
-                <ActionButton
-                  color="dark-2"
-                  label="grade"
-                  description={`grade question "${entry.key}"`}
-                  onClick={() => gradeQuestion(context.dataRef, entry)}
-                  successMessage={`Question "${entry.key}" graded!`}
-                />
+                <Box direction="row" align="baseline">
+                  {λ(() => {
+                    const answersState = useFirebaseDatabase(
+                      context.dataRef.child('answers').child(entry.key)
+                    )
+                    const answers = answersState.unstable_read()
+                    return (
+                      <Text margin={{ right: 'small' }}>
+                        {firebaseToEntries(answers).length}
+                      </Text>
+                    )
+                  })}
+                  <ActionButton
+                    color="dark-2"
+                    label="grade"
+                    description={`grade question "${entry.key}"`}
+                    onClick={() => gradeQuestion(context.dataRef, entry)}
+                    successMessage={`Question "${entry.key}" graded!`}
+                  />
+                </Box>
               </InlineLoadingContext>
             )
           }
