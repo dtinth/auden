@@ -61,6 +61,19 @@ export function QuizQuestionList() {
         columns={[
           { property: 'key', header: 'ID', primary: true },
           {
+            property: '_actions',
+            header: 'Actions',
+            render: entry => (
+              <ActionButton
+                color="dark-2"
+                label="activate"
+                description={`activate question "${entry.key}"`}
+                onClick={() => activateQuestion(context.dataRef, entry)}
+                successMessage={`Question "${entry.key}" activated!`}
+              />
+            )
+          },
+          {
             property: '_status',
             header: 'Status',
             render: entry =>
@@ -77,7 +90,7 @@ export function QuizQuestionList() {
                   currentQuestion.questionId === entry.key
                 ) {
                   return (
-                    <Box direction="row" align="baseline">
+                    <Box direction="row" align="center">
                       <Text margin={{ right: 'small' }}>Active</Text>
                       <ActionCheckbox
                         label="Reveal answer"
@@ -95,19 +108,6 @@ export function QuizQuestionList() {
                 }
                 return <Text>—</Text>
               })
-          },
-          {
-            property: '_actions',
-            header: 'Actions',
-            render: entry => (
-              <ActionButton
-                color="dark-2"
-                label="activate"
-                description={`activate question "${entry.key}"`}
-                onClick={() => activateQuestion(context.dataRef, entry)}
-                successMessage={`Question "${entry.key}" activated!`}
-              />
-            )
           },
           {
             property: '_answers',
