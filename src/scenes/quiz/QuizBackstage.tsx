@@ -2,10 +2,15 @@ import React, { ReactNode, Children } from 'react'
 import { Box, Heading, DataTable, Button, Text } from 'grommet'
 import { useSceneContext } from '../../core/app/SceneContext'
 import { useFirebaseDatabase } from 'fiery'
-import { LoadingContext, handlePromise, ActionButton } from '../../core/ui'
+import {
+  LoadingContext,
+  handlePromise,
+  ActionButton,
+  ActionCheckbox
+} from '../../core/ui'
 import firebase from 'firebase'
 import λ from 'react-lambda'
-import { firebaseToEntries } from '../../core/app';
+import { firebaseToEntries } from '../../core/app'
 
 const QuizImporter = React.lazy(() => import('./QuizImporter'))
 
@@ -55,15 +60,33 @@ export function QuizQuestionList() {
             header: 'Status',
             render: entry =>
               λ(() => {
+                const currentQuestionRef = context.dataRef
+                  .child('state')
+                  .child('currentQuestion')
                 const currentQuestionState = useFirebaseDatabase(
-                  context.dataRef.child('state').child('currentQuestion')
+                  currentQuestionRef
                 )
                 const currentQuestion = currentQuestionState.unstable_read()
                 if (
                   currentQuestion &&
                   currentQuestion.questionId === entry.key
                 ) {
-                  return <Text>Active</Text>
+                  return (
+                    <Text>
+                      Active{' '}
+                      <ActionCheckbox
+                        label="Reveal answer"
+                        checked={currentQuestion.answerRevealed}
+                        color="dark-2"
+                        description="reveal answer"
+                        onChange={async (e: any) =>
+                          currentQuestionRef
+                            .child('answerRevealed')
+                            .set(e.target.checked)
+                        }
+                      />
+                    </Text>
+                  )
                 }
                 return <Text>—</Text>
               })
