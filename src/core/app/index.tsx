@@ -176,3 +176,14 @@ function AuthenticationWall(props: {
     </React.Fragment>
   )
 }
+
+export function UserName(props: { uid: string }) {
+  const profileState = useFirebaseDatabase(
+    firebase
+      .database()
+      .ref('profiles')
+      .child(props.uid)
+      .child('displayName')
+  )
+  return <span>{profileState.unstable_read() || props.uid}</span>
+}

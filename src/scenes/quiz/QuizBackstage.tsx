@@ -11,7 +11,8 @@ import {
 } from '../../core/ui'
 import firebase from 'firebase'
 import λ from 'react-lambda'
-import { firebaseToEntries } from '../../core/app'
+import { firebaseToEntries, UserName } from '../../core/app'
+import { useLeaderboardData } from './useLeaderboardData'
 
 const QuizImporter = React.lazy(() => import('./QuizImporter'))
 
@@ -158,7 +159,11 @@ async function activateQuestion(
         answerChoices: Object.keys(entry.val.answers),
         startedAt: firebase.database.ServerValue.TIMESTAMP,
         expiresIn: ((entry.val && entry.val.timeLimit) || 30) * 1000
-      })
+      }),
+    sceneRef
+      .child('state')
+      .child('showLeaderboard')
+      .set(false)
   ])
 }
 
@@ -190,19 +195,17 @@ async function gradeQuestion(
       console.log('Set %s to %s', pointRef.toString(), points)
     }
   }
+  out.push(
+    sceneRef
+      .child('state')
+      .child('showLeaderboard')
+      .set(true)
+  )
   await Promise.all(out)
 }
 
 export function QuizLeaderboard() {
-  const context = useSceneContext()
-  const scoreRef = context.dataRef.child('state').child('score')
-  const scoreState = useFirebaseDatabase(scoreRef)
-  const points = (d: any) => firebaseToEntries(d).reduce((a, e) => a + e.val, 0)
-  const scoreData = firebaseToEntries(scoreState.unstable_read()).sort(
-    (a, b) => {
-      return points(b.val) - points(a.val)
-    }
-  )
+  const leaderboardData = useLeaderboardData()
   return (
     <Box pad="small">
       <DataTable
@@ -211,11 +214,15 @@ export function QuizLeaderboard() {
             property: 'key',
             header: 'Participant',
             primary: true,
-            render: d => d.key
+            render: row => <UserName uid={row.uid} />
           },
-          { property: 'val', header: 'Score', render: d => points(d.val) }
+          {
+            property: 'val',
+            header: 'Score',
+            render: row => <span>{row.points}</span>
+          }
         ]}
-        data={scoreData}
+        data={leaderboardData}
       />
     </Box>
   )
