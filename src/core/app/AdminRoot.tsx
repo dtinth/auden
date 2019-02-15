@@ -6,7 +6,13 @@ import firebase from 'firebase'
 import { IScene } from '../model'
 import { History } from 'history'
 import { useFirebaseDatabase } from 'fiery'
-import { InlineLoadingContext, handlePromise, LoadingContext } from '../ui'
+import {
+  InlineLoadingContext,
+  handlePromise,
+  LoadingContext,
+  ActionButton,
+  ActionCheckbox
+} from '../ui'
 import { SceneContext } from './SceneContext'
 
 export function AdminRoot(props: { sceneName?: string; history: History }) {
@@ -73,14 +79,10 @@ export function Backstage(props: { scene: IScene }) {
             const dataState = useFirebaseDatabase(dataRef)
             const currentScene = dataState.unstable_read()
             return (
-              <CheckBox
+              <ActionCheckbox
                 checked={currentScene === props.scene.name}
-                onChange={() =>
-                  handlePromise(
-                    `set currentScene to "${props.scene.name}"`,
-                    dataRef.set(props.scene.name)
-                  )
-                }
+                description={`set currentScene to "${props.scene.name}"`}
+                onChange={() => dataRef.set(props.scene.name)}
                 toggle
                 label="active"
               />
