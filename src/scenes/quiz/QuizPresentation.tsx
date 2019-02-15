@@ -17,7 +17,12 @@ export function QuizPresentation() {
   const question =
     questions && currentQuestionId && questions[currentQuestionId]
   if (question) {
-    return <QuizQuestionPresentation question={question} />
+    return (
+      <QuizQuestionPresentation
+        question={question}
+        answerRevealed={currentQuestion.answerRevealed}
+      />
+    )
   }
   return (
     <Box pad="xlarge">
@@ -26,7 +31,10 @@ export function QuizPresentation() {
   )
 }
 
-export function QuizQuestionPresentation(props: { question: any }) {
+export function QuizQuestionPresentation(props: {
+  question: any
+  answerRevealed: boolean
+}) {
   const { question } = props
   return (
     <Box fill>
@@ -52,7 +60,8 @@ export function QuizQuestionPresentation(props: { question: any }) {
               style={{
                 position: 'relative',
                 fontSize: '56px',
-                lineHeight: '72px'
+                lineHeight: '72px',
+                opacity: props.answerRevealed && !entry.val.correct ? 0.5 : 1
               }}
             >
               <Box
