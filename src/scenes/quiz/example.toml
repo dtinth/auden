@@ -1,0 +1,37 @@
+[[questions]]
+text = "Answer is A"
+answers = [
+  { text = "This is correct", correct = true },
+  { text = "This is not" },
+  { text = "This is not" },
+  { text = "This is not" },
+]
+
+[[questions]]
+text = "Answer is B"
+columns = 1
+answers = [
+  { text = "This is not" },
+  { text = "This is correct", correct = true },
+  { text = "This is not" },
+  { text = "This is not" },
+]
+
+[[questions]]
+text = "*Answer* is **C**"
+answers = [
+  { text = "This is not" },
+  { text = "This is not" },
+  { text = "This is correct", correct = true },
+  { text = "This is not" },
+]
+
+[[questions]]
+text = "Answer is D"
+columns = 1
+answers = [
+  { text = "This is not" },
+  { text = "This is not" },
+  { text = "This is not" },
+  { text = "This is correct", correct = true },
+]
