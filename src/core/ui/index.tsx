@@ -1,4 +1,13 @@
-import { Box, Button, Heading, Text, Layer, ButtonProps } from 'grommet'
+import {
+  Box,
+  Button,
+  Heading,
+  Text,
+  Layer,
+  ButtonProps,
+  CheckBoxProps,
+  CheckBox
+} from 'grommet'
 import Noty from 'noty'
 import 'noty/lib/noty.css'
 import 'noty/lib/themes/mint.css'
@@ -171,6 +180,7 @@ export function ActionButton(
 ) {
   const [running, run] = useActionRunner()
   const onClick = async (e: React.MouseEvent) => {
+    e.persist()
     e.preventDefault()
     if (props.onClick) {
       const onClick = props.onClick
@@ -179,5 +189,30 @@ export function ActionButton(
   }
   return (
     <Button {...props} onClick={onClick} disabled={props.disabled || running} />
+  )
+}
+
+export function ActionCheckbox(
+  props: CheckBoxProps &
+    JSX.IntrinsicElements['input'] & {
+      description?: string
+      successMessage?: string
+    }
+) {
+  const [running, run] = useActionRunner()
+  const onChange = async (e: React.ChangeEvent) => {
+    e.persist()
+    e.preventDefault()
+    if (props.onChange) {
+      const onChange = props.onChange
+      run(props.description || 'run', () => onChange(e), props.successMessage)
+    }
+  }
+  return (
+    <CheckBox
+      {...props}
+      onChange={onChange}
+      disabled={props.disabled || running}
+    />
   )
 }
