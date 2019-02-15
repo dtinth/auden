@@ -40,6 +40,9 @@ export function QuizBackstage() {
           }}
         />
       </BackstageSection>
+      <BackstageSection title="Leaderboard">
+        <QuizLeaderboard />
+      </BackstageSection>
     </Box>
   )
 }
@@ -188,4 +191,32 @@ async function gradeQuestion(
     }
   }
   await Promise.all(out)
+}
+
+export function QuizLeaderboard() {
+  const context = useSceneContext()
+  const scoreRef = context.dataRef.child('state').child('score')
+  const scoreState = useFirebaseDatabase(scoreRef)
+  const points = (d: any) => firebaseToEntries(d).reduce((a, e) => a + e.val, 0)
+  const scoreData = firebaseToEntries(scoreState.unstable_read()).sort(
+    (a, b) => {
+      return points(b.val) - points(a.val)
+    }
+  )
+  return (
+    <Box pad="small">
+      <DataTable
+        columns={[
+          {
+            property: 'key',
+            header: 'Participant',
+            primary: true,
+            render: d => d.key
+          },
+          { property: 'val', header: 'Score', render: d => points(d.val) }
+        ]}
+        data={scoreData}
+      />
+    </Box>
+  )
 }
