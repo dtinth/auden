@@ -1,6 +1,6 @@
 import React from 'react'
 import { useConfig } from './ConfigContext'
-import { Tabs, Tab, Box, Text, CheckBox } from 'grommet'
+import { Tabs, Tab, Box, Text, CheckBox, Menu } from 'grommet'
 import λ from 'react-lambda'
 import firebase from 'firebase'
 import { IScene } from '../model'
@@ -73,6 +73,21 @@ export function Backstage(props: { scene: IScene }) {
         <Box flex>
           <Text weight="bold">{props.scene.name}</Text>
         </Box>
+        <Menu
+          label="actions"
+          items={[
+            {
+              label: 'Nuke state',
+              onClick: () =>
+                confirm('Are you sure?') &&
+                handlePromise(
+                  'nuke state',
+                  sceneContext.dataRef.remove(),
+                  'state cleared'
+                )
+            }
+          ]}
+        />
         <InlineLoadingContext description="get current scene">
           {λ(() => {
             const dataRef = firebase.database().ref('/currentScene')
