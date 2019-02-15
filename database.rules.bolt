@@ -33,15 +33,18 @@ path /scenes {
       read() { this.parent().parent().currentQuestion == qid }
     }
     // Audience can submit answer to current question.
-    path /answers/{qid}/{uid} is String {
+    path /answers/{qid}/{uid} is Answer {
       read() { isCurrentUser(uid) }
       write() { isCurrentUser(uid) && this.parent().parent().parent().currentQuestion == qid }
     }
-    // Audience has points, but must be assigned by admin.
-    path /scores {
-      read() { true }
-    }
   }
+}
+type Answer {
+  answerId: String
+  timestamp: CurrentTimestamp
+}
+type CurrentTimestamp extends Number {
+  validate() { this == now }
 }
 
 isAdmin() {

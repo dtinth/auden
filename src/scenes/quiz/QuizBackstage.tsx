@@ -6,7 +6,8 @@ import {
   LoadingContext,
   handlePromise,
   ActionButton,
-  ActionCheckbox
+  ActionCheckbox,
+  InlineLoadingContext
 } from '../../core/ui'
 import firebase from 'firebase'
 import λ from 'react-lambda'
@@ -103,6 +104,28 @@ export function QuizQuestionList() {
                 successMessage={`Question "${entry.key}" activated!`}
               />
             )
+          },
+          {
+            property: '_answers',
+            header: 'Answers',
+            render: entry => (
+              <InlineLoadingContext description="load answers">
+                {λ(() => {
+                  const answersState = useFirebaseDatabase(
+                    context.dataRef.child('answers').child(entry.key)
+                  )
+                  const answers = answersState.unstable_read()
+                  return <span>{firebaseToEntries(answers).length}</span>
+                })}
+                <ActionButton
+                  color="dark-2"
+                  label="grade"
+                  description={`grade question "${entry.key}"`}
+                  onClick={() => gradeQuestion(context.dataRef, entry)}
+                  successMessage={`Question "${entry.key}" graded!`}
+                />
+              </InlineLoadingContext>
+            )
           }
         ]}
         data={firebaseToEntries(questionsState.unstable_read())}
@@ -115,10 +138,6 @@ async function activateQuestion(
   sceneRef: firebase.database.Reference,
   entry: { key: string; val: any }
 ) {
-  // const drift = (await firebase
-  //   .database()
-  //   .ref('.info/serverTimeOffset')
-  //   .once('value')).val()
   await Promise.all([
     sceneRef
       .child('state')
@@ -133,8 +152,40 @@ async function activateQuestion(
       .child('currentQuestion')
       .set({
         questionId: entry.key,
+        answerChoices: Object.keys(entry.val.answers),
         startedAt: firebase.database.ServerValue.TIMESTAMP,
         expiresIn: ((entry.val && entry.val.timeLimit) || 30) * 1000
       })
   ])
+}
+
+async function gradeQuestion(
+  sceneRef: firebase.database.Reference,
+  entry: { key: string; val: any }
+) {
+  const answers = firebaseToEntries(
+    (await sceneRef
+      .child('answers')
+      .child(entry.key)
+      .once('value')).val()
+  ).sort((a, b) => a.val.timestamp - b.val.timestamp)
+  const out = [] as Promise<void>[]
+  let reward = 100
+  for (const a of answers) {
+    const uid = a.key
+    const answerId = a.val.answerId
+    const answer = entry.val.answers[answerId]
+    if (answer && answer.correct) {
+      const pointRef = sceneRef
+        .child('state')
+        .child('score')
+        .child(uid)
+        .child(entry.key)
+      const points = reward
+      out.push(pointRef.set(points))
+      if (reward > 50) reward--
+      console.log('Set %s to %s', pointRef.toString(), points)
+    }
+  }
+  await Promise.all(out)
 }

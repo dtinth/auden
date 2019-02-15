@@ -1,9 +1,8 @@
-import React from 'react'
-import { Box, Heading, Text, Grid } from 'grommet'
-import { useSceneContext } from '../../core/app/SceneContext'
 import { useFirebaseDatabase } from 'fiery'
-import λ from 'react-lambda'
+import { Box, Grid, Text } from 'grommet'
+import React from 'react'
 import { firebaseToEntries } from '../../core/app'
+import { useSceneContext } from '../../core/app/SceneContext'
 
 export function QuizPresentation() {
   const context = useSceneContext()
