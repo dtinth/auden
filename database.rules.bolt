@@ -28,14 +28,10 @@ path /scenes {
     path /state {
       read() { true }
     }
-    // Audience can read information about current question only.
-    path /questions/{qid} {
-      read() { this.parent().parent().currentQuestion == qid }
-    }
     // Audience can submit answer to current question.
     path /answers/{qid}/{uid} is Answer {
       read() { isCurrentUser(uid) }
-      write() { isCurrentUser(uid) && this.parent().parent().parent().currentQuestion == qid }
+      write() { isCurrentUser(uid) && this.parent().parent().parent().state.currentQuestion.questionId == qid }
     }
   }
 }
