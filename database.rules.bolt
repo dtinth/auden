@@ -34,6 +34,18 @@ path /scenes {
       write() { isCurrentUser(uid) && this.parent().parent().parent().state.currentQuestion.questionId == qid }
     }
   }
+  path /vote {
+    path /settings {
+      read() { true }
+    }
+    path /options {
+      read() { true }
+    }
+    path /votes/{uid} {
+      read() { isCurrentUser(uid) }
+      write() { isCurrentUser(uid) }
+    }
+  }
 }
 type Answer {
   answerId: String
