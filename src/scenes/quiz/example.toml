@@ -1,37 +1,64 @@
-[[questions]]
-text = "Answer is A"
-answers = [
-  { text = "This is correct", correct = true },
-  { text = "This is not" },
-  { text = "This is not" },
-  { text = "This is not" },
-]
 
 [[questions]]
-text = "Answer is B"
+text = "`a = '1'; a += 2; a`"
 columns = 1
 answers = [
-  { text = "This is not" },
-  { text = "This is correct", correct = true },
-  { text = "This is not" },
-  { text = "This is not" },
+  { text = "`'12'`", correct = true },
+  { text = "`'3'`" },
+  { text = "`12`" },
+  { text = "`3`" },
 ]
 
 [[questions]]
-text = "*Answer* is **C**"
+text = "`(''+ +'').length`"
 answers = [
-  { text = "This is not" },
-  { text = "This is not" },
-  { text = "This is correct", correct = true },
-  { text = "This is not" },
+  { text = "`0`" },
+  { text = "`1`", correct = true },
+  { text = "`4`" },
+  { text = "`9`" },
 ]
 
 [[questions]]
-text = "Answer is D"
-columns = 1
+text = "`/n/.test()`"
 answers = [
-  { text = "This is not" },
-  { text = "This is not" },
-  { text = "This is not" },
-  { text = "This is correct", correct = true },
+  { text = "`true`", correct = true },
+  { text = "`false`" },
+  { text = "`null`" },
+  { text = "`undefined`" },
+]
+
+[[questions]]
+text = "`/u/.test()`"
+answers = [
+  { text = "`true`", correct = true },
+  { text = "`false`" },
+  { text = "`null`" },
+  { text = "`undefined`" },
+]
+
+[[questions]]
+text = "`/l/.test()`"
+answers = [
+  { text = "`true`" },
+  { text = "`false`", correct = true },
+  { text = "`null`" },
+  { text = "`undefined`" },
+]
+
+[[questions]]
+text = "`a = '1'; a -=- 2; a`"
+answers = [
+  { text = "`'12'`" },
+  { text = "`'3'`" },
+  { text = "`12`" },
+  { text = "`3`", correct = true },
+]
+
+[[questions]]
+text = "`(''+void+'').length`"
+answers = [
+  { text = "`0`" },
+  { text = "`1`" },
+  { text = "`4`" },
+  { text = "`9`", correct = true },
 ]
