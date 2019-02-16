@@ -110,9 +110,14 @@ export function QuizQuestionList() {
                       context.dataRef.child('answers').child(entry.key)
                     )
                     const answers = answersState.unstable_read()
+                    const correct = firebaseToEntries(answers).filter(e => {
+                      const answerId = e.val.answerId
+                      const answer = entry.val.answers[answerId]
+                      return answer && answer.correct
+                    }).length
                     return (
                       <Text margin={{ right: 'small' }}>
-                        {firebaseToEntries(answers).length}
+                        {firebaseToEntries(answers).length} ({correct} correct)
                       </Text>
                     )
                   })}
