@@ -234,6 +234,15 @@ function VotePresentation() {
   if (!showResults) {
     return (
       <Box fill align="center" justify="center">
+        <Text
+          alignSelf="center"
+          textAlign="center"
+          size="64px"
+          weight="bold"
+          color="accent-1"
+        >
+          Please vote @ qz.netlify.com
+        </Text>
         <Text alignSelf="center" textAlign="center" size="64px">
           {λ(() => {
             const allVotesRef = sceneContext.dataRef.child('votes')
