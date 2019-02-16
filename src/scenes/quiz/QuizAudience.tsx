@@ -24,6 +24,17 @@ export function QuizAudience() {
     return λ(() => {
       const answerState = useFirebaseDatabase(answerRef)
       const answer = answerState.unstable_read()
+      if (currentQuestion.answerRevealed) {
+        return (
+          <Box pad="xlarge">
+            <Text size="xlarge">{currentQuestionId}</Text>
+            <br />
+            Answer has been revealed!
+            <br />
+            Wait for next question...
+          </Box>
+        )
+      }
       if (answer) {
         return (
           <Box pad="xlarge">
