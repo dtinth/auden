@@ -216,3 +216,21 @@ export function ActionCheckbox(
     />
   )
 }
+
+export function BackstageSection(props: {
+  title: ReactNode
+  children: ReactNode
+}) {
+  return (
+    <Box>
+      <Box pad="small" background="dark-1">
+        <Heading level="2" margin="none" size="small">
+          {props.title}
+        </Heading>
+      </Box>
+      <LoadingContext>
+        <Box pad="small">{props.children}</Box>
+      </LoadingContext>
+    </Box>
+  )
+}

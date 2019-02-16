@@ -7,7 +7,8 @@ import {
   handlePromise,
   ActionButton,
   ActionCheckbox,
-  InlineLoadingContext
+  InlineLoadingContext,
+  BackstageSection
 } from '../../core/ui'
 import firebase from 'firebase'
 import λ from 'react-lambda'
@@ -16,21 +17,10 @@ import { useLeaderboardData } from './useLeaderboardData'
 
 const QuizImporter = React.lazy(() => import('./QuizImporter'))
 
-function BackstageSection(props: { title: ReactNode; children: ReactNode }) {
-  return (
-    <Box>
-      <Heading level="2" margin="none" size="small">
-        {props.title}
-      </Heading>
-      <LoadingContext>{props.children}</LoadingContext>
-    </Box>
-  )
-}
-
 export function QuizBackstage() {
   const context = useSceneContext()
   return (
-    <Box pad="small">
+    <Box>
       <BackstageSection title="Questions">
         <QuizQuestionList />
       </BackstageSection>

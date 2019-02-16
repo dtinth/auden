@@ -1,4 +1,5 @@
 import * as quiz from './scenes/quiz'
+import * as vote from './scenes/vote'
 import { IConfig } from './core/model'
 
 export const config: IConfig = {
@@ -10,5 +11,5 @@ export const config: IConfig = {
     storageBucket: 'ingage-platform-demo.appspot.com',
     messagingSenderId: '13020059910'
   },
-  scenes: [quiz.scene]
+  scenes: [quiz.scene, vote.scene]
 }
