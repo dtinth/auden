@@ -123,7 +123,7 @@ function QuizLeaderboardPresentation() {
         </Text>
       </Box>
       <Box flex pad="small" style={{ fontSize: '56px', lineHeight: '72px' }}>
-        {leaderboardData.map(entry => {
+        {leaderboardData.slice(0, 8).map(entry => {
           return (
             <Box direction="row" pad="small">
               <Box flex>
