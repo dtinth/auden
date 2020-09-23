@@ -111,16 +111,16 @@ function Navigation() {
       </CardHeader>
       <CardBody>
         <Suspense fallback={'Loading screens...'}>
-          <ScreenList>
+          <ScreenListConnector>
             {(screenIds) =>
               screenIds.length ? (
                 screenIds.map((screenId) => (
                   <RoutedAnchor path={`/admin/screens/${screenId}`}>
                     <Box pad="small">
                       <Suspense fallback={'...'}>
-                        <ScreenInfo key={screenId} screenId={screenId}>
+                        <ScreenInfoConnector key={screenId} screenId={screenId}>
                           {(info) => info.title}
-                        </ScreenInfo>
+                        </ScreenInfoConnector>
                       </Suspense>
                     </Box>
                   </RoutedAnchor>
@@ -129,7 +129,7 @@ function Navigation() {
                 <Box pad="small">No screens, create one!</Box>
               )
             }
-          </ScreenList>
+          </ScreenListConnector>
         </Suspense>
       </CardBody>
       <CardFooter pad={{ horizontal: 'small' }} background="dark-2">
@@ -154,7 +154,7 @@ function Navigation() {
   )
 }
 
-function ScreenList(props: {
+function ScreenListConnector(props: {
   children: (screenIds: string[]) => React.ReactNode
 }) {
   const dataRef = firebase.database().ref('/screenList')
@@ -164,7 +164,7 @@ function ScreenList(props: {
   return <>{props.children(screenIds)}</>
 }
 
-function ScreenInfo(props: {
+function ScreenInfoConnector(props: {
   screenId: string
   children: (screenInfo: any) => React.ReactNode
 }) {
