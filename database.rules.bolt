@@ -22,6 +22,33 @@ path /currentScene is String {
   read() { true }
 }
 
+// Anyone can see which screen is active
+path /currentScreen is String {
+  read() { true }
+}
+
+path /screenList {
+  path /{orderKey} is String {}
+}
+
+path /screenData {
+  path /{screenId} {
+    path /info {
+      path /scene is String {}
+      read() { true }
+    }
+    path /public {
+      read() { true }
+    }
+    path /users/{uid} {
+      read() { isCurrentUser(uid) }
+      path /writable {
+        write() { isCurrentUser(uid) }
+      }
+    }
+  }
+}
+
 path /scenes {
   path /quiz {
     // Everyone can read the current state of quiz
