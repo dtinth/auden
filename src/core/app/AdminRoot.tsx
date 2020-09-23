@@ -26,6 +26,7 @@ import {
   LoadingContext,
   ActionButton,
   ActionCheckbox,
+  ErrorMessage,
 } from '../ui'
 import { SceneContext } from './SceneContext'
 import { Add } from 'grommet-icons'
@@ -53,7 +54,11 @@ export function AdminRoot(props: {
         <Box gridArea="nav">
           <Navigation />
         </Box>
-        <Box gridArea="main">Main area</Box>
+        <Box gridArea="main">
+          <LoadingContext>
+            <ScreenBackstage screenId={props.screenId} />
+          </LoadingContext>
+        </Box>
       </Grid>
     )
   }
@@ -171,6 +176,47 @@ function ScreenInfo(props: {
   const dataState = useFirebaseDatabase(dataRef)
   const data = dataState.unstable_read()
   return <>{props.children(data)}</>
+}
+
+export function ScreenBackstage(props: { screenId: string }) {
+  const config = useConfig()
+  const screenId = props.screenId
+  const dataRef = firebase
+    .database()
+    .ref('/screenData')
+    .child(screenId)
+    .child('info')
+    .child('scene')
+  const dataState = useFirebaseDatabase(dataRef)
+  const data = dataState.unstable_read()
+  const sceneType = data?.info?.scene
+  const scene = config.scenes.find((s) => s.name === sceneType)
+  if (!scene) {
+    return <ErrorMessage message={'Scene type ' + sceneType + ' not found'} />
+  }
+  const BackstageComponent = scene.backstageComponent || FallbackBackstage
+  const sceneContext = {
+    dataRef: firebase.database().ref('/screenData').child(screenId),
+  }
+  return (
+    <Box margin="xsmall" border="all" direction="column">
+      <Box
+        border="bottom"
+        background="dark-1"
+        direction="row"
+        pad={{ vertical: 'xsmall', horizontal: 'small' }}
+      >
+        <Box flex>
+          <Text weight="bold">{scene.name}</Text>
+        </Box>
+      </Box>
+      <SceneContext.Provider value={sceneContext}>
+        <LoadingContext>
+          <BackstageComponent />
+        </LoadingContext>
+      </SceneContext.Provider>
+    </Box>
+  )
 }
 
 export function Backstage(props: { scene: IScene }) {
