@@ -179,12 +179,12 @@ export function ActionButton(
     }
 ) {
   const [running, run] = useActionRunner()
-  const onClick = async (e: React.MouseEvent) => {
+  const onClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.persist()
     e.preventDefault()
     if (props.onClick) {
       const onClick = props.onClick
-      run(props.description || 'run', () => onClick(e), props.successMessage)
+      run(props.description || 'run', async () => onClick(e), props.successMessage)
     }
   }
   return (
@@ -200,12 +200,12 @@ export function ActionCheckbox(
     }
 ) {
   const [running, run] = useActionRunner()
-  const onChange = async (e: React.ChangeEvent) => {
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist()
     e.preventDefault()
     if (props.onChange) {
       const onChange = props.onChange
-      run(props.description || 'run', () => onChange(e), props.successMessage)
+      run(props.description || 'run', async () => onChange(e), props.successMessage)
     }
   }
   return (

@@ -39,6 +39,8 @@ export function AdminRoot(props: { sceneName?: string; history: History }) {
             title={
               λ(() => {
                 const dataRef = firebase.database().ref('/currentScene')
+                // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+                // eslint-disable-next-line react-hooks/rules-of-hooks
                 const dataState = useFirebaseDatabase(dataRef)
                 const weight = dataState.data === scene.name ? 'bold' : 'normal'
                 return <Text weight={weight}>{scene.name}</Text>
@@ -79,7 +81,7 @@ export function Backstage(props: { scene: IScene }) {
             {
               label: 'Nuke state',
               onClick: () =>
-                confirm('Are you sure?') &&
+                window.confirm('Are you sure?') &&
                 handlePromise(
                   'nuke state',
                   sceneContext.dataRef.remove(),
@@ -91,6 +93,8 @@ export function Backstage(props: { scene: IScene }) {
         <InlineLoadingContext description="get current scene">
           {λ(() => {
             const dataRef = firebase.database().ref('/currentScene')
+            // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const dataState = useFirebaseDatabase(dataRef)
             const currentScene = dataState.unstable_read()
             return (

@@ -22,6 +22,8 @@ export function QuizAudience() {
       .child(currentQuestionId)
       .child(me.uid)
     return λ(() => {
+      // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const answerState = useFirebaseDatabase(answerRef)
       const answer = answerState.unstable_read()
       if (currentQuestion.answerRevealed) {

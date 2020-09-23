@@ -71,6 +71,9 @@ export function QuizQuestionList() {
                 const currentQuestionRef = context.dataRef
                   .child('state')
                   .child('currentQuestion')
+
+                // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+                // eslint-disable-next-line react-hooks/rules-of-hooks
                 const currentQuestionState = useFirebaseDatabase(
                   currentQuestionRef
                 )
@@ -106,6 +109,8 @@ export function QuizQuestionList() {
               <InlineLoadingContext description="load answers">
                 <Box direction="row" align="baseline">
                   {λ(() => {
+                    // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+                    // eslint-disable-next-line react-hooks/rules-of-hooks
                     const answersState = useFirebaseDatabase(
                       context.dataRef.child('answers').child(entry.key)
                     )

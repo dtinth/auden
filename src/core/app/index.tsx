@@ -68,6 +68,8 @@ function TopBar(props: { user: firebase.User }) {
           {' '}
           <InlineLoadingContext description="check admin status">
             {λ(() => {
+              // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+              // eslint-disable-next-line react-hooks/rules-of-hooks
               const adminState = useFirebaseDatabase(
                 firebase
                   .database()
@@ -85,7 +87,7 @@ function TopBar(props: { user: firebase.User }) {
           label="Sign out"
           color="neutral-3"
           onClick={async () => {
-            if (confirm('Surely?')) await firebase.auth().signOut()
+            if (window.confirm('Surely?')) await firebase.auth().signOut()
           }}
         />
       </Text>
@@ -137,8 +139,13 @@ function AuthenticationWall(props: {
             .database()
             .ref('/profiles')
             .child(me.uid)
+          // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           const profileState = useFirebaseDatabase(profileRef)
           const profile = profileState.unstable_read()
+
+          // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should convert this to actual React.FC instead.
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           useEffect(() => {
             if (!profile) {
               handlePromise(
