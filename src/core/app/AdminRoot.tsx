@@ -14,6 +14,7 @@ import {
   CardFooter,
   Button,
   RoutedAnchor,
+  Heading,
 } from 'grommet'
 import λ from 'react-lambda'
 import firebase from 'firebase'
@@ -188,8 +189,7 @@ export function ScreenBackstage(props: { screenId: string }) {
     .child('info')
     .child('scene')
   const dataState = useFirebaseDatabase(dataRef)
-  const data = dataState.unstable_read()
-  const sceneType = data?.info?.scene
+  const sceneType = dataState.unstable_read()
   const scene = config.scenes.find((s) => s.name === sceneType)
   if (!scene) {
     return <ErrorMessage message={'Scene type ' + sceneType + ' not found'} />
@@ -199,23 +199,32 @@ export function ScreenBackstage(props: { screenId: string }) {
     dataRef: firebase.database().ref('/screenData').child(screenId),
   }
   return (
-    <Box margin="xsmall" border="all" direction="column">
-      <Box
-        border="bottom"
-        background="dark-1"
-        direction="row"
-        pad={{ vertical: 'xsmall', horizontal: 'small' }}
-      >
-        <Box flex>
-          <Text weight="bold">{scene.name}</Text>
+    <>
+      <Heading margin={{ vertical: 'small', horizontal: 'small' }}>
+        <InlineLoadingContext description="get screen title">
+          <ScreenInfoConnector screenId={screenId}>
+            {(info) => info?.title}
+          </ScreenInfoConnector>
+        </InlineLoadingContext>
+      </Heading>
+      <Box margin="xsmall" border="all" direction="column">
+        <Box
+          border="bottom"
+          background="dark-1"
+          direction="row"
+          pad={{ vertical: 'xsmall', horizontal: 'small' }}
+        >
+          <Box flex>
+            <Text weight="bold">{scene.name}</Text>
+          </Box>
         </Box>
+        <SceneContext.Provider value={sceneContext}>
+          <LoadingContext>
+            <BackstageComponent />
+          </LoadingContext>
+        </SceneContext.Provider>
       </Box>
-      <SceneContext.Provider value={sceneContext}>
-        <LoadingContext>
-          <BackstageComponent />
-        </LoadingContext>
-      </SceneContext.Provider>
-    </Box>
+    </>
   )
 }
 
