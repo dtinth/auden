@@ -1,6 +1,20 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { useConfig } from './ConfigContext'
-import { Tabs, Tab, Box, Text, CheckBox, Menu } from 'grommet'
+import {
+  Tabs,
+  Tab,
+  Box,
+  Text,
+  CheckBox,
+  Menu,
+  Grid,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Button,
+  RoutedAnchor,
+} from 'grommet'
 import λ from 'react-lambda'
 import firebase from 'firebase'
 import { IScene } from '../model'
@@ -11,19 +25,46 @@ import {
   handlePromise,
   LoadingContext,
   ActionButton,
-  ActionCheckbox
+  ActionCheckbox,
 } from '../ui'
 import { SceneContext } from './SceneContext'
+import { Add } from 'grommet-icons'
+import { Link } from 'react-router-dom'
 
-export function AdminRoot(props: { sceneName?: string; history: History }) {
+export function AdminRoot(props: {
+  sceneName?: string
+  screenId?: string
+  history: History
+}) {
   const config = useConfig()
+
+  if (props.screenId) {
+    return (
+      <Grid
+        rows={['auto']}
+        columns={['16rem', 'auto']}
+        gap="small"
+        pad="small"
+        areas={[
+          { name: 'nav', start: [0, 0], end: [0, 0] },
+          { name: 'main', start: [1, 0], end: [1, 0] },
+        ]}
+      >
+        <Box gridArea="nav">
+          <Navigation />
+        </Box>
+        <Box gridArea="main">Main area</Box>
+      </Grid>
+    )
+  }
+
   return (
     <div>
       <Tabs
         activeIndex={
-          config.scenes.findIndex(s => s.name === props.sceneName!) + 1
+          config.scenes.findIndex((s) => s.name === props.sceneName!) + 1
         }
-        onActive={index => {
+        onActive={(index) => {
           if (index === 0) {
             props.history.push('/admin')
           } else {
@@ -56,13 +97,86 @@ export function AdminRoot(props: { sceneName?: string; history: History }) {
   )
 }
 
+function Navigation() {
+  const config = useConfig()
+  return (
+    <Card background="dark-1">
+      <CardHeader pad="small" background="dark-2">
+        Screens
+      </CardHeader>
+      <CardBody>
+        <Suspense fallback={'Loading screens...'}>
+          <ScreenList>
+            {(screenIds) =>
+              screenIds.length ? (
+                screenIds.map((screenId) => (
+                  <RoutedAnchor path={`/admin/screens/${screenId}`}>
+                    <Box pad="small">
+                      <Suspense fallback={'...'}>
+                        <ScreenInfo key={screenId} screenId={screenId}>
+                          {(info) => info.title}
+                        </ScreenInfo>
+                      </Suspense>
+                    </Box>
+                  </RoutedAnchor>
+                ))
+              ) : (
+                <Box pad="small">No screens, create one!</Box>
+              )
+            }
+          </ScreenList>
+        </Suspense>
+      </CardBody>
+      <CardFooter pad={{ horizontal: 'small' }} background="dark-2">
+        <Menu
+          icon={<Add color="light-1" />}
+          items={config.scenes.map((scene, i) => ({
+            label: scene.name,
+            onClick: () => {
+              const screenDataRef = firebase
+                .database()
+                .ref('/screenData')
+                .push()
+              screenDataRef.set({
+                info: { scene: scene.name, title: scene.name },
+              })
+              firebase.database().ref('/screenList').push(screenDataRef.key)
+            },
+          }))}
+        />
+      </CardFooter>
+    </Card>
+  )
+}
+
+function ScreenList(props: {
+  children: (screenIds: string[]) => React.ReactNode
+}) {
+  const dataRef = firebase.database().ref('/screenList')
+  const dataState = useFirebaseDatabase(dataRef)
+  const data = dataState.unstable_read()
+  const screenIds: string[] = Object.values(data || {})
+  return <>{props.children(screenIds)}</>
+}
+
+function ScreenInfo(props: {
+  screenId: string
+  children: (screenInfo: any) => React.ReactNode
+}) {
+  const dataRef = firebase
+    .database()
+    .ref('/screenData')
+    .child(props.screenId)
+    .child('info')
+  const dataState = useFirebaseDatabase(dataRef)
+  const data = dataState.unstable_read()
+  return <>{props.children(data)}</>
+}
+
 export function Backstage(props: { scene: IScene }) {
   const BackstageComponent = props.scene.backstageComponent || FallbackBackstage
   const sceneContext = {
-    dataRef: firebase
-      .database()
-      .ref('/scenes')
-      .child(props.scene.name)
+    dataRef: firebase.database().ref('/scenes').child(props.scene.name),
   }
   return (
     <Box margin="xsmall" border="all" direction="column">
@@ -86,8 +200,8 @@ export function Backstage(props: { scene: IScene }) {
                   'nuke state',
                   sceneContext.dataRef.remove(),
                   'state cleared'
-                )
-            }
+                ),
+            },
           ]}
         />
         <InlineLoadingContext description="get current scene">

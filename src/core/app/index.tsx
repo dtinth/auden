@@ -13,7 +13,7 @@ import {
   ErrorMessage,
   InlineLoadingContext,
   Loading,
-  handlePromise
+  handlePromise,
 } from '../ui'
 import { AdminRoot } from './AdminRoot'
 import { ConfigContext } from './ConfigContext'
@@ -25,9 +25,9 @@ export * from './FirebaseDataUtils'
 const theme = deepMerge(generate(24, 6), dark, {
   global: {
     font: {
-      family: 'inherit'
-    }
-  }
+      family: 'inherit',
+    },
+  },
 })
 
 export function App(props: { config: IConfig }) {
@@ -37,7 +37,7 @@ export function App(props: { config: IConfig }) {
         <ErrorBoundary>
           <Suspense fallback={<Loading />}>
             <AuthenticationWall>
-              {user => <ProtectedArea user={user} />}
+              {(user) => <ProtectedArea user={user} />}
             </AuthenticationWall>
           </Suspense>
         </ErrorBoundary>
@@ -71,10 +71,7 @@ function TopBar(props: { user: firebase.User }) {
               // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
               // eslint-disable-next-line react-hooks/rules-of-hooks
               const adminState = useFirebaseDatabase(
-                firebase
-                  .database()
-                  .ref('/admins')
-                  .child(user.uid)
+                firebase.database().ref('/admins').child(user.uid)
               )
               return <span>{adminState.unstable_read() ? '(admin)' : ''}</span>
             })}
@@ -104,12 +101,22 @@ function Main(props: { user: firebase.User }) {
         <Route
           exact
           path="/admin"
-          render={props => <AdminRoot history={props.history} />}
+          render={(props) => <AdminRoot history={props.history} />}
+        />
+        <Route
+          exact
+          path="/admin/screens/:screenId"
+          render={(props) => (
+            <AdminRoot
+              history={props.history}
+              screenId={props.match.params.screenId}
+            />
+          )}
         />
         <Route
           exact
           path="/admin/:scene"
-          render={props => (
+          render={(props) => (
             <AdminRoot
               sceneName={props.match.params.scene}
               history={props.history}
@@ -135,10 +142,7 @@ function AuthenticationWall(props: {
     <React.Fragment>
       {me ? (
         λ(() => {
-          const profileRef = firebase
-            .database()
-            .ref('/profiles')
-            .child(me.uid)
+          const profileRef = firebase.database().ref('/profiles').child(me.uid)
           // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
           // eslint-disable-next-line react-hooks/rules-of-hooks
           const profileState = useFirebaseDatabase(profileRef)
@@ -151,7 +155,7 @@ function AuthenticationWall(props: {
               handlePromise(
                 'create profile',
                 profileRef.set({
-                  displayName: me.displayName
+                  displayName: me.displayName,
                 }),
                 'User profile created.'
               )
@@ -186,11 +190,7 @@ function AuthenticationWall(props: {
 
 export function UserName(props: { uid: string }) {
   const profileState = useFirebaseDatabase(
-    firebase
-      .database()
-      .ref('profiles')
-      .child(props.uid)
-      .child('displayName')
+    firebase.database().ref('profiles').child(props.uid).child('displayName')
   )
   return <span>{profileState.unstable_read() || props.uid}</span>
 }
