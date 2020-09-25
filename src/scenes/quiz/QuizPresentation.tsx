@@ -7,7 +7,9 @@ import { useLeaderboardData } from './useLeaderboardData'
 
 export function QuizPresentation() {
   const context = useSceneContext()
-  const questionsState = useFirebaseDatabase(context.dataRef.child('questions'))
+  const questionsState = useFirebaseDatabase(
+    context.dataRef.child('main').child('questions').child('secret')
+  )
   const currentQuestionState = useFirebaseDatabase(
     context.dataRef
       .child('main')

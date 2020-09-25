@@ -27,7 +27,11 @@ export function QuizBackstage() {
       <BackstageSection title="Import questions">
         <QuizImporter
           import={async (data) => {
-            await context.dataRef.child('questions').set(data)
+            await context.dataRef
+              .child('main')
+              .child('questions')
+              .child('secret')
+              .set(data)
           }}
         />
       </BackstageSection>
@@ -40,7 +44,10 @@ export function QuizBackstage() {
 
 export function QuizQuestionList() {
   const context = useSceneContext()
-  const questionsRef = context.dataRef.child('questions')
+  const questionsRef = context.dataRef
+    .child('main')
+    .child('questions')
+    .child('secret')
   const questionsState = useFirebaseDatabase(questionsRef)
 
   return (
@@ -112,7 +119,10 @@ export function QuizQuestionList() {
                     // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
                     // eslint-disable-next-line react-hooks/rules-of-hooks
                     const answersState = useFirebaseDatabase(
-                      context.dataRef.child('answers').child(entry.key)
+                      context.dataRef
+                        .child('answers')
+                        .child(entry.key)
+                        .child('private')
                     )
                     const answers = answersState.unstable_read()
                     const correct = firebaseToEntries(answers).filter((e) => {
@@ -184,7 +194,13 @@ async function gradeQuestion(
   entry: { key: string; val: any }
 ) {
   const answers = firebaseToEntries(
-    (await sceneRef.child('answers').child(entry.key).once('value')).val()
+    (
+      await sceneRef
+        .child('answers')
+        .child(entry.key)
+        .child('private')
+        .once('value')
+    ).val()
   ).sort((a, b) => a.val.timestamp - b.val.timestamp)
   const out = [] as Promise<void>[]
   let reward = 100

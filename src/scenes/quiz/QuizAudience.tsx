@@ -21,11 +21,10 @@ export function QuizAudience() {
   const currentQuestionId = currentQuestion && currentQuestion.questionId
   if (currentQuestionId) {
     const answerRef = context.dataRef
-      .child('users')
-      .child(me.uid)
-      .child('read-write')
       .child('answers')
       .child(currentQuestionId)
+      .child('private')
+      .child(me.uid)
     return λ(() => {
       // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
       // eslint-disable-next-line react-hooks/rules-of-hooks
