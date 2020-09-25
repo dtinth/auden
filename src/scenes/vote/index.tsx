@@ -5,7 +5,7 @@ import {
   ActionButton,
   ActionCheckbox,
   flashError,
-  BackstageSection
+  BackstageSection,
 } from '../../core/ui'
 import { useSceneContext } from '../../core/app/SceneContext'
 import { useFirebaseDatabase, useFirebaseAuth } from 'fiery'
@@ -16,7 +16,7 @@ export const scene: IScene = {
   name: 'vote',
   backstageComponent: VoteBackstage,
   presentationComponent: VotePresentation,
-  audienceComponent: VoteAudience
+  audienceComponent: VoteAudience,
 }
 
 function VoteAudience() {
@@ -28,24 +28,40 @@ function VoteAudience() {
   const uid = me.uid
 
   // vote options
-  const optionsRef = sceneContext.dataRef.child('options')
+  const optionsRef = sceneContext.dataRef
+    .child('main')
+    .child('options')
+    .child('public-read')
   const optionsState = useFirebaseDatabase(optionsRef)
   const options = optionsState.unstable_read()
 
   // my votes
-  const myVotesRef = sceneContext.dataRef.child('votes').child(uid)
+  const myVotesRef = sceneContext.dataRef
+    .child('main')
+    .child('votes')
+    .child('private')
+    .child(uid)
   const myVotesState = useFirebaseDatabase(myVotesRef)
   const myVotes = myVotesState.unstable_read()
-  const voteCount = firebaseToEntries(myVotes).filter(entry => entry.val).length
+  const voteCount = firebaseToEntries(myVotes).filter((entry) => entry.val)
+    .length
   const hasVotedFor = (optionId: string) => !!(myVotes && myVotes[optionId])
 
   // max votes
-  const maxVotesRef = sceneContext.dataRef.child('settings').child('maxVotes')
+  const maxVotesRef = sceneContext.dataRef
+    .child('main')
+    .child('settings')
+    .child('public-read')
+    .child('maxVotes')
   const maxVotesState = useFirebaseDatabase(maxVotesRef)
   const maxVotes = maxVotesState.unstable_read() || DEFAULT_MAX_VOTES
 
   // enabled?
-  const enabledRef = sceneContext.dataRef.child('settings').child('enabled')
+  const enabledRef = sceneContext.dataRef
+    .child('main')
+    .child('settings')
+    .child('public-read')
+    .child('enabled')
   const enabledState = useFirebaseDatabase(enabledRef)
   const enabled = enabledState.unstable_read()
 
@@ -60,7 +76,7 @@ function VoteAudience() {
           <Text weight="bold">Vote your favorite</Text> (max: {maxVotes}):
         </Text>
       </Box>
-      {firebaseToEntries(options).map(entry => (
+      {firebaseToEntries(options).map((entry) => (
         <Box pad="xsmall" key={entry.key}>
           <ActionCheckbox
             label={entry.val}
@@ -85,12 +101,15 @@ function VoteBackstage() {
   const sceneContext = useSceneContext()
   const [voteOptionsText, setVoteOptionsText] = useState<string | null>(null)
 
-  const optionsRef = sceneContext.dataRef.child('options')
+  const optionsRef = sceneContext.dataRef
+    .child('main')
+    .child('options')
+    .child('public-read')
   const optionsState = useFirebaseDatabase(optionsRef)
   const options = optionsState.unstable_read()
 
   const initialVoteOptionsText = firebaseToEntries(options)
-    .map(entry => entry.val)
+    .map((entry) => entry.val)
     .join('/')
   const textValue =
     voteOptionsText != null ? voteOptionsText : initialVoteOptionsText
@@ -114,7 +133,7 @@ function VoteBackstage() {
               onClick={async () => {
                 const options = {} as any
                 let n = 0
-                for (const item of textValue.split('/').filter(x => x)) {
+                for (const item of textValue.split('/').filter((x) => x)) {
                   options['option' + ('' + n++).padStart(2, '0')] = item
                 }
                 await optionsRef.set(options)
@@ -125,7 +144,9 @@ function VoteBackstage() {
           <Box flex={false} margin={{ right: 'small' }}>
             {λ(() => {
               const maxVotesRef = sceneContext.dataRef
+                .child('main')
                 .child('settings')
+                .child('public-read')
                 .child('maxVotes')
               // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
               // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -151,7 +172,9 @@ function VoteBackstage() {
           <Box flex={false}>
             {λ(() => {
               const enabledRef = sceneContext.dataRef
+                .child('main')
                 .child('settings')
+                .child('public-read')
                 .child('enabled')
               // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
               // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -175,7 +198,9 @@ function VoteBackstage() {
       <BackstageSection title="Vote results">
         {λ(() => {
           const showResultsRef = sceneContext.dataRef
+            .child('main')
             .child('settings')
+            .child('public-read')
             .child('showResults')
           // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
           // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -194,16 +219,19 @@ function VoteBackstage() {
           )
         })}
         {λ(() => {
-          const allVotesRef = sceneContext.dataRef.child('votes')
+          const allVotesRef = sceneContext.dataRef
+            .child('main')
+            .child('votes')
+            .child('private')
           // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
           // eslint-disable-next-line react-hooks/rules-of-hooks
           const allVotesState = useFirebaseDatabase(allVotesRef)
           const allVotes = firebaseToEntries(allVotesState.unstable_read())
           const voteResult = firebaseToEntries(options)
-            .map(entry => {
+            .map((entry) => {
               const optionId = entry.key
               const optionText = entry.val
-              const voteCount = allVotes.filter(voterEntry => {
+              const voteCount = allVotes.filter((voterEntry) => {
                 const voterVotes = voterEntry.val
                 return !!(voterVotes && voterVotes[optionId])
               }).length
@@ -214,7 +242,7 @@ function VoteBackstage() {
             <DataTable
               columns={[
                 { header: 'Option', property: 'optionText', primary: true },
-                { header: 'Votes', property: 'voteCount', primary: true }
+                { header: 'Votes', property: 'voteCount', primary: true },
               ]}
               data={voteResult}
             />
@@ -229,12 +257,17 @@ function VotePresentation() {
   const sceneContext = useSceneContext()
   const [voteOptionsText, setVoteOptionsText] = useState<string | null>(null)
 
-  const optionsRef = sceneContext.dataRef.child('options')
+  const optionsRef = sceneContext.dataRef
+    .child('main')
+    .child('options')
+    .child('public-read')
   const optionsState = useFirebaseDatabase(optionsRef)
   const options = optionsState.unstable_read()
 
   const showResultsRef = sceneContext.dataRef
+    .child('main')
     .child('settings')
+    .child('public-read')
     .child('showResults')
   const showResultsState = useFirebaseDatabase(showResultsRef)
   const showResults = showResultsState.unstable_read()
@@ -253,16 +286,20 @@ function VotePresentation() {
         </Text>
         <Text alignSelf="center" textAlign="center" size="64px">
           {λ(() => {
-            const allVotesRef = sceneContext.dataRef.child('votes')
+            const allVotesRef = sceneContext.dataRef
+              .child('main')
+              .child('votes')
+              .child('private')
             // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
             // eslint-disable-next-line react-hooks/rules-of-hooks
             const allVotesState = useFirebaseDatabase(allVotesRef)
             const votesPerUser = firebaseToEntries(
               allVotesState.unstable_read()
             ).map(
-              entry =>
-                firebaseToEntries(entry.val).filter(voteEntry => voteEntry.val)
-                  .length
+              (entry) =>
+                firebaseToEntries(entry.val).filter(
+                  (voteEntry) => voteEntry.val
+                ).length
             )
             const numberOfPeople = votesPerUser.length
             const numberOfVotes = votesPerUser.reduce((a, b) => a + b, 0)
@@ -281,16 +318,19 @@ function VotePresentation() {
   return (
     <Box fill>
       {λ(() => {
-        const allVotesRef = sceneContext.dataRef.child('votes')
+        const allVotesRef = sceneContext.dataRef
+          .child('main')
+          .child('votes')
+          .child('private')
         // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const allVotesState = useFirebaseDatabase(allVotesRef)
         const allVotes = firebaseToEntries(allVotesState.unstable_read())
         const voteResult = firebaseToEntries(options)
-          .map(entry => {
+          .map((entry) => {
             const optionId = entry.key
             const optionText = entry.val
-            const voteCount = allVotes.filter(voterEntry => {
+            const voteCount = allVotes.filter((voterEntry) => {
               const voterVotes = voterEntry.val
               return !!(voterVotes && voterVotes[optionId])
             }).length
@@ -309,7 +349,7 @@ function VotePresentation() {
               pad="small"
               style={{ fontSize: '56px', lineHeight: '72px' }}
             >
-              {voteResult.map(entry => {
+              {voteResult.map((entry) => {
                 return (
                   <Box direction="row" pad="small">
                     <Box flex>{entry.optionText}</Box>
