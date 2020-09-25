@@ -196,7 +196,11 @@ export function ScreenBackstage(props: { screenId: string }) {
   }
   const BackstageComponent = scene.backstageComponent || FallbackBackstage
   const sceneContext = {
-    dataRef: firebase.database().ref('/screenData').child(screenId),
+    dataRef: firebase
+      .database()
+      .ref('/screenData')
+      .child(screenId)
+      .child('data'),
   }
   return (
     <>
@@ -231,11 +235,7 @@ export function ScreenBackstage(props: { screenId: string }) {
 export function Backstage(props: { scene: IScene }) {
   const BackstageComponent = props.scene.backstageComponent || FallbackBackstage
   const sceneContext = {
-    dataRef: firebase
-      .database()
-      .ref('/scenes')
-      .child(props.scene.name)
-      .child('data'),
+    dataRef: firebase.database().ref('/scenes').child(props.scene.name),
   }
   return (
     <Box margin="xsmall" border="all" direction="column">
