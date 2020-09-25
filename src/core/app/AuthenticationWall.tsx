@@ -1,8 +1,9 @@
 import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
 import { Box, Heading, Paragraph } from 'grommet'
-import React, { ReactNode, useEffect } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { ActionButton, Loading, handlePromise, ConnectorType } from '../ui'
+import { signInIntegrationCallbacks } from './SignInIntegrationCallbacks'
 
 export function AuthenticationWall(props: {
   children: (user: firebase.User) => ReactNode
@@ -29,6 +30,24 @@ export function AuthenticationWall(props: {
 }
 
 function PleaseSignIn() {
+  const [needsWaiting, setNeedsWaiting] = useState(
+    signInIntegrationCallbacks.length > 0
+  )
+  useEffect(() => {
+    async function runCallbacks() {
+      try {
+        for (const callback of signInIntegrationCallbacks) {
+          await handlePromise('complete sign in', callback(), 'Signed in')
+        }
+      } finally {
+        setNeedsWaiting(false)
+      }
+    }
+    runCallbacks()
+  }, [])
+  if (needsWaiting) {
+    return <Loading message="Signing in..." />
+  }
   return (
     <Box pad="medium">
       <Heading level="1">You must sign in to continue</Heading>
