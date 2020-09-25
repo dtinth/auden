@@ -1,9 +1,9 @@
-import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
+import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Grommet, Heading, Paragraph, Text } from 'grommet'
+import { Box, Grommet, Text } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import React, { ReactNode, Suspense, useEffect } from 'react'
+import React, { Suspense } from 'react'
 import λ from 'react-lambda'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import { IConfig } from '../model'
@@ -13,12 +13,12 @@ import {
   ErrorMessage,
   InlineLoadingContext,
   Loading,
-  handlePromise,
 } from '../ui'
 import { AdminRoot } from './AdminRoot'
 import { ConfigContext } from './ConfigContext'
 import { AudienceRoot } from './AudienceRoot'
 import { DisplayRoot } from './DisplayRoot'
+import { AuthenticationWall } from './AuthenticationWall'
 
 export * from './FirebaseDataUtils'
 
@@ -131,61 +131,6 @@ function Main(props: { user: firebase.User }) {
 
 function NoMatch() {
   return <ErrorMessage message="Route not matched T_T" />
-}
-
-function AuthenticationWall(props: {
-  children: (user: firebase.User) => ReactNode
-}) {
-  const authState = useFirebaseAuth()
-  const me = authState.unstable_read()
-  return (
-    <React.Fragment>
-      {me ? (
-        λ(() => {
-          const profileRef = firebase.database().ref('/profiles').child(me.uid)
-          // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const profileState = useFirebaseDatabase(profileRef)
-          const profile = profileState.unstable_read()
-
-          // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should convert this to actual React.FC instead.
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          useEffect(() => {
-            if (!profile) {
-              handlePromise(
-                'create profile',
-                profileRef.set({
-                  displayName: me.displayName,
-                }),
-                'User profile created.'
-              )
-            }
-          }, [profile])
-          return profile ? (
-            <React.Fragment>{props.children(me)}</React.Fragment>
-          ) : (
-            <Loading message="Creating profile..." />
-          )
-        })
-      ) : (
-        <Box pad="medium">
-          <Heading level="1">You must sign in to continue</Heading>
-          <Paragraph>
-            <ActionButton
-              primary
-              label="Sign in with Facebook"
-              color="#365899"
-              onClick={() =>
-                firebase
-                  .auth()
-                  .signInWithPopup(new firebase.auth.FacebookAuthProvider())
-              }
-            />
-          </Paragraph>
-        </Box>
-      )}
-    </React.Fragment>
-  )
 }
 
 export function UserName(props: { uid: string }) {
