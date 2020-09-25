@@ -31,19 +31,45 @@ path /screenList {
   path /{orderKey} is String {}
 }
 
+type Event {
+  owner: CurrentUser
+  timestamp: CurrentTimestamp
+  payload: Object | Null
+}
 path /screenData {
   path /{screenId} {
     path /info {
+      // Public information and metadata about the screen
       path /scene is String {}
       read() { true }
     }
+
     path /public {
-      read() { true }
+      path /read-only {
+        // Anyone can read but only writable by admin
+        read() { true }
+      }
+      path /append-only {
+        path /{channelName} {
+          read() { true }
+          path /{eventId} is Event {
+            index() { [ "timestamp" ] }
+            write() { createOnly(this) }
+          }
+        }
+      }
     }
+
     path /users/{uid} {
-      read() { isCurrentUser(uid) }
-      path /writable {
+      // Data private to user
+      path /read-only {
+        // Read/write by user
+        read() { isCurrentUser(uid) }
         write() { isCurrentUser(uid) }
+      }
+      path /writable {
+        // Read only by user
+        read() { isCurrentUser(uid) }
       }
     }
   }
@@ -81,10 +107,15 @@ type Answer {
 type CurrentTimestamp extends Number {
   validate() { this == now }
 }
-
+type CurrentUser extends String {
+  validate() { this == auth.uid }
+}
 isAdmin() {
   root.admins[auth.uid] == true
 }
 isCurrentUser(uid) {
   auth != null && auth.uid == uid
+}
+createOnly(value) {
+  prior(value) == null && value != null
 }
