@@ -8,7 +8,7 @@ import {
   ActionButton,
   ActionCheckbox,
   InlineLoadingContext,
-  BackstageSection
+  BackstageSection,
 } from '../../core/ui'
 import firebase from 'firebase'
 import λ from 'react-lambda'
@@ -26,7 +26,7 @@ export function QuizBackstage() {
       </BackstageSection>
       <BackstageSection title="Import questions">
         <QuizImporter
-          import={async data => {
+          import={async (data) => {
             await context.dataRef.child('questions').set(data)
           }}
         />
@@ -42,8 +42,6 @@ export function QuizQuestionList() {
   const context = useSceneContext()
   const questionsRef = context.dataRef.child('questions')
   const questionsState = useFirebaseDatabase(questionsRef)
-  // const sceneStateRef = context.dataRef.child('state')
-  // const sceneStateState = useFirebaseDatabase(sceneStateRef)
 
   return (
     <Box pad="small">
@@ -53,7 +51,7 @@ export function QuizQuestionList() {
           {
             property: '_actions',
             header: 'Actions',
-            render: entry => (
+            render: (entry) => (
               <ActionButton
                 color="dark-2"
                 label="activate"
@@ -61,15 +59,17 @@ export function QuizQuestionList() {
                 onClick={() => activateQuestion(context.dataRef, entry)}
                 successMessage={`Question "${entry.key}" activated!`}
               />
-            )
+            ),
           },
           {
             property: '_status',
             header: 'Status',
-            render: entry =>
+            render: (entry) =>
               λ(() => {
                 const currentQuestionRef = context.dataRef
+                  .child('main')
                   .child('state')
+                  .child('public-read')
                   .child('currentQuestion')
 
                 // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
@@ -100,12 +100,12 @@ export function QuizQuestionList() {
                   )
                 }
                 return <Text>—</Text>
-              })
+              }),
           },
           {
             property: '_answers',
             header: 'Answers',
-            render: entry => (
+            render: (entry) => (
               <InlineLoadingContext description="load answers">
                 <Box direction="row" align="baseline">
                   {λ(() => {
@@ -115,7 +115,7 @@ export function QuizQuestionList() {
                       context.dataRef.child('answers').child(entry.key)
                     )
                     const answers = answersState.unstable_read()
-                    const correct = firebaseToEntries(answers).filter(e => {
+                    const correct = firebaseToEntries(answers).filter((e) => {
                       const answerId = e.val.answerId
                       const answer = entry.val.answers[answerId]
                       return answer && answer.correct
@@ -135,8 +135,8 @@ export function QuizQuestionList() {
                   />
                 </Box>
               </InlineLoadingContext>
-            )
-          }
+            ),
+          },
         ]}
         data={firebaseToEntries(questionsState.unstable_read())}
       />
@@ -150,26 +150,32 @@ async function activateQuestion(
 ) {
   await Promise.all([
     sceneRef
+      .child('main')
       .child('state')
+      .child('public-read')
       .child('released')
       .child(entry.key)
       .set({
         startedAt: firebase.database.ServerValue.TIMESTAMP,
-        expiresIn: ((entry.val && entry.val.timeLimit) || 30) * 1000
+        expiresIn: ((entry.val && entry.val.timeLimit) || 30) * 1000,
       }),
     sceneRef
+      .child('main')
       .child('state')
+      .child('public-read')
       .child('currentQuestion')
       .set({
         questionId: entry.key,
         answerChoices: Object.keys(entry.val.answers),
         startedAt: firebase.database.ServerValue.TIMESTAMP,
-        expiresIn: ((entry.val && entry.val.timeLimit) || 30) * 1000
+        expiresIn: ((entry.val && entry.val.timeLimit) || 30) * 1000,
       }),
     sceneRef
+      .child('main')
       .child('state')
+      .child('public-read')
       .child('showLeaderboard')
-      .set(false)
+      .set(false),
   ])
 }
 
@@ -178,10 +184,7 @@ async function gradeQuestion(
   entry: { key: string; val: any }
 ) {
   const answers = firebaseToEntries(
-    (await sceneRef
-      .child('answers')
-      .child(entry.key)
-      .once('value')).val()
+    (await sceneRef.child('answers').child(entry.key).once('value')).val()
   ).sort((a, b) => a.val.timestamp - b.val.timestamp)
   const out = [] as Promise<void>[]
   let reward = 100
@@ -191,7 +194,9 @@ async function gradeQuestion(
     const answer = entry.val.answers[answerId]
     if (answer && answer.correct) {
       const pointRef = sceneRef
+        .child('main')
         .child('state')
+        .child('public-read')
         .child('score')
         .child(uid)
         .child(entry.key)
@@ -203,7 +208,9 @@ async function gradeQuestion(
   }
   out.push(
     sceneRef
+      .child('main')
       .child('state')
+      .child('public-read')
       .child('showLeaderboard')
       .set(true)
   )
@@ -220,13 +227,13 @@ export function QuizLeaderboard() {
             property: 'key',
             header: 'Participant',
             primary: true,
-            render: row => <UserName uid={row.uid} />
+            render: (row) => <UserName uid={row.uid} />,
           },
           {
             property: 'val',
             header: 'Score',
-            render: row => <span>{row.points}</span>
-          }
+            render: (row) => <span>{row.points}</span>,
+          },
         ]}
         data={leaderboardData}
       />

@@ -43,33 +43,37 @@ path /screenData {
       path /scene is String {}
       read() { true }
     }
-
-    path /public {
-      path /read-only {
-        // Anyone can read but only writable by admin
-        read() { true }
-      }
-      path /append-only {
-        path /{channelName} {
-          read() { true }
-          path /{eventId} is Event {
-            index() { [ "timestamp" ] }
-            write() { createOnly(this) }
+    path /data {
+      path /{namespace} {
+        path /{name} {
+          path /public-read {
+            read() { true }
+          }
+          path /events {
+            read() { true }
+            path /{eventId} is Event {
+              index() { [ "timestamp" ] }
+              write() { createOnly(this) }
+            }
+          }
+          path /personal {
+            read() { true }
+            path /{uid} {
+              write() { isCurrentUser(uid) }
+            }
+          }
+          path /private {
+            path /{uid} {
+              read() { isCurrentUser(uid) }
+              write() { isCurrentUser(uid) }
+            }
+          }
+          path /inbox {
+            path /{uid} {
+              read() { isCurrentUser(uid) }
+            }
           }
         }
-      }
-    }
-
-    path /users/{uid} {
-      // Data private to user
-      path /read-only {
-        // Read/write by user
-        read() { isCurrentUser(uid) }
-        write() { isCurrentUser(uid) }
-      }
-      path /writable {
-        // Read only by user
-        read() { isCurrentUser(uid) }
       }
     }
   }
