@@ -77,13 +77,39 @@ announcements, and an idle scene when there’s nothing interesting going on.
 
 Each scene has:
 
-- A state schema and security rules, stored in `database.rules.bolt`,
-  representing how data in that scene looks like. It has to be deployed to
-  Firebase.
-- A state, stored in Firebase.
 - A presentation display, for projecting to a large screen.
 - A audience UI to let audience engage with the event from their mobile phone
   (or desktop).
 - A backstage UI to manipulate the scene.
 
-That can be one active scene at a given time.
+Data is structured in Firebase this way: **Namespace &rarr; Name &rarr; Access
+pattern**. This allows using same Firebase rules across all scene types,
+eliminating need for us to deploy new rules when adding new scene types.
+
+Available access patterns:
+
+- `public-read` — Anyone can read but only admins can write. Examples:
+  - `main` &rarr; `state` &rarr; `public-read` &rarr; `showLeaderboard`
+  - `main` &rarr; `settings` &rarr; `public-read` &rarr; `maxVotes`
+- `personal` — Anyone can read, however, each user can write to their own
+  personal slot. Examples:
+  - `main` &rarr; `poll` &rarr; `personal` &rarr; `$uid` &rarr; `selectedOption`
+- `events` — Anyone can read. Each user can publish events. Append-only.
+  Examples:
+  - `main` &rarr; `chatMessages` &rarr; `events` &rarr; `$eventId`
+- `private` — Each user can read and write to their own personal slot. Examples:
+  - `answers` &rarr; `$questionId` &rarr; `private` &rarr; `$uid` &rarr;
+    `answerId`
+- `inbox` — Each user can read data assigned to their own personal slot.
+  Examples:
+  - `main` &rarr; `role` &rarr; `inbox` &rarr; `$uid`
+- `secret` — Only admin can access
+  - `main` &rarr; `questions` &rarr; `secret`
+
+### Screen
+
+An instance of a scene. It has:
+
+- Data stored in Firebase. How data is used is determined by scene type.
+
+That can be one active screen at a given time.
