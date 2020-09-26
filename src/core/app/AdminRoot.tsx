@@ -64,6 +64,7 @@ export function AdminRoot(props: {
     )
   }
 
+  // TODO: Delete this
   return (
     <div>
       <Tabs
@@ -120,7 +121,10 @@ function Navigation() {
                     <Box pad="small">
                       <Suspense fallback={'...'}>
                         <ScreenInfoConnector key={screenId} screenId={screenId}>
-                          {(info) => info.title}
+                          {(info) =>
+                            // TODO: Show which screen is active
+                            info.title
+                          }
                         </ScreenInfoConnector>
                       </Suspense>
                     </Box>
@@ -207,7 +211,13 @@ export function ScreenBackstage(props: { screenId: string }) {
       <Heading margin={{ vertical: 'small', horizontal: 'small' }}>
         <InlineLoadingContext description="get screen title">
           <ScreenInfoConnector screenId={screenId}>
-            {(info) => info?.title}
+            {(info) =>
+              // TODO: Allow renaming screen
+              // TODO: Allow activating a screen
+              // TODO: Allow deactivating a screen
+              // TODO: Allow deleting a screen
+              info?.title
+            }
           </ScreenInfoConnector>
         </InlineLoadingContext>
       </Heading>
