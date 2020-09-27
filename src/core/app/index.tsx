@@ -1,9 +1,9 @@
-import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
+import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Grommet, Heading, Paragraph, Text } from 'grommet'
+import { Box, Grommet, Text } from 'grommet'
 import { dark, generate } from 'grommet/themes'
 import { deepMerge } from 'grommet/utils'
-import React, { ReactNode, Suspense, useEffect } from 'react'
+import React, { Suspense } from 'react'
 import λ from 'react-lambda'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import { IConfig } from '../model'
@@ -13,21 +13,21 @@ import {
   ErrorMessage,
   InlineLoadingContext,
   Loading,
-  handlePromise
 } from '../ui'
 import { AdminRoot } from './AdminRoot'
 import { ConfigContext } from './ConfigContext'
 import { AudienceRoot } from './AudienceRoot'
 import { DisplayRoot } from './DisplayRoot'
+import { AuthenticationWall } from './AuthenticationWall'
 
 export * from './FirebaseDataUtils'
 
 const theme = deepMerge(generate(24, 6), dark, {
   global: {
     font: {
-      family: 'inherit'
-    }
-  }
+      family: 'inherit',
+    },
+  },
 })
 
 export function App(props: { config: IConfig }) {
@@ -37,7 +37,7 @@ export function App(props: { config: IConfig }) {
         <ErrorBoundary>
           <Suspense fallback={<Loading />}>
             <AuthenticationWall>
-              {user => <ProtectedArea user={user} />}
+              {(user) => <ProtectedArea user={user} />}
             </AuthenticationWall>
           </Suspense>
         </ErrorBoundary>
@@ -68,11 +68,10 @@ function TopBar(props: { user: firebase.User }) {
           {' '}
           <InlineLoadingContext description="check admin status">
             {λ(() => {
+              // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+              // eslint-disable-next-line react-hooks/rules-of-hooks
               const adminState = useFirebaseDatabase(
-                firebase
-                  .database()
-                  .ref('/admins')
-                  .child(user.uid)
+                firebase.database().ref('/admins').child(user.uid)
               )
               return <span>{adminState.unstable_read() ? '(admin)' : ''}</span>
             })}
@@ -85,7 +84,7 @@ function TopBar(props: { user: firebase.User }) {
           label="Sign out"
           color="neutral-3"
           onClick={async () => {
-            if (confirm('Surely?')) await firebase.auth().signOut()
+            if (window.confirm('Surely?')) await firebase.auth().signOut()
           }}
         />
       </Text>
@@ -102,12 +101,22 @@ function Main(props: { user: firebase.User }) {
         <Route
           exact
           path="/admin"
-          render={props => <AdminRoot history={props.history} />}
+          render={(props) => <AdminRoot history={props.history} />}
+        />
+        <Route
+          exact
+          path="/admin/screens/:screenId"
+          render={(props) => (
+            <AdminRoot
+              history={props.history}
+              screenId={props.match.params.screenId}
+            />
+          )}
         />
         <Route
           exact
           path="/admin/:scene"
-          render={props => (
+          render={(props) => (
             <AdminRoot
               sceneName={props.match.params.scene}
               history={props.history}
@@ -124,66 +133,9 @@ function NoMatch() {
   return <ErrorMessage message="Route not matched T_T" />
 }
 
-function AuthenticationWall(props: {
-  children: (user: firebase.User) => ReactNode
-}) {
-  const authState = useFirebaseAuth()
-  const me = authState.unstable_read()
-  return (
-    <React.Fragment>
-      {me ? (
-        λ(() => {
-          const profileRef = firebase
-            .database()
-            .ref('/profiles')
-            .child(me.uid)
-          const profileState = useFirebaseDatabase(profileRef)
-          const profile = profileState.unstable_read()
-          useEffect(() => {
-            if (!profile) {
-              handlePromise(
-                'create profile',
-                profileRef.set({
-                  displayName: me.displayName
-                }),
-                'User profile created.'
-              )
-            }
-          }, [profile])
-          return profile ? (
-            <React.Fragment>{props.children(me)}</React.Fragment>
-          ) : (
-            <Loading message="Creating profile..." />
-          )
-        })
-      ) : (
-        <Box pad="medium">
-          <Heading level="1">You must sign in to continue</Heading>
-          <Paragraph>
-            <ActionButton
-              primary
-              label="Sign in with Facebook"
-              color="#365899"
-              onClick={() =>
-                firebase
-                  .auth()
-                  .signInWithPopup(new firebase.auth.FacebookAuthProvider())
-              }
-            />
-          </Paragraph>
-        </Box>
-      )}
-    </React.Fragment>
-  )
-}
-
 export function UserName(props: { uid: string }) {
   const profileState = useFirebaseDatabase(
-    firebase
-      .database()
-      .ref('profiles')
-      .child(props.uid)
-      .child('displayName')
+    firebase.database().ref('profiles').child(props.uid).child('displayName')
   )
   return <span>{profileState.unstable_read() || props.uid}</span>
 }

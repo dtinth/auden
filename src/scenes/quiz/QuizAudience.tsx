@@ -1,7 +1,6 @@
 import { useFirebaseDatabase, useFirebaseAuth } from 'fiery'
 import { Box, Grid, Text } from 'grommet'
 import React from 'react'
-import { firebaseToEntries } from '../../core/app'
 import { useSceneContext } from '../../core/app/SceneContext'
 import { ActionButton } from '../../core/ui'
 import firebase from 'firebase'
@@ -10,7 +9,11 @@ import λ from 'react-lambda'
 export function QuizAudience() {
   const context = useSceneContext()
   const currentQuestionState = useFirebaseDatabase(
-    context.dataRef.child('state').child('currentQuestion')
+    context.dataRef
+      .child('main')
+      .child('state')
+      .child('public-read')
+      .child('currentQuestion')
   )
   const userState = useFirebaseAuth()
   const me = userState.unstable_read()!
@@ -20,8 +23,11 @@ export function QuizAudience() {
     const answerRef = context.dataRef
       .child('answers')
       .child(currentQuestionId)
+      .child('private')
       .child(me.uid)
     return λ(() => {
+      // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const answerState = useFirebaseDatabase(answerRef)
       const answer = answerState.unstable_read()
       if (currentQuestion.answerRevealed) {
@@ -65,7 +71,7 @@ export function QuizAudience() {
                   onClick={async () => {
                     await answerRef.set({
                       answerId: answerId,
-                      timestamp: firebase.database.ServerValue.TIMESTAMP
+                      timestamp: firebase.database.ServerValue.TIMESTAMP,
                     })
                   }}
                 />

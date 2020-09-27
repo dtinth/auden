@@ -5,6 +5,9 @@ import './index.css'
 import { App } from './core/app'
 import * as serviceWorker from './serviceWorker'
 import { config } from './config'
+import { checkHashForEventpopTicketToken } from './core/app/EventpopIntegration'
+
+checkHashForEventpopTicketToken()
 
 firebase.initializeApp(config.firebase)
 Object.assign(global, { firebase })

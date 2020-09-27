@@ -7,12 +7,22 @@ import { useLeaderboardData } from './useLeaderboardData'
 
 export function QuizPresentation() {
   const context = useSceneContext()
-  const questionsState = useFirebaseDatabase(context.dataRef.child('questions'))
+  const questionsState = useFirebaseDatabase(
+    context.dataRef.child('main').child('questions').child('secret')
+  )
   const currentQuestionState = useFirebaseDatabase(
-    context.dataRef.child('state').child('currentQuestion')
+    context.dataRef
+      .child('main')
+      .child('state')
+      .child('public-read')
+      .child('currentQuestion')
   )
   const showLeaderboardState = useFirebaseDatabase(
-    context.dataRef.child('state').child('showLeaderboard')
+    context.dataRef
+      .child('main')
+      .child('state')
+      .child('public-read')
+      .child('showLeaderboard')
   )
   if (showLeaderboardState.unstable_read()) {
     return <QuizLeaderboardPresentation />
@@ -56,7 +66,7 @@ export function QuizQuestionPresentation(props: {
           margin={{ top: 'small' }}
           columns={question.columns === 1 ? ['auto'] : ['1/2', '1/2']}
           style={{
-            gridTemplateRows: 'repeat(auto-fill, 1fr)'
+            gridTemplateRows: 'repeat(auto-fill, 1fr)',
           }}
         >
           {firebaseToEntries(question.answers).map((entry, index) => {
@@ -68,7 +78,7 @@ export function QuizQuestionPresentation(props: {
                   position: 'relative',
                   fontSize: '56px',
                   lineHeight: '72px',
-                  opacity: props.answerRevealed && !entry.val.correct ? 0.5 : 1
+                  opacity: props.answerRevealed && !entry.val.correct ? 0.5 : 1,
                 }}
               >
                 <Box
@@ -81,7 +91,7 @@ export function QuizQuestionPresentation(props: {
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    left: 0
+                    left: 0,
                   }}
                 >
                   <Box
@@ -92,7 +102,7 @@ export function QuizQuestionPresentation(props: {
                       height: 80,
                       borderRadius: '50%',
                       textShadow: '2px 2px 1px rgba(0,0,0,0.5)',
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
                     }}
                     align="center"
                     justify="center"
@@ -123,7 +133,7 @@ function QuizLeaderboardPresentation() {
         </Text>
       </Box>
       <Box flex pad="small" style={{ fontSize: '56px', lineHeight: '72px' }}>
-        {leaderboardData.slice(0, 8).map(entry => {
+        {leaderboardData.slice(0, 8).map((entry) => {
           return (
             <Box direction="row" pad="small">
               <Box flex>

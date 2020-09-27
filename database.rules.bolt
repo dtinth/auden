@@ -22,6 +22,63 @@ path /currentScene is String {
   read() { true }
 }
 
+// Anyone can see which screen is active
+path /currentScreen is String {
+  read() { true }
+}
+
+path /screenList {
+  path /{orderKey} is String {}
+}
+
+type Event {
+  owner: CurrentUser
+  timestamp: CurrentTimestamp
+  payload: Object | Null
+}
+path /screenData {
+  path /{screenId} {
+    path /info {
+      // Public information and metadata about the screen
+      path /scene is String {}
+      read() { true }
+    }
+    path /data {
+      path /{namespace} {
+        path /{name} {
+          path /public-read {
+            read() { true }
+          }
+          path /events {
+            read() { true }
+            path /{eventId} is Event {
+              index() { [ "timestamp" ] }
+              write() { createOnly(this) }
+            }
+          }
+          path /personal {
+            read() { true }
+            path /{uid} {
+              write() { isCurrentUser(uid) }
+            }
+          }
+          path /private {
+            path /{uid} {
+              read() { isCurrentUser(uid) }
+              write() { isCurrentUser(uid) }
+            }
+          }
+          path /inbox {
+            path /{uid} {
+              read() { isCurrentUser(uid) }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 path /scenes {
   path /quiz {
     // Everyone can read the current state of quiz
@@ -54,10 +111,15 @@ type Answer {
 type CurrentTimestamp extends Number {
   validate() { this == now }
 }
-
+type CurrentUser extends String {
+  validate() { this == auth.uid }
+}
 isAdmin() {
   root.admins[auth.uid] == true
 }
 isCurrentUser(uid) {
   auth != null && auth.uid == uid
+}
+createOnly(value) {
+  prior(value) == null && value != null
 }

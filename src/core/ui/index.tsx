@@ -6,7 +6,7 @@ import {
   Layer,
   ButtonProps,
   CheckBoxProps,
-  CheckBox
+  CheckBox,
 } from 'grommet'
 import Noty from 'noty'
 import 'noty/lib/noty.css'
@@ -16,7 +16,7 @@ import React, {
   Suspense,
   useState,
   useMemo,
-  useCallback
+  useCallback,
 } from 'react'
 
 export function flashError(text: string) {
@@ -27,7 +27,7 @@ export function flashSuccess(text: string) {
   new Noty({
     text: text,
     type: 'success',
-    timeout: 5000
+    timeout: 5000,
   }).show()
 }
 
@@ -179,12 +179,16 @@ export function ActionButton(
     }
 ) {
   const [running, run] = useActionRunner()
-  const onClick = async (e: React.MouseEvent) => {
+  const onClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.persist()
     e.preventDefault()
     if (props.onClick) {
       const onClick = props.onClick
-      run(props.description || 'run', () => onClick(e), props.successMessage)
+      run(
+        props.description || 'run',
+        async () => onClick(e),
+        props.successMessage
+      )
     }
   }
   return (
@@ -200,12 +204,16 @@ export function ActionCheckbox(
     }
 ) {
   const [running, run] = useActionRunner()
-  const onChange = async (e: React.ChangeEvent) => {
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist()
     e.preventDefault()
     if (props.onChange) {
       const onChange = props.onChange
-      run(props.description || 'run', () => onChange(e), props.successMessage)
+      run(
+        props.description || 'run',
+        async () => onChange(e),
+        props.successMessage
+      )
     }
   }
   return (
@@ -234,3 +242,12 @@ export function BackstageSection(props: {
     </Box>
   )
 }
+
+export type ConnectorType<
+  Props extends {},
+  Args extends any[]
+> = React.ComponentType<
+  Props & {
+    children: (...args: Args) => React.ReactNode
+  }
+>

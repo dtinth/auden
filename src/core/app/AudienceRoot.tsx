@@ -8,10 +8,18 @@ import { SceneContext } from './SceneContext'
 
 export function AudienceRoot() {
   const config = useConfig()
-  const dataRef = firebase.database().ref('/currentScene')
-  const dataState = useFirebaseDatabase(dataRef)
-  const currentScene = dataState.unstable_read()
-  const scene = config.scenes.filter(s => s.name === currentScene)[0]
+  const currentScreenRef = firebase.database().ref('/currentScreen')
+  const currentScreenState = useFirebaseDatabase(currentScreenRef)
+  const currentScreenId = currentScreenState.unstable_read()
+  const sceneNameRef = firebase
+    .database()
+    .ref('/screenData')
+    .child(currentScreenId)
+    .child('info')
+    .child('scene')
+  const sceneNameState = useFirebaseDatabase(sceneNameRef)
+  const sceneName = sceneNameState.unstable_read()
+  const scene = config.scenes.filter((s) => s.name === sceneName)[0]
   if (!scene)
     return (
       <Box pad="large">
@@ -32,8 +40,9 @@ export function AudienceRoot() {
   const sceneContext = {
     dataRef: firebase
       .database()
-      .ref('/scenes')
-      .child(scene.name)
+      .ref('/screenData')
+      .child(currentScreenId)
+      .child('data'),
   }
   return (
     <SceneContext.Provider value={sceneContext}>
