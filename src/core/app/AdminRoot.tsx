@@ -122,7 +122,7 @@ function Navigation() {
                       <Suspense fallback={'...'}>
                         <ScreenInfoConnector key={screenId} screenId={screenId}>
                           {(info) =>
-                            // TODO: Show which screen is active
+                            // TODO: #5 Show which screen is active
                             info.title
                           }
                         </ScreenInfoConnector>
@@ -212,10 +212,10 @@ export function ScreenBackstage(props: { screenId: string }) {
         <InlineLoadingContext description="get screen title">
           <ScreenInfoConnector screenId={screenId}>
             {(info) =>
-              // TODO: Allow renaming screen
-              // TODO: Allow activating a screen
-              // TODO: Allow deactivating a screen
-              // TODO: Allow deleting a screen
+              // TODO: #4 Allow renaming screen
+              // TODO: #6 Allow activating a screen
+              // TODO: #7 Allow deactivating a screen
+              // TODO: #8 Allow deleting a screen
               info?.title
             }
           </ScreenInfoConnector>
