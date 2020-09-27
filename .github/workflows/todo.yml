@@ -1,0 +1,13 @@
+name: Process TODO comments
+on:
+  push:
+    branches: [master]
+jobs:
+  process_todos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Auto-close TODO issues
+        uses: ./.github/actions/todo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

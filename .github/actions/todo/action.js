@@ -1,0 +1,1 @@
+require('child_process').execFileSync('ruby', [require.resolve('./action.rb')], { stdio: 'inherit' })

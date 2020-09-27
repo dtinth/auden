@@ -1,0 +1,5 @@
+name: 'todo-actions-lite'
+description: 'Closes issues with TODO label without TODO in source code'
+runs:
+  using: 'node12'
+  main: 'action.js'
