@@ -29,7 +29,7 @@ export function AdminRoot(props: {
     <Grid
       rows={['auto']}
       columns={['16rem', 'auto']}
-      gap="small"
+      gap="medium"
       pad="small"
       areas={[
         { name: 'nav', start: [0, 0], end: [0, 0] },
@@ -37,7 +37,7 @@ export function AdminRoot(props: {
       ]}
     >
       <Box gridArea="nav">
-        <Navigation />
+        <AdminNavigation />
       </Box>
       <Box gridArea="main">
         {props.screenId ? (
@@ -52,7 +52,7 @@ export function AdminRoot(props: {
   )
 }
 
-function Navigation() {
+function AdminNavigation() {
   const config = useConfig()
   return (
     <Panel
@@ -198,8 +198,8 @@ export function ScreenBackstage(props: { screenId: string }) {
   }
   return (
     <>
-      <Box margin="xsmall" direction="row" gap="small" align="center">
-        <Heading margin={{ vertical: 'small', horizontal: 'small' }}>
+      <Box direction="row" gap="medium" align="center">
+        <Heading margin={{ vertical: 'small' }}>
           <InlineLoadingContext description="get screen title">
             <ScreenInfoConnector screenId={screenId}>
               {(info, actions) => <>{info?.title}</>}
@@ -260,23 +260,11 @@ export function ScreenBackstage(props: { screenId: string }) {
         </InlineLoadingContext>
       </Box>
 
-      <Box margin="xsmall" border="all" direction="column">
-        <Box
-          border="bottom"
-          background="dark-1"
-          direction="row"
-          pad={{ vertical: 'xsmall', horizontal: 'small' }}
-        >
-          <Box flex>
-            <Text weight="bold">{scene.name}</Text>
-          </Box>
-        </Box>
-        <SceneContext.Provider value={sceneContext}>
-          <LoadingContext>
-            <BackstageComponent />
-          </LoadingContext>
-        </SceneContext.Provider>
-      </Box>
+      <SceneContext.Provider value={sceneContext}>
+        <LoadingContext>
+          <BackstageComponent />
+        </LoadingContext>
+      </SceneContext.Provider>
     </>
   )
 }
@@ -290,65 +278,6 @@ const CurrentScreenConnector: ConnectorType<
   const currentScreen = dataState.unstable_read()
   return (
     <>{props.children(currentScreen, (newScreen) => dataRef.set(newScreen))}</>
-  )
-}
-
-export function Backstage(props: { scene: IScene }) {
-  const BackstageComponent = props.scene.backstageComponent || FallbackBackstage
-  const sceneContext = {
-    dataRef: firebase.database().ref('/scenes').child(props.scene.name),
-  }
-  return (
-    <Box margin="xsmall" border="all" direction="column">
-      <Box
-        border="bottom"
-        background="dark-1"
-        direction="row"
-        pad={{ vertical: 'xsmall', horizontal: 'small' }}
-      >
-        <Box flex>
-          <Text weight="bold">{props.scene.name}</Text>
-        </Box>
-        <Menu
-          label="actions"
-          items={[
-            {
-              label: 'Nuke state',
-              onClick: () =>
-                window.confirm('Are you sure?') &&
-                handlePromise(
-                  'nuke state',
-                  sceneContext.dataRef.remove(),
-                  'state cleared'
-                ),
-            },
-          ]}
-        />
-        <InlineLoadingContext description="get current scene">
-          {λ(() => {
-            const dataRef = firebase.database().ref('/currentScene')
-            // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const dataState = useFirebaseDatabase(dataRef)
-            const currentScene = dataState.unstable_read()
-            return (
-              <ActionCheckbox
-                checked={currentScene === props.scene.name}
-                description={`set currentScene to "${props.scene.name}"`}
-                onChange={() => dataRef.set(props.scene.name)}
-                toggle
-                label="active"
-              />
-            )
-          })}
-        </InlineLoadingContext>
-      </Box>
-      <SceneContext.Provider value={sceneContext}>
-        <LoadingContext>
-          <BackstageComponent />
-        </LoadingContext>
-      </SceneContext.Provider>
-    </Box>
   )
 }
 

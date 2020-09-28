@@ -20,9 +20,12 @@ const QuizImporter = React.lazy(() => import('./QuizImporter'))
 export function QuizBackstage() {
   const context = useSceneContext()
   return (
-    <Box>
+    <Box gap="medium">
       <Panel title="Questions">
         <QuizQuestionList />
+      </Panel>
+      <Panel title="Leaderboard">
+        <QuizLeaderboard />
       </Panel>
       <Panel title="Import questions">
         <QuizImporter
@@ -34,9 +37,6 @@ export function QuizBackstage() {
               .set(data)
           }}
         />
-      </Panel>
-      <Panel title="Leaderboard">
-        <QuizLeaderboard />
       </Panel>
     </Box>
   )

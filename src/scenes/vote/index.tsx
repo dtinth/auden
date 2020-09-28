@@ -110,9 +110,9 @@ function VoteBackstage() {
     voteOptionsText != null ? voteOptionsText : initialVoteOptionsText
 
   return (
-    <Box>
+    <Box gap="medium">
       <Panel title="Available options">
-        <Box direction="row" align="center">
+        <Box direction="row" align="center" pad="small">
           <Box flex margin={{ right: 'small' }}>
             <TextInput
               value={textValue}
@@ -191,58 +191,60 @@ function VoteBackstage() {
         </Box>
       </Panel>
       <Panel title="Vote results">
-        {λ(() => {
-          const showResultsRef = sceneContext.dataRef
-            .child('main')
-            .child('settings')
-            .child('public-read')
-            .child('showResults')
-          // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const showResultsState = useFirebaseDatabase(showResultsRef)
-          const showResults = showResultsState.unstable_read()
-          return (
-            <ActionCheckbox
-              checked={showResults}
-              toggle
-              label={`Show results`}
-              description="toggle result visibility"
-              onChange={async () => {
-                await showResultsRef.set(!showResults)
-              }}
-            />
-          )
-        })}
-        {λ(() => {
-          const allVotesRef = sceneContext.dataRef
-            .child('main')
-            .child('votes')
-            .child('private')
-          // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const allVotesState = useFirebaseDatabase(allVotesRef)
-          const allVotes = firebaseToEntries(allVotesState.unstable_read())
-          const voteResult = firebaseToEntries(options)
-            .map((entry) => {
-              const optionId = entry.key
-              const optionText = entry.val
-              const voteCount = allVotes.filter((voterEntry) => {
-                const voterVotes = voterEntry.val
-                return !!(voterVotes && voterVotes[optionId])
-              }).length
-              return { optionText, voteCount }
-            })
-            .sort((a, b) => b.voteCount - a.voteCount)
-          return (
-            <DataTable
-              columns={[
-                { header: 'Option', property: 'optionText', primary: true },
-                { header: 'Votes', property: 'voteCount', primary: true },
-              ]}
-              data={voteResult}
-            />
-          )
-        })}
+        <Box pad="small">
+          {λ(() => {
+            const showResultsRef = sceneContext.dataRef
+              .child('main')
+              .child('settings')
+              .child('public-read')
+              .child('showResults')
+            // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const showResultsState = useFirebaseDatabase(showResultsRef)
+            const showResults = showResultsState.unstable_read()
+            return (
+              <ActionCheckbox
+                checked={showResults}
+                toggle
+                label={`Show results`}
+                description="toggle result visibility"
+                onChange={async () => {
+                  await showResultsRef.set(!showResults)
+                }}
+              />
+            )
+          })}
+          {λ(() => {
+            const allVotesRef = sceneContext.dataRef
+              .child('main')
+              .child('votes')
+              .child('private')
+            // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const allVotesState = useFirebaseDatabase(allVotesRef)
+            const allVotes = firebaseToEntries(allVotesState.unstable_read())
+            const voteResult = firebaseToEntries(options)
+              .map((entry) => {
+                const optionId = entry.key
+                const optionText = entry.val
+                const voteCount = allVotes.filter((voterEntry) => {
+                  const voterVotes = voterEntry.val
+                  return !!(voterVotes && voterVotes[optionId])
+                }).length
+                return { optionText, voteCount }
+              })
+              .sort((a, b) => b.voteCount - a.voteCount)
+            return (
+              <DataTable
+                columns={[
+                  { header: 'Option', property: 'optionText', primary: true },
+                  { header: 'Votes', property: 'voteCount', primary: true },
+                ]}
+                data={voteResult}
+              />
+            )
+          })}
+        </Box>
       </Panel>
     </Box>
   )
