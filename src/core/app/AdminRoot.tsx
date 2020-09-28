@@ -81,7 +81,8 @@ function Navigation() {
             {(screenIds) =>
               screenIds.length ? (
                 screenIds.map((screenId) => (
-                  // TODO: RoutedAnchor deprecated https://github.com/grommet/grommet/issues/2855
+                  // TODO: #10 RoutedAnchor deprecated
+                  // https://github.com/grommet/grommet/issues/2855
                   <RoutedAnchor path={`/admin/screens/${screenId}`}>
                     <Box pad="small">
                       <InlineLoadingContext description={'get screen title'}>
