@@ -8,7 +8,7 @@ import {
   ActionButton,
   ActionCheckbox,
   InlineLoadingContext,
-  BackstageSection,
+  Panel,
 } from '../../core/ui'
 import firebase from 'firebase'
 import λ from 'react-lambda'
@@ -21,10 +21,10 @@ export function QuizBackstage() {
   const context = useSceneContext()
   return (
     <Box>
-      <BackstageSection title="Questions">
+      <Panel title="Questions">
         <QuizQuestionList />
-      </BackstageSection>
-      <BackstageSection title="Import questions">
+      </Panel>
+      <Panel title="Import questions">
         <QuizImporter
           import={async (data) => {
             await context.dataRef
@@ -34,10 +34,10 @@ export function QuizBackstage() {
               .set(data)
           }}
         />
-      </BackstageSection>
-      <BackstageSection title="Leaderboard">
+      </Panel>
+      <Panel title="Leaderboard">
         <QuizLeaderboard />
-      </BackstageSection>
+      </Panel>
     </Box>
   )
 }

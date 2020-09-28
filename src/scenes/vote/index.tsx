@@ -1,12 +1,7 @@
 import React, { useRef, useState, ChangeEvent } from 'react'
 import { IScene } from '../../core/model'
 import { Box, TextInput, Text, DataTable } from 'grommet'
-import {
-  ActionButton,
-  ActionCheckbox,
-  flashError,
-  BackstageSection,
-} from '../../core/ui'
+import { ActionButton, ActionCheckbox, flashError, Panel } from '../../core/ui'
 import { useSceneContext } from '../../core/app/SceneContext'
 import { useFirebaseDatabase, useFirebaseAuth } from 'fiery'
 import { firebaseToEntries } from '../../core/app'
@@ -116,7 +111,7 @@ function VoteBackstage() {
 
   return (
     <Box>
-      <BackstageSection title="Available options">
+      <Panel title="Available options">
         <Box direction="row" align="center">
           <Box flex margin={{ right: 'small' }}>
             <TextInput
@@ -194,8 +189,8 @@ function VoteBackstage() {
             })}
           </Box>
         </Box>
-      </BackstageSection>
-      <BackstageSection title="Vote results">
+      </Panel>
+      <Panel title="Vote results">
         {λ(() => {
           const showResultsRef = sceneContext.dataRef
             .child('main')
@@ -248,7 +243,7 @@ function VoteBackstage() {
             />
           )
         })}
-      </BackstageSection>
+      </Panel>
     </Box>
   )
 }

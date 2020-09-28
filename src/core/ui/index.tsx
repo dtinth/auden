@@ -225,10 +225,7 @@ export function ActionCheckbox(
   )
 }
 
-export function BackstageSection(props: {
-  title: ReactNode
-  children: ReactNode
-}) {
+export function Panel(props: { title: ReactNode; children: ReactNode }) {
   return (
     <Box>
       <Box pad="small" background="dark-1">
