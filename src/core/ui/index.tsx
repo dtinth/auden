@@ -7,6 +7,10 @@ import {
   ButtonProps,
   CheckBoxProps,
   CheckBox,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
 } from 'grommet'
 import Noty from 'noty'
 import 'noty/lib/noty.css'
@@ -225,18 +229,29 @@ export function ActionCheckbox(
   )
 }
 
-export function Panel(props: { title: ReactNode; children: ReactNode }) {
+export function Panel(props: {
+  title: ReactNode
+  bottomBar?: ReactNode
+  topBar?: ReactNode
+  children: ReactNode
+}) {
   return (
-    <Box>
-      <Box pad="small" background="dark-1">
-        <Heading level="2" margin="none" size="small">
-          {props.title}
-        </Heading>
-      </Box>
-      <LoadingContext>
-        <Box pad="small">{props.children}</Box>
-      </LoadingContext>
-    </Box>
+    <Card background="black">
+      <CardHeader pad="small" background="dark-2">
+        <strong>{props.title}</strong>
+      </CardHeader>
+      {props.topBar ? (
+        <CardHeader pad={{ horizontal: 'small' }} background="dark-1">
+          {props.topBar}
+        </CardHeader>
+      ) : null}
+      <CardBody>{props.children}</CardBody>
+      {props.bottomBar ? (
+        <CardFooter pad={{ horizontal: 'small' }} background="dark-1">
+          {props.bottomBar}
+        </CardFooter>
+      ) : null}
+    </Card>
   )
 }
 

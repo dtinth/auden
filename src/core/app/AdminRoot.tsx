@@ -1,46 +1,29 @@
-import React, { Suspense, useCallback } from 'react'
-import { useConfig } from './ConfigContext'
-import {
-  Tabs,
-  Tab,
-  Box,
-  Text,
-  CheckBox,
-  Menu,
-  Grid,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Button,
-  RoutedAnchor,
-  Heading,
-} from 'grommet'
-import λ from 'react-lambda'
-import firebase from 'firebase'
-import { IScene } from '../model'
-import { History } from 'history'
 import { useFirebaseDatabase } from 'fiery'
+import firebase from 'firebase'
+import { Box, Grid, Heading, Menu, RoutedAnchor, Text } from 'grommet'
+import { Add } from 'grommet-icons'
+import { History } from 'history'
+import React, { useCallback } from 'react'
+import λ from 'react-lambda'
+import { IScene } from '../model'
 import {
-  InlineLoadingContext,
-  handlePromise,
-  LoadingContext,
   ActionButton,
   ActionCheckbox,
-  ErrorMessage,
   ConnectorType,
+  ErrorMessage,
+  handlePromise,
+  InlineLoadingContext,
+  LoadingContext,
+  Panel,
 } from '../ui'
+import { useConfig } from './ConfigContext'
 import { SceneContext } from './SceneContext'
-import { Add } from 'grommet-icons'
-import { Link } from 'react-router-dom'
 
 export function AdminRoot(props: {
   sceneName?: string
   screenId?: string
   history: History
 }) {
-  const config = useConfig()
-
   return (
     <Grid
       rows={['auto']}
@@ -71,45 +54,9 @@ export function AdminRoot(props: {
 function Navigation() {
   const config = useConfig()
   return (
-    <Card background="dark-1">
-      <CardHeader pad="small" background="dark-2">
-        Screens
-      </CardHeader>
-      <CardBody>
-        <LoadingContext>
-          <ScreenListConnector>
-            {(screenIds) =>
-              screenIds.length ? (
-                screenIds.map((screenId) => (
-                  // TODO: #10 RoutedAnchor deprecated
-                  // https://github.com/grommet/grommet/issues/2855
-                  <RoutedAnchor path={`/admin/screens/${screenId}`}>
-                    <Box pad="small">
-                      <InlineLoadingContext description={'get screen title'}>
-                        <ScreenInfoConnector key={screenId} screenId={screenId}>
-                          {(info) =>
-                            info ? (
-                              <>
-                                {
-                                  // TODO: #5 Show which screen is active
-                                  info.title
-                                }
-                              </>
-                            ) : null
-                          }
-                        </ScreenInfoConnector>
-                      </InlineLoadingContext>
-                    </Box>
-                  </RoutedAnchor>
-                ))
-              ) : (
-                <Box pad="small">No screens, create one!</Box>
-              )
-            }
-          </ScreenListConnector>
-        </LoadingContext>
-      </CardBody>
-      <CardFooter pad={{ horizontal: 'small' }} background="dark-2">
+    <Panel
+      title="Screens"
+      bottomBar={
         <Menu
           icon={<Add color="light-1" />}
           items={config.scenes.map((scene, i) => ({
@@ -126,8 +73,41 @@ function Navigation() {
             },
           }))}
         />
-      </CardFooter>
-    </Card>
+      }
+    >
+      <LoadingContext>
+        <ScreenListConnector>
+          {(screenIds) =>
+            screenIds.length ? (
+              screenIds.map((screenId) => (
+                // TODO: #10 RoutedAnchor deprecated
+                // https://github.com/grommet/grommet/issues/2855
+                <RoutedAnchor path={`/admin/screens/${screenId}`}>
+                  <Box pad="small">
+                    <InlineLoadingContext description={'get screen title'}>
+                      <ScreenInfoConnector key={screenId} screenId={screenId}>
+                        {(info) =>
+                          info ? (
+                            <>
+                              {
+                                // TODO: #5 Show which screen is active
+                                info.title
+                              }
+                            </>
+                          ) : null
+                        }
+                      </ScreenInfoConnector>
+                    </InlineLoadingContext>
+                  </Box>
+                </RoutedAnchor>
+              ))
+            ) : (
+              <Box pad="small">No screens, create one!</Box>
+            )
+          }
+        </ScreenListConnector>
+      </LoadingContext>
+    </Panel>
   )
 }
 
