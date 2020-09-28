@@ -15,6 +15,7 @@ import {
   InlineLoadingContext,
   LoadingContext,
   Panel,
+  ToolbarFiller,
 } from '../ui'
 import { useConfig } from './ConfigContext'
 import { SceneContext } from './SceneContext'
@@ -57,22 +58,25 @@ function Navigation() {
     <Panel
       title="Screens"
       bottomBar={
-        <Menu
-          icon={<Add color="light-1" />}
-          items={config.scenes.map((scene, i) => ({
-            label: scene.name,
-            onClick: () => {
-              const screenDataRef = firebase
-                .database()
-                .ref('/screenData')
-                .push()
-              screenDataRef.set({
-                info: { scene: scene.name, title: scene.name },
-              })
-              firebase.database().ref('/screenList').push(screenDataRef.key)
-            },
-          }))}
-        />
+        <>
+          <ToolbarFiller />
+          <Menu
+            icon={<Add color="light-1" />}
+            items={config.scenes.map((scene, i) => ({
+              label: scene.name,
+              onClick: () => {
+                const screenDataRef = firebase
+                  .database()
+                  .ref('/screenData')
+                  .push()
+                screenDataRef.set({
+                  info: { scene: scene.name, title: scene.name },
+                })
+                firebase.database().ref('/screenList').push(screenDataRef.key)
+              },
+            }))}
+          />
+        </>
       }
     >
       <LoadingContext>

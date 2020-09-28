@@ -241,18 +241,30 @@ export function Panel(props: {
         <strong>{props.title}</strong>
       </CardHeader>
       {props.topBar ? (
-        <CardHeader pad={{ horizontal: 'small' }} background="dark-1">
+        <CardHeader
+          pad={{ horizontal: 'small' }}
+          background="dark-1"
+          direction="row"
+        >
           {props.topBar}
         </CardHeader>
       ) : null}
       <CardBody>{props.children}</CardBody>
       {props.bottomBar ? (
-        <CardFooter pad={{ horizontal: 'small' }} background="dark-1">
+        <CardFooter
+          pad={{ horizontal: 'small' }}
+          background="dark-1"
+          direction="row"
+        >
           {props.bottomBar}
         </CardFooter>
       ) : null}
     </Card>
   )
+}
+
+export function ToolbarFiller() {
+  return <Box flex />
 }
 
 export type ConnectorType<
