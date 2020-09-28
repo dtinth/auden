@@ -9,7 +9,7 @@ const md = MarkdownIt({ html: true })
 export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
   const [running, run] = useActionRunner()
   const ref = useRef<HTMLTextAreaElement | null>(null)
-  const submit = useCallback(e => {
+  const submit = useCallback((e) => {
     e.preventDefault()
     run(
       'import questions',
@@ -19,20 +19,20 @@ export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
         let qs = 0
         let i = 1
         for (const q of result.questions) {
-          const key = `question${i++}`
+          const key = `question${(i++).toString().padStart(3, '0')}`
           let j = 1
           try {
             let correct = 0
             output[key] = {
               ...q,
               text: md.renderInline(q.text),
-              answers: {}
+              answers: {},
             }
             for (const a of q.answers) {
               output[key].answers[`answer${j++}`] = {
                 ...a,
                 text: md.renderInline(a.text),
-                correct: !!a.correct
+                correct: !!a.correct,
               }
               if (a.correct) correct++
             }
