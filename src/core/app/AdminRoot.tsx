@@ -41,67 +41,30 @@ export function AdminRoot(props: {
 }) {
   const config = useConfig()
 
-  if (props.screenId) {
-    return (
-      <Grid
-        rows={['auto']}
-        columns={['16rem', 'auto']}
-        gap="small"
-        pad="small"
-        areas={[
-          { name: 'nav', start: [0, 0], end: [0, 0] },
-          { name: 'main', start: [1, 0], end: [1, 0] },
-        ]}
-      >
-        <Box gridArea="nav">
-          <Navigation />
-        </Box>
-        <Box gridArea="main">
+  return (
+    <Grid
+      rows={['auto']}
+      columns={['16rem', 'auto']}
+      gap="small"
+      pad="small"
+      areas={[
+        { name: 'nav', start: [0, 0], end: [0, 0] },
+        { name: 'main', start: [1, 0], end: [1, 0] },
+      ]}
+    >
+      <Box gridArea="nav">
+        <Navigation />
+      </Box>
+      <Box gridArea="main">
+        {props.screenId ? (
           <LoadingContext>
             <ScreenBackstage screenId={props.screenId} />
           </LoadingContext>
-        </Box>
-      </Grid>
-    )
-  }
-
-  // TODO: Delete this
-  return (
-    <div>
-      <Tabs
-        activeIndex={
-          config.scenes.findIndex((s) => s.name === props.sceneName!) + 1
-        }
-        onActive={(index) => {
-          if (index === 0) {
-            props.history.push('/admin')
-          } else {
-            props.history.push('/admin/' + config.scenes[index - 1].name)
-          }
-        }}
-      >
-        <Tab title="home">
-          <Box pad="medium">Nothing to see here — please select a scene!</Box>
-        </Tab>
-        {config.scenes.map((scene, i) => (
-          <Tab
-            title={
-              λ(() => {
-                const dataRef = firebase.database().ref('/currentScene')
-                // Using hooks in λ is okay but now that `react-script` refuses to compile this, we should use `fiery.Data` instead.
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                const dataState = useFirebaseDatabase(dataRef)
-                const weight = dataState.data === scene.name ? 'bold' : 'normal'
-                return <Text weight={weight}>{scene.name}</Text>
-              }) as any
-            }
-            key={i}
-          >
-            <Backstage scene={scene} />
-          </Tab>
-        ))}
-      </Tabs>
-    </div>
+        ) : (
+          <AdminEmptyState />
+        )}
+      </Box>
+    </Grid>
   )
 }
 
@@ -218,6 +181,10 @@ async function deleteScreen(screenId: string) {
   ])
 }
 
+function AdminEmptyState() {
+  return <Box pad="small">No active screen. Create one on the left.</Box>
+}
+
 export function ScreenBackstage(props: { screenId: string }) {
   const config = useConfig()
   const screenId = props.screenId
@@ -229,6 +196,9 @@ export function ScreenBackstage(props: { screenId: string }) {
     .child('scene')
   const dataState = useFirebaseDatabase(dataRef)
   const sceneType = dataState.unstable_read()
+  if (!sceneType) {
+    return <AdminEmptyState />
+  }
   const scene = config.scenes.find((s) => s.name === sceneType)
   if (!scene) {
     return <ErrorMessage message={'Scene type ' + sceneType + ' not found'} />
