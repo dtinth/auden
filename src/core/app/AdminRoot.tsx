@@ -204,8 +204,6 @@ export function ScreenBackstage(props: { screenId: string }) {
             <Box>
               <CurrentScreenConnector>
                 {(currentScreen, setCurrentScreen) => (
-                  // TODO: #7 Allow deactivating a screen
-                  // TODO: #8 Allow deleting a screen
                   <ActionCheckbox
                     checked={currentScreen === screenId}
                     description={`set currentScreen to "${screenId}"`}
