@@ -1,24 +1,22 @@
 import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Grid, Heading, Menu, RoutedAnchor, Text } from 'grommet'
+import { Box, Grid, Heading, Menu, RoutedAnchor } from 'grommet'
 import { Add } from 'grommet-icons'
 import { History } from 'history'
-import React, { useCallback } from 'react'
-import λ from 'react-lambda'
-import { IScene } from '../model'
+import React from 'react'
 import {
   ActionButton,
   ActionCheckbox,
-  ConnectorType,
   ErrorMessage,
-  handlePromise,
   InlineLoadingContext,
   LoadingContext,
   Panel,
   ToolbarFiller,
 } from '../ui'
 import { useConfig } from './ConfigContext'
+import { CurrentScreenConnector } from './CurrentScreenConnector'
 import { SceneContext } from './SceneContext'
+import { ScreenInfoConnector } from './ScreenInfoConnector'
 
 export function AdminRoot(props: {
   sceneName?: string
@@ -93,10 +91,12 @@ function AdminNavigation() {
                         {(info) =>
                           info ? (
                             <>
-                              {
-                                // TODO: #5 Show which screen is active
-                                info.title
-                              }
+                              {info.title}
+                              <CurrentScreenConnector>
+                                {(currentScreen) =>
+                                  screenId === currentScreen ? ' [active]' : ''
+                                }
+                              </CurrentScreenConnector>
                             </>
                           ) : null
                         }
@@ -123,31 +123,6 @@ function ScreenListConnector(props: {
   const data = dataState.unstable_read()
   const screenIds: string[] = Object.values(data || {})
   return <>{props.children(screenIds)}</>
-}
-
-const ScreenInfoConnector: ConnectorType<
-  { screenId: string },
-  [any, { changeTitleTo: (newName: string) => Promise<void> }]
-> = (props) => {
-  const dataRef = firebase
-    .database()
-    .ref('/screenData')
-    .child(props.screenId)
-    .child('info')
-  const dataState = useFirebaseDatabase(dataRef)
-  const data = dataState.unstable_read()
-  return (
-    <>
-      {props.children(data, {
-        changeTitleTo: useCallback(
-          async (newName) => {
-            await dataRef.child('title').set(newName)
-          },
-          [dataRef]
-        ),
-      })}
-    </>
-  )
 }
 
 async function deleteScreen(screenId: string) {
@@ -266,18 +241,6 @@ export function ScreenBackstage(props: { screenId: string }) {
         </LoadingContext>
       </SceneContext.Provider>
     </>
-  )
-}
-
-const CurrentScreenConnector: ConnectorType<
-  {},
-  [string, (newScreen: string | null) => Promise<void>]
-> = (props) => {
-  const dataRef = firebase.database().ref('/currentScreen')
-  const dataState = useFirebaseDatabase(dataRef)
-  const currentScreen = dataState.unstable_read()
-  return (
-    <>{props.children(currentScreen, (newScreen) => dataRef.set(newScreen))}</>
   )
 }
 

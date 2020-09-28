@@ -132,6 +132,14 @@ export function LoadingContext(props: { children: ReactNode }) {
   )
 }
 
+export function LargeLoadingContext(props: { children: ReactNode }) {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Loading />}>{props.children}</Suspense>
+    </ErrorBoundary>
+  )
+}
+
 export async function handlePromise<T>(
   description: string,
   promise: Promise<T>,
