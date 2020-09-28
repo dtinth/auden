@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useCallback } from 'react'
 import { useConfig } from './ConfigContext'
 import {
   Tabs,
@@ -28,6 +28,7 @@ import {
   ActionButton,
   ActionCheckbox,
   ErrorMessage,
+  ConnectorType,
 } from '../ui'
 import { SceneContext } from './SceneContext'
 import { Add } from 'grommet-icons'
@@ -169,10 +170,10 @@ function ScreenListConnector(props: {
   return <>{props.children(screenIds)}</>
 }
 
-function ScreenInfoConnector(props: {
-  screenId: string
-  children: (screenInfo: any) => React.ReactNode
-}) {
+const ScreenInfoConnector: ConnectorType<
+  { screenId: string },
+  [any, { changeTitleTo: (newName: string) => Promise<void> }]
+> = (props) => {
   const dataRef = firebase
     .database()
     .ref('/screenData')
@@ -180,7 +181,18 @@ function ScreenInfoConnector(props: {
     .child('info')
   const dataState = useFirebaseDatabase(dataRef)
   const data = dataState.unstable_read()
-  return <>{props.children(data)}</>
+  return (
+    <>
+      {props.children(data, {
+        changeTitleTo: useCallback(
+          async (newName) => {
+            await dataRef.child('title').set(newName)
+          },
+          [dataRef]
+        ),
+      })}
+    </>
+  )
 }
 
 export function ScreenBackstage(props: { screenId: string }) {
@@ -211,13 +223,23 @@ export function ScreenBackstage(props: { screenId: string }) {
       <Heading margin={{ vertical: 'small', horizontal: 'small' }}>
         <InlineLoadingContext description="get screen title">
           <ScreenInfoConnector screenId={screenId}>
-            {(info) =>
-              // TODO: #4 Allow renaming screen
+            {(info, actions) => (
               // TODO: #6 Allow activating a screen
               // TODO: #7 Allow deactivating a screen
               // TODO: #8 Allow deleting a screen
-              info?.title
-            }
+              <>
+                {info?.title}
+                <ActionButton
+                  label="Rename"
+                  onClick={async () => {
+                    const newTitle = window.prompt('New name plox', info?.title)
+                    if (newTitle) {
+                      actions.changeTitleTo(newTitle)
+                    }
+                  }}
+                />
+              </>
+            )}
           </ScreenInfoConnector>
         </InlineLoadingContext>
       </Heading>
