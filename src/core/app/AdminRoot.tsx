@@ -113,21 +113,28 @@ function Navigation() {
         Screens
       </CardHeader>
       <CardBody>
-        <Suspense fallback={'Loading screens...'}>
+        <LoadingContext>
           <ScreenListConnector>
             {(screenIds) =>
               screenIds.length ? (
                 screenIds.map((screenId) => (
+                  // TODO: RoutedAnchor deprecated https://github.com/grommet/grommet/issues/2855
                   <RoutedAnchor path={`/admin/screens/${screenId}`}>
                     <Box pad="small">
-                      <Suspense fallback={'...'}>
+                      <InlineLoadingContext description={'get screen title'}>
                         <ScreenInfoConnector key={screenId} screenId={screenId}>
                           {(info) =>
-                            // TODO: #5 Show which screen is active
-                            info.title
+                            info ? (
+                              <>
+                                {
+                                  // TODO: #5 Show which screen is active
+                                  info.title
+                                }
+                              </>
+                            ) : null
                           }
                         </ScreenInfoConnector>
-                      </Suspense>
+                      </InlineLoadingContext>
                     </Box>
                   </RoutedAnchor>
                 ))
@@ -136,7 +143,7 @@ function Navigation() {
               )
             }
           </ScreenListConnector>
-        </Suspense>
+        </LoadingContext>
       </CardBody>
       <CardFooter pad={{ horizontal: 'small' }} background="dark-2">
         <Menu
@@ -195,6 +202,22 @@ const ScreenInfoConnector: ConnectorType<
   )
 }
 
+async function deleteScreen(screenId: string) {
+  const screenList = (
+    await firebase.database().ref('/screenList').once('value')
+  ).val()
+  const orderKey = Object.keys(screenList || {}).find(
+    (k) => screenList[k] === screenId
+  )
+  if (!orderKey) {
+    return
+  }
+  await Promise.all([
+    firebase.database().ref('/screenData').child(screenId).set(null),
+    firebase.database().ref('/screenList').child(orderKey).set(null),
+  ])
+}
+
 export function ScreenBackstage(props: { screenId: string }) {
   const config = useConfig()
   const screenId = props.screenId
@@ -220,29 +243,68 @@ export function ScreenBackstage(props: { screenId: string }) {
   }
   return (
     <>
-      <Heading margin={{ vertical: 'small', horizontal: 'small' }}>
-        <InlineLoadingContext description="get screen title">
-          <ScreenInfoConnector screenId={screenId}>
-            {(info, actions) => (
-              // TODO: #6 Allow activating a screen
-              // TODO: #7 Allow deactivating a screen
-              // TODO: #8 Allow deleting a screen
-              <>
-                {info?.title}
-                <ActionButton
-                  label="Rename"
-                  onClick={async () => {
-                    const newTitle = window.prompt('New name plox', info?.title)
-                    if (newTitle) {
-                      actions.changeTitleTo(newTitle)
+      <Box margin="xsmall" direction="row" gap="small" align="center">
+        <Heading margin={{ vertical: 'small', horizontal: 'small' }}>
+          <InlineLoadingContext description="get screen title">
+            <ScreenInfoConnector screenId={screenId}>
+              {(info, actions) => <>{info?.title}</>}
+            </ScreenInfoConnector>
+          </InlineLoadingContext>
+        </Heading>
+        <InlineLoadingContext description="screen actions">
+          <Box direction="row" gap="small" align="center" flex>
+            <Box>
+              <ScreenInfoConnector screenId={screenId}>
+                {(info, actions) => (
+                  <ActionButton
+                    label="Rename"
+                    onClick={async () => {
+                      const newTitle = window.prompt(
+                        'New name plox',
+                        info?.title
+                      )
+                      if (newTitle) {
+                        actions.changeTitleTo(newTitle)
+                      }
+                    }}
+                  />
+                )}
+              </ScreenInfoConnector>
+            </Box>
+            <Box>
+              <CurrentScreenConnector>
+                {(currentScreen, setCurrentScreen) => (
+                  // TODO: #7 Allow deactivating a screen
+                  // TODO: #8 Allow deleting a screen
+                  <ActionCheckbox
+                    checked={currentScreen === screenId}
+                    description={`set currentScreen to "${screenId}"`}
+                    onChange={() =>
+                      setCurrentScreen(
+                        currentScreen === screenId ? null : screenId
+                      )
                     }
-                  }}
-                />
-              </>
-            )}
-          </ScreenInfoConnector>
+                    toggle
+                    label="active"
+                  />
+                )}
+              </CurrentScreenConnector>
+            </Box>
+            <Box flex />
+            <Box>
+              <ActionButton
+                label="Delete"
+                onClick={async () => {
+                  if (window.confirm('Delete screen?')) {
+                    await deleteScreen(screenId)
+                  }
+                }}
+              />
+            </Box>
+          </Box>
         </InlineLoadingContext>
-      </Heading>
+      </Box>
+
       <Box margin="xsmall" border="all" direction="column">
         <Box
           border="bottom"
@@ -261,6 +323,18 @@ export function ScreenBackstage(props: { screenId: string }) {
         </SceneContext.Provider>
       </Box>
     </>
+  )
+}
+
+const CurrentScreenConnector: ConnectorType<
+  {},
+  [string, (newScreen: string | null) => Promise<void>]
+> = (props) => {
+  const dataRef = firebase.database().ref('/currentScreen')
+  const dataState = useFirebaseDatabase(dataRef)
+  const currentScreen = dataState.unstable_read()
+  return (
+    <>{props.children(currentScreen, (newScreen) => dataRef.set(newScreen))}</>
   )
 }
 
