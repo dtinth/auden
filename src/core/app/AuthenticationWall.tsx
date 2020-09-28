@@ -51,7 +51,7 @@ function PleaseSignIn() {
   return (
     <Box pad="medium">
       <Heading level="1">You must sign in to continue</Heading>
-      <Paragraph>
+      {/* <Paragraph>
         <ActionButton
           primary
           label="Sign in with Facebook"
@@ -62,7 +62,7 @@ function PleaseSignIn() {
               .signInWithPopup(new firebase.auth.FacebookAuthProvider())
           }
         />
-      </Paragraph>
+      </Paragraph> */}
       <Paragraph>
         <ActionButton
           primary
