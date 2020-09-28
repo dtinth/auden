@@ -1,27 +1,21 @@
 import {
   Box,
   Button,
-  Heading,
-  Text,
-  Layer,
   ButtonProps,
-  CheckBoxProps,
-  CheckBox,
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
+  CardHeader,
+  CheckBox,
+  CheckBoxProps,
+  Heading,
+  Layer,
+  Text,
 } from 'grommet'
 import Noty from 'noty'
 import 'noty/lib/noty.css'
 import 'noty/lib/themes/mint.css'
-import React, {
-  ReactNode,
-  Suspense,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react'
+import React, { ReactNode, Suspense, useCallback, useState } from 'react'
 
 export function flashError(text: string) {
   new Noty({ text, type: 'error' }).show()
@@ -128,14 +122,6 @@ export function LoadingContext(props: { children: ReactNode }) {
       >
         {props.children}
       </Suspense>
-    </ErrorBoundary>
-  )
-}
-
-export function LargeLoadingContext(props: { children: ReactNode }) {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<Loading />}>{props.children}</Suspense>
     </ErrorBoundary>
   )
 }

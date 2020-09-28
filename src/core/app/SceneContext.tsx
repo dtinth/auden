@@ -1,7 +1,7 @@
 import firebase from 'firebase'
 import React, { createContext, ReactNode, useContext } from 'react'
 import { IScene, ISceneContext } from '../model'
-import { ConnectorType, LargeLoadingContext } from '../ui'
+import { ConnectorType, ErrorBoundary } from '../ui'
 import { useConfig } from './ConfigContext'
 import { CurrentScreenConnector } from './CurrentScreenConnector'
 import { FirebaseDataConnector } from './FirebaseConnector'
@@ -57,9 +57,7 @@ export function CurrentSceneContextConnector(props: {
               }
               return (
                 <SceneContext.Provider value={sceneContext}>
-                  <LargeLoadingContext>
-                    {props.renderScene(scene)}
-                  </LargeLoadingContext>
+                  <ErrorBoundary>{props.renderScene(scene)}</ErrorBoundary>
                 </SceneContext.Provider>
               )
             }}
