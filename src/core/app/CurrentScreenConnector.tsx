@@ -11,6 +11,8 @@ export const CurrentScreenConnector: ConnectorType<
   const dataState = useFirebaseDatabase(dataRef)
   const currentScreen = dataState.unstable_read()
   return (
-    <>{props.children(currentScreen, (newScreen) => dataRef.set(newScreen))}</>
+    <React.Fragment key={currentScreen}>
+      {props.children(currentScreen, (newScreen) => dataRef.set(newScreen))}
+    </React.Fragment>
   )
 }

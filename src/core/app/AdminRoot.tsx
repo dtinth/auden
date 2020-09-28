@@ -40,7 +40,7 @@ export function AdminRoot(props: {
       <Box gridArea="main">
         {props.screenId ? (
           <LoadingContext>
-            <ScreenBackstage screenId={props.screenId} />
+            <ScreenBackstage key={props.screenId} screenId={props.screenId} />
           </LoadingContext>
         ) : (
           <AdminEmptyState />
