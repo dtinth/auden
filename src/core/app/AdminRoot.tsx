@@ -54,7 +54,7 @@ export function AdminRoot(props: {
             />
           </Nav>
         </Box>
-        {previewer}
+        <Box style={{ position: 'sticky', top: '1rem' }}>{previewer}</Box>
       </Box>
     </Box>
   )
