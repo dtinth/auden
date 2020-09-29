@@ -75,10 +75,15 @@ export function QuizQuestionPresentation(props: {
                 key={index}
                 background={`neutral-${index + 1}`}
                 style={{
+                  color: 'white',
                   position: 'relative',
                   fontSize: '56px',
                   lineHeight: '72px',
                   opacity: props.answerRevealed && !entry.val.correct ? 0.5 : 1,
+                  filter:
+                    props.answerRevealed && !entry.val.correct
+                      ? 'grayscale(100%)'
+                      : '',
                 }}
               >
                 <Box
@@ -98,6 +103,7 @@ export function QuizQuestionPresentation(props: {
                     flex={false}
                     background={`neutral-${index + 1}`}
                     style={{
+                      color: 'white',
                       width: 80,
                       height: 80,
                       borderRadius: '50%',
