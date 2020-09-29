@@ -12,14 +12,56 @@ export const scene: IScene = {
 }
 
 const AUDIENCE_TEXT_PATH = ['main', 'settings', 'public-read', 'audienceText']
+const AUDIENCE_CSS_PATH = ['main', 'settings', 'public-read', 'audienceCSS']
+
+const PRESENTATION_TEXT_PATH = [
+  'main',
+  'settings',
+  'public-read',
+  'presentationText',
+]
+const PRESENTATION_CSS_PATH = [
+  'main',
+  'settings',
+  'public-read',
+  'presentationCSS',
+]
 
 function FreestyleAudience() {
   return (
-    <Box pad="small">
+    <Box pad="small" id="freestyle">
       <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
         {(audienceText) => (
           <div
             dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
+          />
+        )}
+      </SceneDataConnector>
+      <SceneDataConnector path={AUDIENCE_CSS_PATH}>
+        {(audienceCSS) => (
+          <style
+            dangerouslySetInnerHTML={{ __html: String(audienceCSS.value) }}
+          />
+        )}
+      </SceneDataConnector>
+    </Box>
+  )
+}
+
+function FreestylePresentation() {
+  return (
+    <Box fill id="freestyle">
+      <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
+        {(audienceText) => (
+          <div
+            dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
+          />
+        )}
+      </SceneDataConnector>
+      <SceneDataConnector path={PRESENTATION_CSS_PATH}>
+        {(audienceCSS) => (
+          <style
+            dangerouslySetInnerHTML={{ __html: String(audienceCSS.value) }}
           />
         )}
       </SceneDataConnector>
@@ -31,13 +73,74 @@ function FreestyleBackstage() {
   return (
     <Box gap="medium">
       <Panel title="Audience view">
-        <Box pad="small">
+        <Box pad="small" gap="small">
           <Field label="Text to show">
             <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
-              {(audienceText) => (
+              {(text) => (
                 <Draft
-                  value={audienceText.value || ''}
-                  onSave={(value) => audienceText.ref.set(value)}
+                  value={text.value || ''}
+                  onSave={(value) => text.ref.set(value)}
+                >
+                  {(draft, setDraft) => (
+                    <TextArea
+                      rows={8}
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                    />
+                  )}
+                </Draft>
+              )}
+            </SceneDataConnector>
+          </Field>
+
+          <Field label="Audience CSS">
+            <SceneDataConnector path={AUDIENCE_CSS_PATH}>
+              {(text) => (
+                <Draft
+                  value={text.value || ''}
+                  onSave={(value) => text.ref.set(value)}
+                >
+                  {(draft, setDraft) => (
+                    <TextArea
+                      rows={8}
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                    />
+                  )}
+                </Draft>
+              )}
+            </SceneDataConnector>
+          </Field>
+        </Box>
+      </Panel>
+
+      <Panel title="Presentation view">
+        <Box pad="small" gap="small">
+          <Field label="Text to show">
+            <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
+              {(text) => (
+                <Draft
+                  value={text.value || ''}
+                  onSave={(value) => text.ref.set(value)}
+                >
+                  {(draft, setDraft) => (
+                    <TextArea
+                      rows={8}
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                    />
+                  )}
+                </Draft>
+              )}
+            </SceneDataConnector>
+          </Field>
+
+          <Field label="Presentation CSS">
+            <SceneDataConnector path={PRESENTATION_CSS_PATH}>
+              {(text) => (
+                <Draft
+                  value={text.value || ''}
+                  onSave={(value) => text.ref.set(value)}
                 >
                   {(draft, setDraft) => (
                     <TextArea
@@ -54,8 +157,4 @@ function FreestyleBackstage() {
       </Panel>
     </Box>
   )
-}
-
-function FreestylePresentation() {
-  return <Box fill>Freestyle!</Box>
 }
