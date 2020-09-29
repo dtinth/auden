@@ -10,6 +10,7 @@
     "@types/react-dom": "^16.8.0",
     "@types/react-router-dom": "^4.3.1",
     "@types/verror": "^1.10.3",
+    "enable-hot-reload": "^2.0.0-2",
     "fiery": "^0.5.0",
     "firebase": "^7.21.0",
     "firebase-bolt": "^0.8.4",
@@ -45,6 +46,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@types/webpack-env": "^1.15.3",
     "firebase-tools": "^8.11.2"
   }
 }
