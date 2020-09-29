@@ -91,12 +91,12 @@ function AdminNavigation() {
                         {(info) =>
                           info ? (
                             <>
-                              {info.title}
                               <CurrentScreenConnector>
                                 {(currentScreen) =>
-                                  screenId === currentScreen ? ' [active]' : ''
+                                  screenId === currentScreen ? '>>> ' : ''
                                 }
                               </CurrentScreenConnector>
+                              {info.title}
                             </>
                           ) : null
                         }
