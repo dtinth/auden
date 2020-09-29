@@ -270,3 +270,35 @@ export type ConnectorType<
     children: (...args: Args) => React.ReactNode
   }
 >
+
+export function Field(props: { label: ReactNode; children: ReactNode }) {
+  return (
+    <Box direction="row">
+      <Box width="10rem">{props.label}</Box>
+      <Box flex>{props.children}</Box>
+    </Box>
+  )
+}
+
+export function Draft(props: {
+  value: string
+  children: (draft: string, setDraft: (d: string) => void) => ReactNode
+  onSave: (value: string) => Promise<void>
+}) {
+  const [draft, setDraft] = useState<string | null>(null)
+  const draftValue = draft ?? props.value
+  return (
+    <Box gap="xsmall">
+      {props.children(draftValue, setDraft)}
+      <Box direction="row">
+        <ActionButton
+          label="Save"
+          description="save"
+          successMessage="Saved"
+          onClick={() => props.onSave(draftValue)}
+          disabled={draftValue === props.value}
+        />
+      </Box>
+    </Box>
+  )
+}
