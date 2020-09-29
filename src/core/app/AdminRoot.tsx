@@ -1,9 +1,9 @@
 import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Grid, Heading, Menu, RoutedAnchor } from 'grommet'
-import { Add } from 'grommet-icons'
+import { Box, Button, Heading, Menu, Nav, RoutedAnchor } from 'grommet'
+import { Add, Inspect } from 'grommet-icons'
 import { History } from 'history'
-import React from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActionButton,
   ActionCheckbox,
@@ -23,30 +23,40 @@ export function AdminRoot(props: {
   screenId?: string
   history: History
 }) {
+  const navigation = useMemo(() => <AdminNavigation />, [])
+  const backstage = useMemo(
+    () =>
+      props.screenId ? (
+        <LoadingContext>
+          <ScreenBackstage key={props.screenId} screenId={props.screenId} />
+        </LoadingContext>
+      ) : (
+        <AdminEmptyState />
+      ),
+    [props.screenId]
+  )
+  const [previewEnabled, setPreviewEnabled] = useState(false)
+  const previewer = useMemo(
+    () => (previewEnabled ? <AdminPreviewer /> : null),
+    [previewEnabled]
+  )
   return (
-    <Grid
-      rows={['auto']}
-      columns={['16rem', 'auto']}
-      gap="medium"
-      pad="small"
-      areas={[
-        { name: 'nav', start: [0, 0], end: [0, 0] },
-        { name: 'main', start: [1, 0], end: [1, 0] },
-      ]}
-    >
-      <Box gridArea="nav">
-        <AdminNavigation />
+    <Box direction="row" gap="medium" pad="small">
+      <Box width="16rem">{navigation}</Box>
+      <Box flex>{backstage}</Box>
+      <Box width={previewEnabled ? '24rem' : ''} gap="small">
+        <Box align="end">
+          <Nav gap="small">
+            <Button
+              icon={<Inspect />}
+              hoverIndicator
+              onClick={() => setPreviewEnabled((x) => !x)}
+            />
+          </Nav>
+        </Box>
+        {previewer}
       </Box>
-      <Box gridArea="main">
-        {props.screenId ? (
-          <LoadingContext>
-            <ScreenBackstage key={props.screenId} screenId={props.screenId} />
-          </LoadingContext>
-        ) : (
-          <AdminEmptyState />
-        )}
-      </Box>
-    </Grid>
+    </Box>
   )
 }
 
@@ -143,6 +153,52 @@ async function deleteScreen(screenId: string) {
 
 function AdminEmptyState() {
   return <Box pad="small">No active screen. Create one on the left.</Box>
+}
+
+function AdminPreviewer() {
+  const previewFrame = useRef<HTMLIFrameElement>(null)
+  useEffect(() => {
+    const frame = previewFrame.current
+    if (frame) {
+      const container = frame.parentNode as HTMLDivElement
+      if (container.offsetWidth) {
+        frame.style.transform = 'scale(' + container.offsetWidth / 1920 + ')'
+        frame.style.transformOrigin = 'top left'
+      }
+    }
+  }, [])
+  return (
+    <Box gap="medium">
+      <Panel title="Display">
+        <div
+          style={{
+            position: 'relative',
+            paddingTop: '56.25%',
+            overflow: 'hidden',
+          }}
+        >
+          <iframe
+            ref={previewFrame}
+            src="/#/display"
+            style={{
+              width: '1920px',
+              border: '0',
+              height: '1080px',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+          ></iframe>
+        </div>
+      </Panel>
+      <Panel title="Audience">
+        <iframe
+          src="/"
+          style={{ width: '100%', border: '0', height: '480px' }}
+        ></iframe>
+      </Panel>
+    </Box>
+  )
 }
 
 export function ScreenBackstage(props: { screenId: string }) {
