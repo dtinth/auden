@@ -90,10 +90,11 @@ export class InlineErrorBoundary extends React.Component<
 export function InlineLoadingContext(props: {
   children: ReactNode
   description: string
+  fallback?: ReactNode
 }) {
   return (
     <InlineErrorBoundary description={props.description}>
-      <Suspense fallback={'...'}>{props.children}</Suspense>
+      <Suspense fallback={props.fallback ?? '...'}>{props.children}</Suspense>
     </InlineErrorBoundary>
   )
 }

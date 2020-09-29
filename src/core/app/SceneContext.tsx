@@ -4,7 +4,7 @@ import { IScene, ISceneContext } from '../model'
 import { ConnectorType, ErrorBoundary } from '../ui'
 import { useConfig } from './ConfigContext'
 import { CurrentScreenConnector } from './CurrentScreenConnector'
-import { FirebaseDataConnector } from './FirebaseConnector'
+import { FirebaseData, FirebaseDataConnector } from './FirebaseConnector'
 import { ScreenInfoConnector } from './ScreenInfoConnector'
 
 export const SceneContext = createContext<ISceneContext | null>(null)
@@ -17,7 +17,7 @@ export function useSceneContext() {
 
 export const SceneDataConnector: ConnectorType<
   { path: string[] },
-  [any, firebase.database.Reference]
+  [FirebaseData]
 > = (props) => {
   return (
     <FirebaseDataConnector

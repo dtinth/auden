@@ -3,9 +3,18 @@ import { Box, DataTable, Text, TextInput } from 'grommet'
 import React, { ChangeEvent, useState } from 'react'
 import λ from 'react-lambda'
 import { firebaseToEntries } from '../../core/app'
-import { useSceneContext } from '../../core/app/SceneContext'
+import {
+  SceneDataConnector,
+  useSceneContext,
+} from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
-import { ActionButton, ActionCheckbox, flashError, Panel } from '../../core/ui'
+import {
+  ActionButton,
+  ActionCheckbox,
+  flashError,
+  InlineLoadingContext,
+  Panel,
+} from '../../core/ui'
 
 export const scene: IScene = {
   name: 'vote',
@@ -17,18 +26,17 @@ export const scene: IScene = {
 function VoteAudience() {
   const sceneContext = useSceneContext()
 
-  // me
-  const authState = useFirebaseAuth()
-  const me = authState.unstable_read()!
-  const uid = me.uid
-
   // vote options
   const optionsRef = sceneContext.dataRef
     .child('main')
     .child('options')
     .child('public-read')
   const optionsState = useFirebaseDatabase(optionsRef)
-  const options = optionsState.unstable_read()
+
+  // me
+  const authState = useFirebaseAuth()
+  const me = authState.unstable_read()!
+  const uid = me.uid
 
   // my votes
   const myVotesRef = sceneContext.dataRef
@@ -37,10 +45,6 @@ function VoteAudience() {
     .child('private')
     .child(uid)
   const myVotesState = useFirebaseDatabase(myVotesRef)
-  const myVotes = myVotesState.unstable_read()
-  const voteCount = firebaseToEntries(myVotes).filter((entry) => entry.val)
-    .length
-  const hasVotedFor = (optionId: string) => !!(myVotes && myVotes[optionId])
 
   // max votes
   const maxVotesRef = sceneContext.dataRef
@@ -49,7 +53,6 @@ function VoteAudience() {
     .child('public-read')
     .child('maxVotes')
   const maxVotesState = useFirebaseDatabase(maxVotesRef)
-  const maxVotes = maxVotesState.unstable_read() || DEFAULT_MAX_VOTES
 
   // enabled?
   const enabledRef = sceneContext.dataRef
@@ -58,17 +61,38 @@ function VoteAudience() {
     .child('public-read')
     .child('enabled')
   const enabledState = useFirebaseDatabase(enabledRef)
+
+  // read them
+  const myVotes = myVotesState.unstable_read()
+  const voteCount = firebaseToEntries(myVotes).filter((entry) => entry.val)
+    .length
+  const hasVotedFor = (optionId: string) => !!(myVotes && myVotes[optionId])
+  const options = optionsState.unstable_read()
+  const maxVotes = maxVotesState.unstable_read() || DEFAULT_MAX_VOTES
   const enabled = enabledState.unstable_read()
 
   if (!enabled) {
     return <Box pad="medium">Wait for voting to open...</Box>
   }
 
+  const fallbackQuestionText = 'Choose your favorite!'
   return (
     <Box pad="small">
       <Box pad="xsmall">
         <Text>
-          <Text weight="bold">Vote your favorite</Text> (max: {maxVotes}):
+          <Text weight="bold">
+            <InlineLoadingContext
+              fallback={fallbackQuestionText}
+              description="Load question text"
+            >
+              <SceneDataConnector
+                path={['main', 'settings', 'public-read', 'questionText']}
+              >
+                {(questionText) => questionText.value ?? fallbackQuestionText}
+              </SceneDataConnector>
+            </InlineLoadingContext>
+          </Text>{' '}
+          (max: {maxVotes}):
         </Text>
       </Box>
       {firebaseToEntries(options).map((entry) => (
@@ -111,6 +135,11 @@ function VoteBackstage() {
 
   return (
     <Box gap="medium">
+      <Panel title="Question">
+        <Box pad="small">
+          <QuestionTextEditor />
+        </Box>
+      </Panel>
       <Panel title="Available options">
         <Box direction="row" align="center" pad="small">
           <Box flex margin={{ right: 'small' }}>
@@ -247,6 +276,35 @@ function VoteBackstage() {
         </Box>
       </Panel>
     </Box>
+  )
+}
+
+function QuestionTextEditor() {
+  const [draft, setDraft] = useState<string | null>(null)
+  return (
+    <SceneDataConnector
+      path={['main', 'settings', 'public-read', 'questionText']}
+    >
+      {(questionText) => {
+        const textValue = draft ?? questionText.value ?? 'Choose your favorite!'
+        return (
+          <>
+            <TextInput
+              value={textValue}
+              onChange={(e) => setDraft(e.target.value)}
+            />
+            <ActionButton
+              label="Set question text"
+              description="set vote options"
+              onClick={async () => {
+                await questionText.ref.set(textValue)
+              }}
+              successMessage="Vote options has been set"
+            />
+          </>
+        )
+      }}
+    </SceneDataConnector>
   )
 }
 

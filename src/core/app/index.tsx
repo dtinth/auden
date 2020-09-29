@@ -21,6 +21,7 @@ import { DisplayRoot } from './DisplayRoot'
 import { AuthenticationWall } from './AuthenticationWall'
 
 export * from './FirebaseDataUtils'
+export * from './FirebaseConnector'
 
 const theme = deepMerge(generate(24, 6), dark, {
   global: {

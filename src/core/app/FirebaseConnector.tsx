@@ -5,7 +5,7 @@ import { useFirebaseDatabase } from 'fiery'
 
 export const FirebaseDataConnector: ConnectorType<
   { path: string[]; baseRef?: firebase.database.Reference },
-  [any, firebase.database.Reference]
+  [FirebaseData]
 > = (props) => {
   const pathJoined = useMemo(() => JSON.stringify(props.path), [props.path])
   const dataRef = useMemo(() => {
@@ -15,5 +15,15 @@ export const FirebaseDataConnector: ConnectorType<
     )
   }, [props.baseRef, pathJoined])
   const data = useFirebaseDatabase(dataRef)
-  return <>{props.children(data.unstable_read(), dataRef)}</>
+  const value = data.unstable_read()
+  const firebaseData: FirebaseData = useMemo(() => ({ value, ref: dataRef }), [
+    value,
+    dataRef,
+  ])
+  return <>{props.children(firebaseData)}</>
+}
+
+export interface FirebaseData {
+  value: any
+  ref: firebase.database.Reference
 }
