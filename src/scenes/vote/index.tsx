@@ -1,11 +1,11 @@
-import React, { useRef, useState, ChangeEvent } from 'react'
-import { IScene } from '../../core/model'
-import { Box, TextInput, Text, DataTable } from 'grommet'
-import { ActionButton, ActionCheckbox, flashError, Panel } from '../../core/ui'
-import { useSceneContext } from '../../core/app/SceneContext'
-import { useFirebaseDatabase, useFirebaseAuth } from 'fiery'
-import { firebaseToEntries } from '../../core/app'
+import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
+import { Box, DataTable, Text, TextInput } from 'grommet'
+import React, { ChangeEvent, useState } from 'react'
 import λ from 'react-lambda'
+import { firebaseToEntries } from '../../core/app'
+import { useSceneContext } from '../../core/app/SceneContext'
+import { IScene } from '../../core/model'
+import { ActionButton, ActionCheckbox, flashError, Panel } from '../../core/ui'
 
 export const scene: IScene = {
   name: 'vote',
@@ -252,7 +252,6 @@ function VoteBackstage() {
 
 function VotePresentation() {
   const sceneContext = useSceneContext()
-  const [voteOptionsText, setVoteOptionsText] = useState<string | null>(null)
 
   const optionsRef = sceneContext.dataRef
     .child('main')

@@ -1,18 +1,16 @@
-import React, { ReactNode, Children } from 'react'
-import { Box, Heading, DataTable, Button, Text } from 'grommet'
-import { useSceneContext } from '../../core/app/SceneContext'
 import { useFirebaseDatabase } from 'fiery'
+import firebase from 'firebase'
+import { Box, DataTable, Text } from 'grommet'
+import React from 'react'
+import λ from 'react-lambda'
+import { firebaseToEntries, UserName } from '../../core/app'
+import { useSceneContext } from '../../core/app/SceneContext'
 import {
-  LoadingContext,
-  handlePromise,
   ActionButton,
   ActionCheckbox,
   InlineLoadingContext,
-  Panel,
+  Panel
 } from '../../core/ui'
-import firebase from 'firebase'
-import λ from 'react-lambda'
-import { firebaseToEntries, UserName } from '../../core/app'
 import { useLeaderboardData } from './useLeaderboardData'
 
 const QuizImporter = React.lazy(() => import('./QuizImporter'))
