@@ -1,5 +1,6 @@
 import * as quiz from './scenes/quiz'
 import * as vote from './scenes/vote'
+import * as freestyle from './scenes/freestyle'
 import { IConfig } from './core/model'
 
 export const config: IConfig = {
@@ -9,7 +10,7 @@ export const config: IConfig = {
     databaseURL: 'https://ingage-platform-demo.firebaseio.com',
     projectId: 'ingage-platform-demo',
     storageBucket: 'ingage-platform-demo.appspot.com',
-    messagingSenderId: '13020059910'
+    messagingSenderId: '13020059910',
   },
-  scenes: [quiz.scene, vote.scene]
+  scenes: [quiz.scene, vote.scene, freestyle.scene],
 }
