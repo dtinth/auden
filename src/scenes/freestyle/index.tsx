@@ -11,12 +11,12 @@ export const scene: IScene = {
   audienceComponent: FreestyleAudience,
 }
 
+const AUDIENCE_TEXT_PATH = ['main', 'settings', 'public-read', 'audienceText']
+
 function FreestyleAudience() {
   return (
     <Box pad="small">
-      <SceneDataConnector
-        path={['main', 'settings', 'public-read', 'audienceText']}
-      >
+      <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
         {(audienceText) => (
           <div
             dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
@@ -33,9 +33,7 @@ function FreestyleBackstage() {
       <Panel title="Audience view">
         <Box pad="small">
           <Field label="Text to show">
-            <SceneDataConnector
-              path={['main', 'settings', 'public-read', 'audienceText']}
-            >
+            <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
               {(audienceText) => (
                 <Draft
                   value={audienceText.value || ''}
