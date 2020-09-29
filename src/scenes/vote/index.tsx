@@ -96,9 +96,9 @@ function VoteAudience() {
         </Text>
       </Box>
       {firebaseToEntries(options).map((entry) => (
-        <Box pad="xsmall" key={entry.key}>
+        <Box pad={{ horizontal: 'xsmall' }} key={entry.key}>
           <ActionCheckbox
-            label={entry.val}
+            label={<Box pad={{ vertical: 'xsmall' }}>{entry.val}</Box>}
             description={`vote for "${entry.val}"`}
             checked={hasVotedFor(entry.key)}
             onChange={async (e: ChangeEvent<HTMLInputElement>) => {
