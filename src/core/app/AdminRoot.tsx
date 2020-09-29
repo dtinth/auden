@@ -184,24 +184,6 @@ export function ScreenBackstage(props: { screenId: string }) {
         <InlineLoadingContext description="screen actions">
           <Box direction="row" gap="small" align="center" flex>
             <Box>
-              <ScreenInfoConnector screenId={screenId}>
-                {(info, actions) => (
-                  <ActionButton
-                    label="Rename"
-                    onClick={async () => {
-                      const newTitle = window.prompt(
-                        'New name plox',
-                        info?.title
-                      )
-                      if (newTitle) {
-                        actions.changeTitleTo(newTitle)
-                      }
-                    }}
-                  />
-                )}
-              </ScreenInfoConnector>
-            </Box>
-            <Box>
               <CurrentScreenConnector>
                 {(currentScreen, setCurrentScreen) => (
                   <ActionCheckbox
@@ -219,6 +201,24 @@ export function ScreenBackstage(props: { screenId: string }) {
               </CurrentScreenConnector>
             </Box>
             <Box flex />
+            <Box>
+              <ScreenInfoConnector screenId={screenId}>
+                {(info, actions) => (
+                  <ActionButton
+                    label="Rename"
+                    onClick={async () => {
+                      const newTitle = window.prompt(
+                        'New name plox',
+                        info?.title
+                      )
+                      if (newTitle) {
+                        actions.changeTitleTo(newTitle)
+                      }
+                    }}
+                  />
+                )}
+              </ScreenInfoConnector>
+            </Box>
             <Box>
               <ActionButton
                 label="Delete"
