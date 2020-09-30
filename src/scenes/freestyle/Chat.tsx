@@ -194,7 +194,7 @@ function ChatSubmitter() {
         },
       })
     textarea.current!.value = ''
-  }, [])
+  }, [dataRef])
   return (
     <Box direction="row">
       <TextArea

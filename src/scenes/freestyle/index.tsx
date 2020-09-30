@@ -1,14 +1,8 @@
 import { Box, RadioButtonGroup, TextArea } from 'grommet'
-import React, { ChangeEvent, ReactNode, useState } from 'react'
+import React, { ChangeEvent } from 'react'
 import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
-import {
-  ActionButton,
-  ActionCheckbox,
-  Draft,
-  Field,
-  Panel,
-} from '../../core/ui'
+import { ActionCheckbox, Draft, Field, Panel } from '../../core/ui'
 import { ChatAudience, ChatView } from './Chat'
 
 export const scene: IScene = {
