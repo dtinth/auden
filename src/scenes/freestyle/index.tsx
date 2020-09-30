@@ -1,9 +1,15 @@
-import { Box, TextArea } from 'grommet'
-import React, { ReactNode, useState } from 'react'
+import { Box, RadioButtonGroup, TextArea } from 'grommet'
+import React, { ChangeEvent, ReactNode, useState } from 'react'
 import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
-import { ActionButton, Draft, Field, Panel } from '../../core/ui'
-import { ChatAudience } from './Chat'
+import {
+  ActionButton,
+  ActionCheckbox,
+  Draft,
+  Field,
+  Panel,
+} from '../../core/ui'
+import { ChatAudience, ChatView } from './Chat'
 
 export const scene: IScene = {
   name: 'freestyle',
@@ -12,6 +18,12 @@ export const scene: IScene = {
   audienceComponent: FreestyleAudience,
 }
 
+const AUDIENCE_DISPLAY_MODE_PATH = [
+  'main',
+  'settings',
+  'public-read',
+  'audienceDisplayMode',
+]
 const AUDIENCE_TEXT_PATH = ['main', 'settings', 'public-read', 'audienceText']
 const AUDIENCE_CSS_PATH = ['main', 'settings', 'public-read', 'audienceCSS']
 const PRESENTATION_TEXT_PATH = [
@@ -26,26 +38,47 @@ const PRESENTATION_CSS_PATH = [
   'public-read',
   'presentationCSS',
 ]
+const PRESENTATION_SETTINGS_PATH = [
+  'main',
+  'settings',
+  'public-read',
+  'presentationSettings',
+]
 
 function FreestyleAudience() {
   return (
     <Box pad="small">
-      <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
-        {(audienceText) => (
-          <div
-            id="freestyle"
-            dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
-          />
-        )}
+      <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
+        {(displayMode) => {
+          if (displayMode.value === 'chat') {
+            return <ChatAudience />
+          }
+
+          return (
+            <>
+              <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
+                {(audienceText) => (
+                  <div
+                    id="freestyle"
+                    dangerouslySetInnerHTML={{
+                      __html: String(audienceText.value),
+                    }}
+                  />
+                )}
+              </SceneDataConnector>
+              <SceneDataConnector path={AUDIENCE_CSS_PATH}>
+                {(audienceCSS) => (
+                  <style
+                    dangerouslySetInnerHTML={{
+                      __html: String(audienceCSS.value),
+                    }}
+                  />
+                )}
+              </SceneDataConnector>
+            </>
+          )
+        }}
       </SceneDataConnector>
-      <SceneDataConnector path={AUDIENCE_CSS_PATH}>
-        {(audienceCSS) => (
-          <style
-            dangerouslySetInnerHTML={{ __html: String(audienceCSS.value) }}
-          />
-        )}
-      </SceneDataConnector>
-      <ChatAudience />
     </Box>
   )
 }
@@ -53,19 +86,30 @@ function FreestyleAudience() {
 function FreestylePresentation() {
   return (
     <Box fill>
-      <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
-        {(audienceText) => (
-          <div
-            id="freestyle"
-            dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
-          />
-        )}
-      </SceneDataConnector>
-      <SceneDataConnector path={PRESENTATION_CSS_PATH}>
-        {(audienceCSS) => (
-          <style
-            dangerouslySetInnerHTML={{ __html: String(audienceCSS.value) }}
-          />
+      <SceneDataConnector path={PRESENTATION_SETTINGS_PATH}>
+        {(settings) => (
+          <>
+            <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
+              {(audienceText) => (
+                <div
+                  id="freestyle"
+                  dangerouslySetInnerHTML={{
+                    __html: String(audienceText.value),
+                  }}
+                />
+              )}
+            </SceneDataConnector>
+            <SceneDataConnector path={PRESENTATION_CSS_PATH}>
+              {(audienceCSS) => (
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html: String(audienceCSS.value),
+                  }}
+                />
+              )}
+            </SceneDataConnector>
+            {!!settings.value?.showChat && <ChatView />}
+          </>
         )}
       </SceneDataConnector>
     </Box>
@@ -77,6 +121,21 @@ function FreestyleBackstage() {
     <Box gap="medium">
       <Panel title="Audience view">
         <Box pad="small" gap="small">
+          <Field label="Display">
+            <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
+              {(setting) => (
+                <RadioButtonGroup
+                  name="displayMode"
+                  options={['arbitrary', 'chat']}
+                  value={setting.value || 'arbitrary'}
+                  onChange={(event: any) => {
+                    setting.ref.set(event.target.value)
+                  }}
+                />
+              )}
+            </SceneDataConnector>
+          </Field>
+
           <Field label="Text to show">
             <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
               {(text) => (
@@ -119,6 +178,23 @@ function FreestyleBackstage() {
 
       <Panel title="Presentation view">
         <Box pad="small" gap="small">
+          <Field label="Display">
+            <SceneDataConnector path={PRESENTATION_SETTINGS_PATH}>
+              {(settings) => (
+                <>
+                  <ActionCheckbox
+                    label={'Show chat'}
+                    description={`show chat`}
+                    checked={!!settings.value?.showChat}
+                    onChange={async (e: ChangeEvent<HTMLInputElement>) => {
+                      await settings.ref.child('showChat').set(e.target.checked)
+                    }}
+                  />
+                </>
+              )}
+            </SceneDataConnector>
+          </Field>
+
           <Field label="Text to show">
             <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
               {(text) => (

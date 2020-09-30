@@ -57,9 +57,10 @@ export function ChatAudience() {
   )
 }
 
-function ChatView() {
+export function ChatView() {
   return (
     <div
+      className="ChatView"
       style={{
         position: 'absolute',
         top: 0,
@@ -74,7 +75,11 @@ function ChatView() {
             <ChatScroller latestKey={events[events.length - 1]?.key}>
               {events.map(({ key, val }) => {
                 return (
-                  <div key={key} style={{ padding: '0.5ex 0' }}>
+                  <div
+                    key={key}
+                    style={{ padding: '0.5ex 0', lineHeight: '1.32' }}
+                    className="ChatView__item"
+                  >
                     <strong style={{ color: getUserColor(val.owner) }}>
                       <UserName uid={val.owner} />:{' '}
                     </strong>
@@ -94,6 +99,7 @@ function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
   const divRef = useRef<HTMLDivElement>(null)
   const [autoScrolling, setAutoScrolling] = useState(true)
   const autoScrollingRef = useRef(autoScrolling)
+  const scrollingAnimationActiveRef = useRef(false)
 
   useEffect(() => {
     autoScrollingRef.current = autoScrolling
@@ -104,8 +110,33 @@ function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
     if (autoScrollingRef.current) {
       const div = divRef.current
       if (div) {
-        div.scrollTop = div.scrollHeight
+        beginScrollingAnimation(div)
       }
+    }
+
+    function beginScrollingAnimation(div: HTMLDivElement) {
+      if (scrollingAnimationActiveRef.current) {
+        return
+      }
+      scrollingAnimationActiveRef.current = true
+      let lastTime = Date.now()
+      const frame = () => {
+        const now = Date.now()
+        const elapsed = (now - lastTime) / 1e3
+        const pullDistance = div.scrollHeight - div.scrollTop
+        const remainingDistance = pullDistance * Math.exp(-elapsed)
+        const dy = Math.ceil(Math.max(0, pullDistance - remainingDistance))
+        const before = div.scrollTop
+        div.scrollTop += dy
+        const after = div.scrollTop
+        if (before !== after) {
+          lastTime = now
+          requestAnimationFrame(frame)
+        } else {
+          scrollingAnimationActiveRef.current = false
+        }
+      }
+      requestAnimationFrame(frame)
     }
   }, [props.latestKey])
 
@@ -114,7 +145,7 @@ function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
     if (!div) return
     if (div.scrollTop + div.offsetHeight >= div.scrollHeight - 10) {
       setAutoScrolling(true)
-    } else {
+    } else if (!scrollingAnimationActiveRef.current) {
       setAutoScrolling(false)
     }
   }, [])
@@ -122,6 +153,7 @@ function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
   return (
     <>
       <div
+        className="ChatScroller"
         ref={divRef}
         style={{
           position: 'absolute',
