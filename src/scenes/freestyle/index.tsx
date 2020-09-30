@@ -3,6 +3,7 @@ import React, { ReactNode, useState } from 'react'
 import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
 import { ActionButton, Draft, Field, Panel } from '../../core/ui'
+import { ChatAudience } from './Chat'
 
 export const scene: IScene = {
   name: 'freestyle',
@@ -13,7 +14,6 @@ export const scene: IScene = {
 
 const AUDIENCE_TEXT_PATH = ['main', 'settings', 'public-read', 'audienceText']
 const AUDIENCE_CSS_PATH = ['main', 'settings', 'public-read', 'audienceCSS']
-
 const PRESENTATION_TEXT_PATH = [
   'main',
   'settings',
@@ -29,10 +29,11 @@ const PRESENTATION_CSS_PATH = [
 
 function FreestyleAudience() {
   return (
-    <Box pad="small" id="freestyle">
+    <Box pad="small">
       <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
         {(audienceText) => (
           <div
+            id="freestyle"
             dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
           />
         )}
@@ -44,16 +45,18 @@ function FreestyleAudience() {
           />
         )}
       </SceneDataConnector>
+      <ChatAudience />
     </Box>
   )
 }
 
 function FreestylePresentation() {
   return (
-    <Box fill id="freestyle">
+    <Box fill>
       <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
         {(audienceText) => (
           <div
+            id="freestyle"
             dangerouslySetInnerHTML={{ __html: String(audienceText.value) }}
           />
         )}

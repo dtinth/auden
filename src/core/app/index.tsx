@@ -98,7 +98,9 @@ function Main(props: { user: firebase.User }) {
     <HashRouter>
       <Switch>
         <Route exact path="/" component={AudienceRoot} />
+        <Route exact path="/audience/:forceScreenId" component={AudienceRoot} />
         <Route exact path="/display" component={DisplayRoot} />
+        <Route exact path="/display/:forceScreenId" component={DisplayRoot} />
         <Route
           exact
           path="/admin"

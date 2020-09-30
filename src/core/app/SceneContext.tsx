@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 import React, { createContext, ReactNode, useContext } from 'react'
+import { useParams } from 'react-router-dom'
 import { IScene, ISceneContext } from '../model'
 import { ConnectorType, ErrorBoundary } from '../ui'
 import { useConfig } from './ConfigContext'
@@ -34,14 +35,16 @@ export function CurrentSceneContextConnector(props: {
   renderFallback: () => ReactNode
 }) {
   const config = useConfig()
+  const params = useParams<{ forceScreenId?: string }>()
   return (
     <CurrentScreenConnector>
       {(currentScreenId) => {
-        if (!currentScreenId) {
+        const screenId = params.forceScreenId || currentScreenId
+        if (!screenId) {
           return props.renderFallback()
         }
         return (
-          <ScreenInfoConnector screenId={currentScreenId}>
+          <ScreenInfoConnector screenId={screenId}>
             {(info) => {
               if (!info || !info.scene) {
                 return props.renderFallback()
@@ -52,7 +55,7 @@ export function CurrentSceneContextConnector(props: {
                 dataRef: firebase
                   .database()
                   .ref('/screenData')
-                  .child(currentScreenId)
+                  .child(screenId)
                   .child('data'),
               }
               return (

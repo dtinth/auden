@@ -1,6 +1,6 @@
 import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Button, Heading, Menu, Nav, RoutedAnchor } from 'grommet'
+import { Anchor, Box, Button, Heading, Menu, Nav, RoutedAnchor } from 'grommet'
 import { Add, Inspect } from 'grommet-icons'
 import { History } from 'history'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
@@ -37,8 +37,9 @@ export function AdminRoot(props: {
   )
   const [previewEnabled, setPreviewEnabled] = useState(false)
   const previewer = useMemo(
-    () => (previewEnabled ? <AdminPreviewer /> : null),
-    [previewEnabled]
+    () =>
+      previewEnabled ? <AdminPreviewer screenId={props.screenId} /> : null,
+    [previewEnabled, props.screenId]
   )
   return (
     <Box direction="row" gap="medium" pad="small">
@@ -92,9 +93,7 @@ function AdminNavigation() {
           {(screenIds) =>
             screenIds.length ? (
               screenIds.map((screenId) => (
-                // TODO: #10 RoutedAnchor deprecated
-                // https://github.com/grommet/grommet/issues/2855
-                <RoutedAnchor path={`/admin/screens/${screenId}`}>
+                <Anchor href={`#/admin/screens/${screenId}`}>
                   <Box pad="small">
                     <InlineLoadingContext description={'get screen title'}>
                       <ScreenInfoConnector key={screenId} screenId={screenId}>
@@ -113,7 +112,7 @@ function AdminNavigation() {
                       </ScreenInfoConnector>
                     </InlineLoadingContext>
                   </Box>
-                </RoutedAnchor>
+                </Anchor>
               ))
             ) : (
               <Box pad="small">No screens, create one!</Box>
@@ -155,7 +154,8 @@ function AdminEmptyState() {
   return <Box pad="small">No active screen. Create one on the left.</Box>
 }
 
-function AdminPreviewer() {
+function AdminPreviewer(props: { screenId?: string }) {
+  const { screenId } = props
   const previewFrame = useRef<HTMLIFrameElement>(null)
   useEffect(() => {
     const frame = previewFrame.current
@@ -179,7 +179,7 @@ function AdminPreviewer() {
         >
           <iframe
             ref={previewFrame}
-            src="/#/display"
+            src={screenId ? '/#/display/' + screenId : '/#/display'}
             style={{
               width: '1920px',
               border: '0',
@@ -193,7 +193,7 @@ function AdminPreviewer() {
       </Panel>
       <Panel title="Audience">
         <iframe
-          src="/"
+          src={screenId ? '/#/audience/' + screenId : '/#/'}
           style={{ width: '100%', border: '0', height: '480px' }}
         ></iframe>
       </Panel>
