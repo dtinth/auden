@@ -50,7 +50,7 @@ function PleaseSignIn() {
   }
   return (
     <Box pad="medium">
-      <Heading level="1">You must sign in to continue</Heading>
+      <Heading level="1">Welcome</Heading>
       {/* <Paragraph>
         <ActionButton
           primary
@@ -63,6 +63,9 @@ function PleaseSignIn() {
           }
         />
       </Paragraph> */}
+      <Paragraph>
+        Please sign in to participate in our event’s activities!
+      </Paragraph>
       <Paragraph>
         <ActionButton
           primary
