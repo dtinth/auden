@@ -1,8 +1,15 @@
 import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Button, TextArea } from 'grommet'
+import { Box, Button, Text, TextArea } from 'grommet'
 import { Send } from 'grommet-icons'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { firebaseToEntries, UserName } from '../../core/app'
 import { useSceneContext } from '../../core/app/SceneContext'
 import { ConnectorType, LoadingContext } from '../../core/ui'
@@ -59,26 +66,83 @@ function ChatView() {
         right: 0,
         bottom: 0,
         left: 0,
-        overflowY: 'scroll',
       }}
     >
       <LoadingContext>
         <ChatEventsConnector>
-          {(events) =>
-            events.map(({ key, val }) => {
-              return (
-                <div key={key}>
-                  <strong style={{ color: getUserColor(val.owner) }}>
-                    <UserName uid={val.owner} />:{' '}
-                  </strong>
-                  {String(val.payload?.text).slice(0, 280)}
-                </div>
-              )
-            })
-          }
+          {(events) => (
+            <ChatScroller latestKey={events[events.length - 1]?.key}>
+              {events.map(({ key, val }) => {
+                return (
+                  <div key={key} style={{ padding: '0.5ex 0' }}>
+                    <strong style={{ color: getUserColor(val.owner) }}>
+                      <UserName uid={val.owner} />:{' '}
+                    </strong>
+                    {String(val.payload?.text).slice(0, 280)}
+                  </div>
+                )
+              })}
+            </ChatScroller>
+          )}
         </ChatEventsConnector>
       </LoadingContext>
     </div>
+  )
+}
+
+function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
+  const divRef = useRef<HTMLDivElement>(null)
+  const [autoScrolling, setAutoScrolling] = useState(true)
+  const autoScrollingRef = useRef(autoScrolling)
+
+  useEffect(() => {
+    autoScrollingRef.current = autoScrolling
+  }, [autoScrolling])
+
+  useEffect(() => {
+    void props.latestKey
+    if (autoScrollingRef.current) {
+      const div = divRef.current
+      if (div) {
+        div.scrollTop = div.scrollHeight
+      }
+    }
+  }, [props.latestKey])
+
+  const checkScroll = useCallback(() => {
+    const div = divRef.current
+    if (!div) return
+    if (div.scrollTop + div.offsetHeight >= div.scrollHeight - 10) {
+      setAutoScrolling(true)
+    } else {
+      setAutoScrolling(false)
+    }
+  }, [])
+
+  return (
+    <>
+      <div
+        ref={divRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          overflowY: 'scroll',
+        }}
+        onScroll={checkScroll}
+      >
+        {props.children}
+      </div>
+      {!autoScrolling && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+          <Box background="neutral-3" pad="xsmall">
+            <Text color="white">Viewing older messages</Text>
+          </Box>
+        </div>
+      )}
+    </>
   )
 }
 
