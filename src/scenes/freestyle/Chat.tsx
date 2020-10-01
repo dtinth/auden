@@ -205,6 +205,7 @@ function ChatSubmitter() {
   return (
     <Box direction="row">
       <TextArea
+        placeholder="Send your message (max 280 chars)"
         ref={textarea}
         onInput={() => {
           const t = textarea.current!
