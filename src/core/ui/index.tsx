@@ -284,11 +284,12 @@ export function Draft(props: {
   value: string
   children: (draft: string, setDraft: (d: string) => void) => ReactNode
   onSave: (value: string) => Promise<void>
+  singleLine?: boolean
 }) {
   const [draft, setDraft] = useState<string | null>(null)
   const draftValue = draft ?? props.value
   return (
-    <Box gap="xsmall">
+    <Box gap="xsmall" direction={props.singleLine ? 'row' : 'column'}>
       {props.children(draftValue, setDraft)}
       <Box direction="row">
         <ActionButton

@@ -1,6 +1,6 @@
 import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Anchor, Box, Button, Heading, Menu, Nav, RoutedAnchor } from 'grommet'
+import { Anchor, Box, Button, Heading, Menu, Nav } from 'grommet'
 import { Add, Inspect } from 'grommet-icons'
 import { History } from 'history'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
@@ -23,28 +23,32 @@ export function AdminRoot(props: {
   screenId?: string
   history: History
 }) {
-  const navigation = useMemo(() => <AdminNavigation />, [])
-  const backstage = useMemo(
-    () =>
-      props.screenId ? (
-        <LoadingContext>
-          <ScreenBackstage key={props.screenId} screenId={props.screenId} />
-        </LoadingContext>
-      ) : (
-        <AdminEmptyState />
-      ),
-    [props.screenId]
-  )
+  const screenId = props.screenId
   const [previewEnabled, setPreviewEnabled] = useState(false)
-  const previewer = useMemo(
-    () =>
-      previewEnabled ? <AdminPreviewer screenId={props.screenId} /> : null,
-    [previewEnabled, props.screenId]
+  const navigation = useMemo(
+    () => (
+      <Box width="16rem">
+        <AdminNavigation />
+      </Box>
+    ),
+    []
   )
-  return (
-    <Box direction="row" gap="medium" pad="small">
-      <Box width="16rem">{navigation}</Box>
-      <Box flex>{backstage}</Box>
+  const mainArea = useMemo(
+    () => (
+      <Box flex>
+        {screenId ? (
+          <LoadingContext>
+            <ScreenBackstage key={screenId} screenId={screenId} />
+          </LoadingContext>
+        ) : (
+          <AdminEmptyState />
+        )}
+      </Box>
+    ),
+    [screenId]
+  )
+  const previewSidebar = useMemo(
+    () => (
       <Box width={previewEnabled ? '24rem' : ''} gap="small">
         <Box align="end">
           <Nav gap="small">
@@ -55,8 +59,18 @@ export function AdminRoot(props: {
             />
           </Nav>
         </Box>
-        <Box style={{ position: 'sticky', top: '1rem' }}>{previewer}</Box>
+        <Box style={{ position: 'sticky', top: '1rem' }}>
+          {previewEnabled ? <AdminPreviewer screenId={screenId} /> : null}
+        </Box>
       </Box>
+    ),
+    [previewEnabled, screenId]
+  )
+  return (
+    <Box direction="row" gap="medium" pad="small">
+      {navigation}
+      {mainArea}
+      {previewSidebar}
     </Box>
   )
 }
@@ -162,7 +176,7 @@ function AdminPreviewer(props: { screenId?: string }) {
     if (frame) {
       const container = frame.parentNode as HTMLDivElement
       if (container.offsetWidth) {
-        frame.style.transform = 'scale(' + container.offsetWidth / 1920 + ')'
+        frame.style.transform = 'scale(' + container.offsetWidth / 1280 + ')'
         frame.style.transformOrigin = 'top left'
       }
     }
@@ -181,9 +195,9 @@ function AdminPreviewer(props: { screenId?: string }) {
             ref={previewFrame}
             src={screenId ? '/#/display/' + screenId : '/#/display'}
             style={{
-              width: '1920px',
+              width: '1280px',
               border: '0',
-              height: '1080px',
+              height: '720px',
               position: 'absolute',
               top: 0,
               left: 0,

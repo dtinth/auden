@@ -25,6 +25,9 @@ export * from './FirebaseConnector'
 
 const theme = deepMerge(generate(24, 6), dark, {
   global: {
+    focus: {
+      shadow: '0 0 0 2px #888',
+    },
     font: {
       family: 'inherit',
     },
@@ -136,9 +139,9 @@ function NoMatch() {
   return <ErrorMessage message="Route not matched T_T" />
 }
 
-export function UserName(props: { uid: string }) {
+export const UserName = React.memo((props: { uid: string }) => {
   const profileState = useFirebaseDatabase(
     firebase.database().ref('profiles').child(props.uid).child('displayName')
   )
   return <span>{profileState.unstable_read() || props.uid}</span>
-}
+})

@@ -73,20 +73,9 @@ export function ChatView() {
         <ChatEventsConnector>
           {(events) => (
             <ChatScroller latestKey={events[events.length - 1]?.key}>
-              {events.map(({ key, val }) => {
-                return (
-                  <div
-                    key={key}
-                    style={{ padding: '0.5ex 0', lineHeight: '1.32' }}
-                    className="ChatView__item"
-                  >
-                    <strong style={{ color: getUserColor(val.owner) }}>
-                      <UserName uid={val.owner} />:{' '}
-                    </strong>
-                    {String(val.payload?.text).slice(0, 280)}
-                  </div>
-                )
-              })}
+              {events.map((m) => (
+                <ChatMessageView key={m.key} chatMessage={m} />
+              ))}
             </ChatScroller>
           )}
         </ChatEventsConnector>
@@ -94,6 +83,24 @@ export function ChatView() {
     </div>
   )
 }
+
+const ChatMessageView = React.memo(function ChatMessageView(props: {
+  chatMessage: ChatMessage
+}) {
+  const { key, val } = props.chatMessage
+  return (
+    <div
+      key={key}
+      style={{ padding: '0.5ex 0', lineHeight: '1.32' }}
+      className="ChatView__item"
+    >
+      <strong style={{ color: getUserColor(val.owner) }}>
+        <UserName uid={val.owner} />:{' '}
+      </strong>
+      {String(val.payload?.text).slice(0, 280)}
+    </div>
+  )
+})
 
 function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
   const divRef = useRef<HTMLDivElement>(null)
@@ -194,10 +201,11 @@ function ChatSubmitter() {
         },
       })
     textarea.current!.value = ''
-  }, [])
+  }, [dataRef])
   return (
     <Box direction="row">
       <TextArea
+        placeholder="Send your message (max 280 chars)"
         ref={textarea}
         onInput={() => {
           const t = textarea.current!
