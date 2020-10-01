@@ -45,10 +45,11 @@ function FreestyleAudience() {
     <Box pad="small">
       <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
         {(displayMode) => {
-          return <QuestionAudience />
-
           if (displayMode.value === 'chat') {
             return <ChatAudience />
+          }
+          if (displayMode.value === 'questions') {
+            return <QuestionAudience />
           }
 
           return (
@@ -123,7 +124,7 @@ function FreestyleBackstage() {
               {(setting) => (
                 <RadioButtonGroup
                   name="displayMode"
-                  options={['arbitrary', 'chat']}
+                  options={['arbitrary', 'chat', 'questions']}
                   value={setting.value || 'arbitrary'}
                   onChange={(event: any) => {
                     setting.ref.set(event.target.value)
