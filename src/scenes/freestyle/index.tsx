@@ -111,37 +111,6 @@ function FreestylePresentation() {
 function FreestyleBackstage() {
   return (
     <Box gap="medium">
-      <Panel title="Audience view">
-        <Box pad="small" gap="small">
-          <Field label="Display">
-            <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
-              {(setting) => (
-                <RadioButtonGroup
-                  name="displayMode"
-                  options={['arbitrary', 'chat', 'questions']}
-                  value={setting.value || 'arbitrary'}
-                  onChange={(event: any) => {
-                    setting.ref.set(event.target.value)
-                  }}
-                />
-              )}
-            </SceneDataConnector>
-          </Field>
-
-          <Field label="Arbitrary HTML">
-            <FreestyleTextSettingEditor
-              path={[...AUDIENCE_ARBITRARY_PATH, 'html']}
-            />
-          </Field>
-
-          <Field label="Arbitrary CSS">
-            <FreestyleTextSettingEditor
-              path={[...AUDIENCE_ARBITRARY_PATH, 'css']}
-            />
-          </Field>
-        </Box>
-      </Panel>
-
       <Panel title="Presentation view">
         <Box pad="small" gap="small">
           <Field label="Display">
@@ -176,6 +145,37 @@ function FreestyleBackstage() {
           <Field label="Arbitrary CSS">
             <FreestyleTextSettingEditor
               path={[...PRESENTATION_ARBITRARY_PATH, 'css']}
+            />
+          </Field>
+        </Box>
+      </Panel>
+
+      <Panel title="Audience view">
+        <Box pad="small" gap="small">
+          <Field label="Display">
+            <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
+              {(setting) => (
+                <RadioButtonGroup
+                  name="displayMode"
+                  options={['arbitrary', 'chat', 'questions']}
+                  value={setting.value || 'arbitrary'}
+                  onChange={(event: any) => {
+                    setting.ref.set(event.target.value)
+                  }}
+                />
+              )}
+            </SceneDataConnector>
+          </Field>
+
+          <Field label="Arbitrary HTML">
+            <FreestyleTextSettingEditor
+              path={[...AUDIENCE_ARBITRARY_PATH, 'html']}
+            />
+          </Field>
+
+          <Field label="Arbitrary CSS">
+            <FreestyleTextSettingEditor
+              path={[...AUDIENCE_ARBITRARY_PATH, 'css']}
             />
           </Field>
         </Box>
