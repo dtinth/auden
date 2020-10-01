@@ -176,7 +176,7 @@ function AdminPreviewer(props: { screenId?: string }) {
     if (frame) {
       const container = frame.parentNode as HTMLDivElement
       if (container.offsetWidth) {
-        frame.style.transform = 'scale(' + container.offsetWidth / 1920 + ')'
+        frame.style.transform = 'scale(' + container.offsetWidth / 1280 + ')'
         frame.style.transformOrigin = 'top left'
       }
     }
@@ -195,9 +195,9 @@ function AdminPreviewer(props: { screenId?: string }) {
             ref={previewFrame}
             src={screenId ? '/#/display/' + screenId : '/#/display'}
             style={{
-              width: '1920px',
+              width: '1280px',
               border: '0',
-              height: '1080px',
+              height: '720px',
               position: 'absolute',
               top: 0,
               left: 0,
