@@ -4,6 +4,7 @@ import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
 import { ActionCheckbox, Draft, Field, Panel } from '../../core/ui'
 import { ChatAudience, ChatView } from './Chat'
+import { QuestionAudience } from './Questions'
 
 export const scene: IScene = {
   name: 'freestyle',
@@ -44,6 +45,8 @@ function FreestyleAudience() {
     <Box pad="small">
       <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
         {(displayMode) => {
+          return <QuestionAudience />
+
           if (displayMode.value === 'chat') {
             return <ChatAudience />
           }
