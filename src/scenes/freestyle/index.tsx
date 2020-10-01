@@ -1,4 +1,4 @@
-import { Box, RadioButtonGroup, TextArea } from 'grommet'
+import { Box, RadioButtonGroup, TextArea, TextInput } from 'grommet'
 import React, { ChangeEvent } from 'react'
 import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
@@ -19,19 +19,17 @@ const AUDIENCE_DISPLAY_MODE_PATH = [
   'public-read',
   'audienceDisplayMode',
 ]
-const AUDIENCE_TEXT_PATH = ['main', 'settings', 'public-read', 'audienceText']
-const AUDIENCE_CSS_PATH = ['main', 'settings', 'public-read', 'audienceCSS']
-const PRESENTATION_TEXT_PATH = [
+const AUDIENCE_ARBITRARY_PATH = [
   'main',
   'settings',
   'public-read',
-  'presentationText',
+  'audienceArbitrary',
 ]
-const PRESENTATION_CSS_PATH = [
+const PRESENTATION_ARBITRARY_PATH = [
   'main',
   'settings',
   'public-read',
-  'presentationCSS',
+  'presentationArbitrary',
 ]
 const PRESENTATION_SETTINGS_PATH = [
   'main',
@@ -54,23 +52,21 @@ function FreestyleAudience() {
 
           return (
             <>
-              <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
-                {(audienceText) => (
-                  <div
-                    id="freestyle"
-                    dangerouslySetInnerHTML={{
-                      __html: String(audienceText.value),
-                    }}
-                  />
-                )}
-              </SceneDataConnector>
-              <SceneDataConnector path={AUDIENCE_CSS_PATH}>
-                {(audienceCSS) => (
-                  <style
-                    dangerouslySetInnerHTML={{
-                      __html: String(audienceCSS.value),
-                    }}
-                  />
+              <SceneDataConnector path={AUDIENCE_ARBITRARY_PATH}>
+                {(data) => (
+                  <>
+                    <div
+                      id="freestyle"
+                      dangerouslySetInnerHTML={{
+                        __html: String(data.value?.html || ''),
+                      }}
+                    />
+                    <style
+                      dangerouslySetInnerHTML={{
+                        __html: String(data.value?.css || ''),
+                      }}
+                    />
+                  </>
                 )}
               </SceneDataConnector>
             </>
@@ -87,23 +83,21 @@ function FreestylePresentation() {
       <SceneDataConnector path={PRESENTATION_SETTINGS_PATH}>
         {(settings) => (
           <>
-            <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
-              {(audienceText) => (
-                <div
-                  id="freestyle"
-                  dangerouslySetInnerHTML={{
-                    __html: String(audienceText.value),
-                  }}
-                />
-              )}
-            </SceneDataConnector>
-            <SceneDataConnector path={PRESENTATION_CSS_PATH}>
-              {(audienceCSS) => (
-                <style
-                  dangerouslySetInnerHTML={{
-                    __html: String(audienceCSS.value),
-                  }}
-                />
+            <SceneDataConnector path={PRESENTATION_ARBITRARY_PATH}>
+              {(data) => (
+                <>
+                  <div
+                    id="freestyle"
+                    dangerouslySetInnerHTML={{
+                      __html: String(data.value?.html || ''),
+                    }}
+                  />
+                  <style
+                    dangerouslySetInnerHTML={{
+                      __html: String(data.value?.css || ''),
+                    }}
+                  />
+                </>
               )}
             </SceneDataConnector>
             {!!settings.value?.showChat && <ChatView />}
@@ -134,42 +128,16 @@ function FreestyleBackstage() {
             </SceneDataConnector>
           </Field>
 
-          <Field label="Text to show">
-            <SceneDataConnector path={AUDIENCE_TEXT_PATH}>
-              {(text) => (
-                <Draft
-                  value={text.value || ''}
-                  onSave={(value) => text.ref.set(value)}
-                >
-                  {(draft, setDraft) => (
-                    <TextArea
-                      rows={8}
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                    />
-                  )}
-                </Draft>
-              )}
-            </SceneDataConnector>
+          <Field label="Arbitrary HTML">
+            <FreestyleTextSettingEditor
+              path={[...AUDIENCE_ARBITRARY_PATH, 'html']}
+            />
           </Field>
 
-          <Field label="Audience CSS">
-            <SceneDataConnector path={AUDIENCE_CSS_PATH}>
-              {(text) => (
-                <Draft
-                  value={text.value || ''}
-                  onSave={(value) => text.ref.set(value)}
-                >
-                  {(draft, setDraft) => (
-                    <TextArea
-                      rows={8}
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                    />
-                  )}
-                </Draft>
-              )}
-            </SceneDataConnector>
+          <Field label="Arbitrary CSS">
+            <FreestyleTextSettingEditor
+              path={[...AUDIENCE_ARBITRARY_PATH, 'css']}
+            />
           </Field>
         </Box>
       </Panel>
@@ -193,45 +161,64 @@ function FreestyleBackstage() {
             </SceneDataConnector>
           </Field>
 
-          <Field label="Text to show">
-            <SceneDataConnector path={PRESENTATION_TEXT_PATH}>
-              {(text) => (
-                <Draft
-                  value={text.value || ''}
-                  onSave={(value) => text.ref.set(value)}
-                >
-                  {(draft, setDraft) => (
-                    <TextArea
-                      rows={8}
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                    />
-                  )}
-                </Draft>
-              )}
-            </SceneDataConnector>
+          <Field label="Class names">
+            <FreestyleStringSettingEditor
+              path={[...PRESENTATION_SETTINGS_PATH, 'className']}
+            />
           </Field>
 
-          <Field label="Presentation CSS">
-            <SceneDataConnector path={PRESENTATION_CSS_PATH}>
-              {(text) => (
-                <Draft
-                  value={text.value || ''}
-                  onSave={(value) => text.ref.set(value)}
-                >
-                  {(draft, setDraft) => (
-                    <TextArea
-                      rows={8}
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                    />
-                  )}
-                </Draft>
-              )}
-            </SceneDataConnector>
+          <Field label="Arbitrary HTML">
+            <FreestyleTextSettingEditor
+              path={[...PRESENTATION_ARBITRARY_PATH, 'html']}
+            />
+          </Field>
+
+          <Field label="Arbitrary CSS">
+            <FreestyleTextSettingEditor
+              path={[...PRESENTATION_ARBITRARY_PATH, 'css']}
+            />
           </Field>
         </Box>
       </Panel>
     </Box>
+  )
+}
+
+function FreestyleTextSettingEditor(props: { path: string[] }) {
+  return (
+    <SceneDataConnector path={props.path}>
+      {(text) => (
+        <Draft value={text.value || ''} onSave={(value) => text.ref.set(value)}>
+          {(draft, setDraft) => (
+            <TextArea
+              rows={8}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            />
+          )}
+        </Draft>
+      )}
+    </SceneDataConnector>
+  )
+}
+
+function FreestyleStringSettingEditor(props: { path: string[] }) {
+  return (
+    <SceneDataConnector path={props.path}>
+      {(text) => (
+        <Draft
+          singleLine
+          value={text.value || ''}
+          onSave={(value) => text.ref.set(value)}
+        >
+          {(draft, setDraft) => (
+            <TextInput
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            />
+          )}
+        </Draft>
+      )}
+    </SceneDataConnector>
   )
 }
