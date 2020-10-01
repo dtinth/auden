@@ -1,5 +1,5 @@
-import { Box, RadioButtonGroup, TextArea, TextInput } from 'grommet'
-import React, { ChangeEvent } from 'react'
+import { Box, Button, RadioButtonGroup, TextArea, TextInput } from 'grommet'
+import React, { ChangeEvent, useState } from 'react'
 import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
 import { ActionCheckbox, Draft, Field, Panel } from '../../core/ui'
@@ -38,11 +38,27 @@ const PRESENTATION_SETTINGS_PATH = [
   'presentationSettings',
 ]
 
+function Both() {
+  const [mode, setMode] = useState('chat')
+  return (
+    <>
+      <Box direction="row">
+        <Button label="chat" onClick={() => setMode('chat')} />
+        <Button label="questions" onClick={() => setMode('questions')} />
+      </Box>
+      <Box>{mode === 'chat' ? <ChatAudience /> : <QuestionAudience />}</Box>
+    </>
+  )
+}
+
 function FreestyleAudience() {
   return (
     <Box pad="small">
       <SceneDataConnector path={AUDIENCE_DISPLAY_MODE_PATH}>
         {(displayMode) => {
+          if (displayMode.value === 'both') {
+            return <Both />
+          }
           if (displayMode.value === 'chat') {
             return <ChatAudience />
           }
@@ -157,7 +173,7 @@ function FreestyleBackstage() {
               {(setting) => (
                 <RadioButtonGroup
                   name="displayMode"
-                  options={['arbitrary', 'chat', 'questions']}
+                  options={['arbitrary', 'chat', 'questions', 'both']}
                   value={setting.value || 'arbitrary'}
                   onChange={(event: any) => {
                     setting.ref.set(event.target.value)
