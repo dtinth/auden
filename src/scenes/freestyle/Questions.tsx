@@ -5,7 +5,11 @@ import { Send, Upgrade } from 'grommet-icons'
 import React, { useCallback, useMemo, useRef } from 'react'
 import { firebaseToEntries, UserName } from '../../core/app'
 import { useSceneContext } from '../../core/app/SceneContext'
-import { ConnectorType, LoadingContext } from '../../core/ui'
+import {
+  ConnectorType,
+  InlineLoadingContext,
+  LoadingContext,
+} from '../../core/ui'
 import { getUserColor } from './UserColor'
 
 export function QuestionAudience() {
@@ -87,7 +91,9 @@ const QuestionItem = React.memo(function QuestionItem(props: {
     () => (
       <>
         <strong style={{ color: getUserColor(question.owner) }}>
-          <UserName uid={question.owner} />:{' '}
+          <InlineLoadingContext description="get user name">
+            <UserName uid={question.owner} />
+          </InlineLoadingContext>
         </strong>
         {question.text}
       </>

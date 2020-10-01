@@ -12,7 +12,11 @@ import React, {
 } from 'react'
 import { firebaseToEntries, UserName } from '../../core/app'
 import { useSceneContext } from '../../core/app/SceneContext'
-import { ConnectorType, LoadingContext } from '../../core/ui'
+import {
+  ConnectorType,
+  InlineLoadingContext,
+  LoadingContext,
+} from '../../core/ui'
 import { getUserColor } from './UserColor'
 
 export function ChatAudience() {
@@ -95,7 +99,10 @@ const ChatMessageView = React.memo(function ChatMessageView(props: {
       className="ChatView__item"
     >
       <strong style={{ color: getUserColor(val.owner) }}>
-        <UserName uid={val.owner} />:{' '}
+        <InlineLoadingContext description="get user name">
+          <UserName uid={val.owner} />
+        </InlineLoadingContext>
+        :{' '}
       </strong>
       {String(val.payload?.text).slice(0, 280)}
     </div>
