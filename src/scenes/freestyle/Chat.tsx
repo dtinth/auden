@@ -73,24 +73,29 @@ export function ChatView() {
         <ChatEventsConnector>
           {(events) => (
             <ChatScroller latestKey={events[events.length - 1]?.key}>
-              {events.map(({ key, val }) => {
-                return (
-                  <div
-                    key={key}
-                    style={{ padding: '0.5ex 0', lineHeight: '1.32' }}
-                    className="ChatView__item"
-                  >
-                    <strong style={{ color: getUserColor(val.owner) }}>
-                      <UserName uid={val.owner} />:{' '}
-                    </strong>
-                    {String(val.payload?.text).slice(0, 280)}
-                  </div>
-                )
-              })}
+              {events.map((m) => (
+                <ChatMessageView key={m.key} chatMessage={m} />
+              ))}
             </ChatScroller>
           )}
         </ChatEventsConnector>
       </LoadingContext>
+    </div>
+  )
+}
+
+function ChatMessageView(props: { chatMessage: ChatMessage }) {
+  const { key, val } = props.chatMessage
+  return (
+    <div
+      key={key}
+      style={{ padding: '0.5ex 0', lineHeight: '1.32' }}
+      className="ChatView__item"
+    >
+      <strong style={{ color: getUserColor(val.owner) }}>
+        <UserName uid={val.owner} />:{' '}
+      </strong>
+      {String(val.payload?.text).slice(0, 280)}
     </div>
   )
 }
