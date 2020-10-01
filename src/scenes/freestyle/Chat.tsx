@@ -84,7 +84,9 @@ export function ChatView() {
   )
 }
 
-function ChatMessageView(props: { chatMessage: ChatMessage }) {
+const ChatMessageView = React.memo(function ChatMessageView(props: {
+  chatMessage: ChatMessage
+}) {
   const { key, val } = props.chatMessage
   return (
     <div
@@ -98,7 +100,7 @@ function ChatMessageView(props: { chatMessage: ChatMessage }) {
       {String(val.payload?.text).slice(0, 280)}
     </div>
   )
-}
+})
 
 function ChatScroller(props: { children: ReactNode; latestKey?: string }) {
   const divRef = useRef<HTMLDivElement>(null)
