@@ -1,6 +1,6 @@
 import { useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Anchor, Box, Button, Heading, Menu, Nav } from 'grommet'
+import { Anchor, Box, Button, Heading, Menu, Nav, Text } from 'grommet'
 import { Add, Inspect } from 'grommet-icons'
 import { History } from 'history'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
@@ -76,10 +76,30 @@ export function AdminRoot(props: {
   )
 }
 
+function AudienceCounter() {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    const presenceRef = firebase.database().ref('/presence')
+    const listener = (snapshot: firebase.database.DataSnapshot) => {
+      setCount(snapshot.numChildren())
+    }
+    presenceRef.on('value', listener)
+    return () => presenceRef.off('value', listener)
+  }, [])
+  return (
+    <>
+      <ToolbarFiller />
+      <Box pad={{ vertical: 'xsmall' }}>
+        <Text>connected: {count}</Text>
+      </Box>
+    </>
+  )
+}
+
 function AdminNavigation() {
   const config = useConfig()
   const globalPanel = (
-    <Panel title="Global">
+    <Panel title="Global" bottomBar={<AudienceCounter />}>
       <Anchor href={`#/admin`}>
         <Box pad="small">Global settings</Box>
       </Anchor>

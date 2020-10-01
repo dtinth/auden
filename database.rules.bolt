@@ -8,6 +8,12 @@ path /admins/{uid} {
   read() { isCurrentUser(uid) }
 }
 
+// Presence
+path /presence/{uid} {
+  read() { true }
+  write() { isCurrentUser(uid) }
+}
+
 // User can write to their own profile
 path /profiles/{uid} is Profile {
   read() { true }
