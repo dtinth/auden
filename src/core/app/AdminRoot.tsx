@@ -13,6 +13,7 @@ import {
   Panel,
   ToolbarFiller,
 } from '../ui'
+import { AdminGlobalSettings } from './AdminGlobalSettings'
 import { useConfig } from './ConfigContext'
 import { CurrentScreenConnector } from './CurrentScreenConnector'
 import { SceneContext } from './SceneContext'
@@ -41,7 +42,7 @@ export function AdminRoot(props: {
             <ScreenBackstage key={screenId} screenId={screenId} />
           </LoadingContext>
         ) : (
-          <AdminEmptyState />
+          <AdminGlobalSettings />
         )}
       </Box>
     ),
@@ -77,7 +78,14 @@ export function AdminRoot(props: {
 
 function AdminNavigation() {
   const config = useConfig()
-  return (
+  const globalPanel = (
+    <Panel title="Global">
+      <Anchor href={`#/admin`}>
+        <Box pad="small">Global settings</Box>
+      </Anchor>
+    </Panel>
+  )
+  const screens = (
     <Panel
       title="Screens"
       bottomBar={
@@ -135,6 +143,12 @@ function AdminNavigation() {
         </ScreenListConnector>
       </LoadingContext>
     </Panel>
+  )
+  return (
+    <Box gap="medium">
+      {globalPanel}
+      {screens}
+    </Box>
   )
 }
 
