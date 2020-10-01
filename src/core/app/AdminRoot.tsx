@@ -23,28 +23,32 @@ export function AdminRoot(props: {
   screenId?: string
   history: History
 }) {
-  const navigation = useMemo(() => <AdminNavigation />, [])
-  const backstage = useMemo(
-    () =>
-      props.screenId ? (
-        <LoadingContext>
-          <ScreenBackstage key={props.screenId} screenId={props.screenId} />
-        </LoadingContext>
-      ) : (
-        <AdminEmptyState />
-      ),
-    [props.screenId]
-  )
+  const screenId = props.screenId
   const [previewEnabled, setPreviewEnabled] = useState(false)
-  const previewer = useMemo(
-    () =>
-      previewEnabled ? <AdminPreviewer screenId={props.screenId} /> : null,
-    [previewEnabled, props.screenId]
+  const navigation = useMemo(
+    () => (
+      <Box width="16rem">
+        <AdminNavigation />
+      </Box>
+    ),
+    []
   )
-  return (
-    <Box direction="row" gap="medium" pad="small">
-      <Box width="16rem">{navigation}</Box>
-      <Box flex>{backstage}</Box>
+  const mainArea = useMemo(
+    () => (
+      <Box flex>
+        {screenId ? (
+          <LoadingContext>
+            <ScreenBackstage key={screenId} screenId={screenId} />
+          </LoadingContext>
+        ) : (
+          <AdminEmptyState />
+        )}
+      </Box>
+    ),
+    [screenId]
+  )
+  const previewSidebar = useMemo(
+    () => (
       <Box width={previewEnabled ? '24rem' : ''} gap="small">
         <Box align="end">
           <Nav gap="small">
@@ -55,8 +59,18 @@ export function AdminRoot(props: {
             />
           </Nav>
         </Box>
-        <Box style={{ position: 'sticky', top: '1rem' }}>{previewer}</Box>
+        <Box style={{ position: 'sticky', top: '1rem' }}>
+          {previewEnabled ? <AdminPreviewer screenId={screenId} /> : null}
+        </Box>
       </Box>
+    ),
+    [previewEnabled, screenId]
+  )
+  return (
+    <Box direction="row" gap="medium" pad="small">
+      {navigation}
+      {mainArea}
+      {previewSidebar}
     </Box>
   )
 }
