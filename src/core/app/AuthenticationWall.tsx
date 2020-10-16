@@ -75,7 +75,7 @@ function PleaseSignIn() {
             window.location.href =
               'https://eventpop-ticket-gateway.vercel.app/redirect.html?' +
               [
-                `eventId=9622`,
+                `eventId=9912`,
                 `target=${encodeURIComponent(window.location.host)}`,
                 `hash=${encodeURIComponent(window.location.hash)}`,
               ].join('&')
