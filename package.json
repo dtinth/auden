@@ -31,10 +31,10 @@
     "verror": "^1.10.0"
   },
   "scripts": {
-    "start": "env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
-    "build": "env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
-    "test": "env NODE_OPTIONS=--openssl-legacy-provider react-scripts test",
-    "eject": "env NODE_OPTIONS=--openssl-legacy-provider react-scripts eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
