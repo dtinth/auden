@@ -2,7 +2,7 @@ import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
 import { Box, Heading, Paragraph } from 'grommet'
 import React, { ReactNode, useEffect, useState } from 'react'
-import { ActionButton, Loading, handlePromise, ConnectorType } from '../ui'
+import { ActionButton, ConnectorType, Loading, handlePromise } from '../ui'
 import { signInIntegrationCallbacks } from './SignInIntegrationCallbacks'
 
 export function AuthenticationWall(props: {
@@ -75,7 +75,7 @@ function PleaseSignIn() {
             window.location.href =
               'https://eventpop-ticket-gateway.vercel.app/redirect.html?' +
               [
-                `eventId=9912`,
+                `eventId=26957`,
                 `target=${encodeURIComponent(window.location.host)}`,
                 `hash=${encodeURIComponent(window.location.hash)}`,
               ].join('&')

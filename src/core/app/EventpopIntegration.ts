@@ -12,13 +12,20 @@ export function checkHashForEventpopTicketToken() {
     const idToken = sessionStorage.eventpopTicketToken
     delete sessionStorage.eventpopTicketToken
     signInIntegrationCallbacks.push(async () => {
-      const result = await firebase
-        .functions()
-        .httpsCallable('authenticateEventpopTicket')({ idToken })
-      if (!result.data.token) {
+      const result = await fetch(
+        'https://auden-eventpop.vercel.app/api/eventpop',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ idToken }),
+        }
+      ).then((res) => res.json())
+      if (!result.token) {
         throw new Error('Did not receive a token')
       }
-      await firebase.auth().signInWithCustomToken(result.data.token)
+      await firebase.auth().signInWithCustomToken(result.token)
     })
   }
 }
