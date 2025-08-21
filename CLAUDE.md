@@ -19,9 +19,9 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 - `cd e2e && yarn playwright install` - Install browser dependencies
 - `cd e2e && yarn playwright test` - Run E2E tests
 
-### Firebase Deployment
-- `firebase deploy --only hosting` - Deploy web app only
-- `firebase deploy` - Deploy everything
+### Deployment
+- `yarn build` - Build for production (for Netlify hosting)
+- `firebase deploy` - Deploy Firebase database rules only
 
 ## Architecture
 
@@ -64,7 +64,7 @@ Available scenes: `quiz` (Kahoot-style), `vote` (Mentimeter-style), `freestyle` 
 
 ### Configuration
 - `src/config.ts` - Firebase config and scene registration
-- `firebase.json` - Firebase deployment settings
+- `firebase.json` - Firebase database rules configuration
 - `database.rules.bolt` - Firebase security rules
 - `.nvmrc` - Node.js version specification
 

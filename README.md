@@ -65,6 +65,13 @@ It is a webapp, built on top of:
 3. **Make the user an admin** by writing `true` Firebase Database at
    `/admins/$uid`. Admin users can read and write anything.
 
+## Authentication
+
+The app supports two authentication methods:
+
+- **Facebook Authentication**: Standard social login via Firebase Auth
+- **Eventpop Ticket Authentication**: For event attendees with tickets. The server-side authentication logic is handled by a separate service: [auden-eventpop](https://github.com/dtinth/auden-eventpop)
+
 ## Data model
 
 ### Scene
