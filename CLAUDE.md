@@ -34,9 +34,10 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 - **Node Version**: 16.20.0 (main app), 22.18.0 (E2E tests)
 
 ### Core Routing Pattern
-- `/` - Audience view (mobile-optimized for participants)
-- `/display` - Presentation view (for projectors/screens)
-- `/admin` - Backstage management (admin-only)
+Uses React Router with hash routing:
+- `#/` - Audience view (mobile-optimized for participants)
+- `#/display` - Presentation view (for projectors/screens)
+- `#/admin` - Backstage management (admin-only)
 
 ### Scene-Based Architecture
 Each feature is a "scene" with three components:
