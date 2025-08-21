@@ -70,22 +70,54 @@ const testAdminToken = btoa(JSON.stringify({
 
 ## Runtime Configuration
 
-The application detects test mode via localStorage flags to avoid rebuilding for different environments:
+The application provides a user-friendly testing interface to configure Firebase emulator mode without code changes:
+
+### Testing UI (localhost only)
+
+When running on `localhost`, the login page includes a "Show Testing Config" option that allows:
+
+```
+🧪 Firebase Emulator Configuration
+┌─────────────────────────────────────────┐
+│ Current: OFF                            │
+│ ☐ Enable Firebase Emulator Mode        │
+│ Database Namespace: [test-1234567890]   │
+│ [Apply & Reload]                        │
+└─────────────────────────────────────────┘
+```
+
+### Authentication in Emulator Mode
+
+When emulator mode is active, the login page shows custom token authentication:
+
+```
+🧪 Emulator Mode Active
+┌─────────────────────────────────────────┐
+│ Paste custom JWT token here...          │
+│ {"uid":"test-user","name":"Test User"}  │
+│ [Sign in with Custom Token]             │
+└─────────────────────────────────────────┘
+```
+
+### Backend Detection
+
+The application automatically detects emulator mode via localStorage:
 
 ```typescript
-// Runtime emulator detection
+// Runtime emulator detection in AppInitializer.ts
 if (localStorage.getItem('USE_FIREBASE_EMULATOR') === 'true') {
   const dbNamespace = localStorage.getItem('FIREBASE_DB_NAMESPACE') || 'default'
   firebase.database().useEmulator('localhost', 9000)
   firebase.auth().useEmulator('http://localhost:9099')
-  // Use custom database namespace
 }
 ```
 
 **Benefits:**
-- Same build artifact for production and testing
-- No environment variables or rebuild required
-- Easy to toggle per test
+- **Manual Testing**: Everything E2E tests do can be done manually
+- **Exploratory Testing**: Easy to test different user scenarios by hand  
+- **Debugging**: Reproduce any test scenario manually for investigation
+- **No Rebuilds**: Same build artifact for production and testing
+- **Developer Friendly**: UI-guided configuration
 
 ## Page Object Architecture
 
@@ -155,11 +187,18 @@ e2e/tests/
 test('complete vote flow', async ({ browser }) => {
   const app = new AppTester(browser)
   
-  // Create different user types
+  // Create different user types with automatic emulator setup
   const admin = await app.createAdmin('admin-1')
+  await admin.setupEmulatorAndAuthenticate('Admin User')
+  
   const display = await app.createPresentation('display-1')
-  const user1 = await app.createAudience('user-1')
+  await display.setupEmulatorAndAuthenticate('Display')
+  
+  const user1 = await app.createAudience('user-1')  
+  await user1.setupEmulatorAndAuthenticate('Alice')
+  
   const user2 = await app.createAudience('user-2')
+  await user2.setupEmulatorAndAuthenticate('Bob')
   
   // Test real-time synchronization
   await admin.vote.createQuestion('Favorite language?')
@@ -174,6 +213,21 @@ test('complete vote flow', async ({ browser }) => {
   await expect(display.vote.results).toContainText('JavaScript: 1')
   
   // No manual cleanup needed - Playwright handles it
+})
+```
+
+### Current Test Implementation (Simplified)
+
+```typescript
+test('audience welcome flow', async ({ browser }) => {
+  const app = new AppTester(browser)
+  
+  const audience = await app.createAudience('test-user-1')
+  
+  // Uses UI to configure emulator mode, authenticate, and test
+  await audience.setupEmulatorAndAuthenticate('Test User')
+  await audience.navigateToAudience()
+  await audience.expectWelcomeMessage()
 })
 ```
 
@@ -244,10 +298,25 @@ await presentationTester.takeScreenshot('vote-results-display')
 
 ## Development Workflow
 
-### Running Tests
+### Manual Testing with Emulator UI
+
+For exploratory testing and debugging:
+
+1. **Start Firebase Emulators**: `firebase emulators:start` or use the dockerized version
+2. **Start Development Server**: `yarn start` (serves on `localhost:3000`)
+3. **Navigate to Application**: Open `http://localhost:3000` in browser
+4. **Configure Testing**:
+   - Click "Show Testing Config" on login page
+   - Enable "Firebase Emulator Mode"
+   - Set database namespace (e.g., `manual-testing-${Date.now()}`)
+   - Click "Apply & Reload"
+5. **Authenticate**: Use custom token authentication with JSON like `{"uid":"manual-user","name":"Developer"}`
+6. **Test Features**: Navigate to `/admin`, `/display`, or `/` to test different user roles
+
+### Running Automated Tests
 
 ```bash
-# Start Firebase emulators
+# Start Firebase emulators (or use docker-firebase-emulator-suite)
 firebase emulators:start
 
 # Run all tests

@@ -8,12 +8,6 @@ export class AppTester {
     const context = await this.browser.newContext()
     const page = await context.newPage()
     
-    // Set up emulator mode via localStorage flags
-    await page.addInitScript(() => {
-      localStorage.setItem('USE_FIREBASE_EMULATOR', 'true')
-      localStorage.setItem('FIREBASE_DB_NAMESPACE', `test-${Date.now()}`)
-    })
-    
     return new AudienceTester(page, userId)
   }
 }
