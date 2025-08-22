@@ -4,8 +4,8 @@ export class AudienceTester {
   constructor(private page: Page, private userId: string) {}
 
   async setupEmulatorAndAuthenticate(displayName: string): Promise<void> {
-    // Navigate to app (shows login page)
-    await this.page.goto('/')
+    // Navigate to app (shows login page) using audience subdomain
+    await this.page.goto('http://audience.localhost:3000/')
 
     // Click "Show Testing Config" button
     await this.page.getByRole('button', { name: 'Show Testing Config' }).click()
@@ -41,22 +41,13 @@ export class AudienceTester {
       .getByRole('button', { name: 'Sign in with Custom Token' })
       .click()
 
-    // Wait for authentication to complete
-    await this.page.waitForFunction(
-      () => (window as any).firebase?.auth()?.currentUser
-    )
-
-    // Update display name
-    await this.page.evaluate(async (name) => {
-      const user = (window as any).firebase.auth().currentUser
-      if (user) {
-        await user.updateProfile({ displayName: name })
-      }
-    }, displayName)
+    // Wait for authentication to complete by expecting greeting (only first name shown)
+    const firstName = displayName.split(' ')[0]
+    await expect(this.page.getByText(`Hi, ${firstName}!`)).toBeVisible()
   }
 
   async navigateToAudience(): Promise<void> {
-    await this.page.goto('/#/')
+    await this.page.goto('http://audience.localhost:3000/#/')
   }
 
   async expectWelcomeMessage(): Promise<void> {
