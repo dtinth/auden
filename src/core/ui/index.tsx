@@ -231,7 +231,7 @@ export function Panel(props: {
   children: ReactNode
 }) {
   return (
-    <Card background="black">
+    <Card background="black" role="region" aria-label={String(props.title)}>
       <CardHeader pad="small" background="dark-2">
         <strong>{props.title}</strong>
       </CardHeader>

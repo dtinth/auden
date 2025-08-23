@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Essential Reading
+
+**Before working on testing**: Read `TESTING.md` first - it contains the established architecture patterns, page object design, locator strategies, and implementation guidelines that must be followed.
+
 ## Project Overview
 
 Auden is an open-source, hackable audience engagement platform for events, supporting live quizzes and voting systems. It was originally built for "Code in the Dark Thailand #3: CNX 2019" to enable real-time audience participation without requiring multiple separate tools.
@@ -34,9 +38,10 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 - **Node Version**: 16.20.0 (main app), 22.18.0 (E2E tests)
 
 ### Core Routing Pattern
-- `/` - Audience view (mobile-optimized for participants)
-- `/display` - Presentation view (for projectors/screens)
-- `/admin` - Backstage management (admin-only)
+Uses React Router with hash routing:
+- `#/` - Audience view (mobile-optimized for participants)
+- `#/display` - Presentation view (for projectors/screens)
+- `#/admin` - Backstage management (admin-only)
 
 ### Scene-Based Architecture
 Each feature is a "scene" with three components:
@@ -111,3 +116,4 @@ Each scene in `src/scenes/{name}/` contains:
 - E2E tests use Playwright with Node.js 22.18.0
 - Tests run against built static files served on localhost:3000
 - CI configured with full recording (traces, screenshots, videos)
+- **IMPORTANT**: Read `TESTING.md` before implementing any test-related code - it contains the established patterns for page objects, locator strategies, and architecture
