@@ -296,6 +296,52 @@ test('complete vote flow: admin creates vote, audience participates', async ({ c
 - Live result updates
 - Database namespace isolation per test
 
+### Implemented Quiz Test
+
+Complete multi-question quiz flow with progressive scoring:
+
+```typescript
+test('complete quiz flow with 4 expert questions', async ({ context }) => {
+  const app = new AppTester(context)
+  const [admin, user1, user2, presentation] = await Promise.all([
+    app.createAdmin(), app.createAudience('alice'), 
+    app.createAudience('bob'), app.createPresentation()
+  ])
+
+  await test.step('Setup: Admin creates quiz and imports questions', async () => {
+    const screenId = await admin.createQuizScene()
+    await admin.quiz.importQuestions(expertQuizTOML) // TOML format
+    await admin.activateScene(screenId)
+  })
+
+  await test.step('Question 1: JavaScript Closures (Alice=100, Bob=99)', async () => {
+    await admin.quiz.activateQuestion('question001')
+    await presentation.quiz.expectQuestionInterface('JavaScript Closures')
+    
+    await user1.quiz.selectAnswer('A') // Correct, first
+    await user2.quiz.selectAnswer('A') // Correct, second
+    await admin.quiz.expectQuestionAnswerCount('question001', 2, 2)
+    
+    await admin.quiz.revealAnswer()
+    await presentation.quiz.expectAnswerRevealed()
+    
+    await admin.quiz.gradeQuestion('question001') // Time-based scoring
+    await presentation.quiz.expectLeaderboardScores({ Alice: 100, Bob: 99 })
+  })
+  
+  // ... repeat for 4 questions with progressive scoring
+})
+```
+
+**Key Quiz Testing Patterns**:
+- **TOML Import**: Admin imports expert-level questions teaching valuable concepts
+- **Question Lifecycle**: Activate → Answer → Wait for All → Reveal → Grade → Leaderboard
+- **Time-based Scoring**: First correct = 100pts, second = 99pts, incorrect = 0pts  
+- **Progressive Leaderboard**: Scores accumulate and display after each question
+- **Data Attributes**: Use `data-state="correct|incorrect|unrevealed"` for clean assertions
+- **Test Steps**: Organize complex flows with `test.step()` for clarity
+- **Expert Questions**: JavaScript Closures, CSS Grid, Database ACID, Time Complexity
+
 ## Visual Testing
 
 ### Screenshot Strategy
@@ -337,10 +383,11 @@ await presentationTester.takeScreenshot('vote-results-display')
 - Vote limits and validation
 
 **Quiz Scene**:
-- Admin imports quiz data
-- Multiple users answer questions
-- Real-time leaderboard updates
-- Scoring and timing mechanics
+- Admin imports TOML quiz data with questions and answers
+- Multiple users answer questions with time-based scoring
+- Progressive leaderboard updates after each question grading
+- Answer revelation and correctness display
+- Time-based scoring system (100 points for first correct, 99 for second, etc.)
 
 **Freestyle Scene**:
 - Chat functionality with multiple users
@@ -412,7 +459,7 @@ Tests run in GitHub Actions with:
 ### Phase 2: Core Testing ✅
 - [x] Authentication flow implementation  
 - [x] Vote scene multi-user testing
-- [ ] Quiz scene multi-user testing
+- [x] Quiz scene multi-user testing
 - [ ] Freestyle scene testing
 
 ### Phase 3: Advanced Testing
