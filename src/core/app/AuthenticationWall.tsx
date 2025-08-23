@@ -1,6 +1,14 @@
 import { useFirebaseAuth, useFirebaseDatabase } from 'fiery'
 import firebase from 'firebase'
-import { Box, Heading, Paragraph, TextArea, CheckBox, TextInput, Text } from 'grommet'
+import {
+  Box,
+  CheckBox,
+  Heading,
+  Paragraph,
+  Text,
+  TextArea,
+  TextInput,
+} from 'grommet'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { ActionButton, ConnectorType, Loading, handlePromise } from '../ui'
 import { signInIntegrationCallbacks } from './SignInIntegrationCallbacks'
@@ -13,7 +21,13 @@ export function AuthenticationWall(props: {
   return (
     <React.Fragment>
       {me ? (
-        <ProfileConnector uid={me.uid} displayName={me.displayName || me.uid}>
+        <ProfileConnector
+          uid={me.uid}
+          displayName={me.displayName}
+          getFallbackDisplayName={async () =>
+            (await me.getIdTokenResult()).claims.name || me.uid
+          }
+        >
           {(profile) => {
             return profile ? (
               <React.Fragment>{props.children(me)}</React.Fragment>
@@ -35,9 +49,10 @@ function PleaseSignIn() {
   )
   const [showEmulatorConfig, setShowEmulatorConfig] = useState(false)
   const [customToken, setCustomToken] = useState('')
-  
-  const isEmulatorMode = localStorage.getItem('USE_FIREBASE_EMULATOR') === 'true'
-  
+
+  const isEmulatorMode =
+    localStorage.getItem('USE_FIREBASE_EMULATOR') === 'true'
+
   useEffect(() => {
     async function runCallbacks() {
       try {
@@ -50,7 +65,7 @@ function PleaseSignIn() {
     }
     runCallbacks()
   }, [])
-  
+
   const handleSignInWithCustomToken = async () => {
     try {
       await handlePromise(
@@ -62,18 +77,18 @@ function PleaseSignIn() {
       alert('Failed to sign in with custom token: ' + error.message)
     }
   }
-  
+
   if (needsWaiting) {
     return <Loading message="Signing in..." />
   }
   return (
     <Box pad="medium" gap="medium">
       <Heading level="1">Welcome</Heading>
-      
+
       <Paragraph>
         Please sign in to participate in our event's activities!
       </Paragraph>
-      
+
       <Paragraph>
         <ActionButton
           primary
@@ -109,12 +124,14 @@ function PleaseSignIn() {
           />
         </Box>
       )}
-      
+
       {window.location.hostname.includes('localhost') && (
         <Box gap="small" border="top" pad={{ top: 'medium' }}>
           <ActionButton
             plain
-            label={showEmulatorConfig ? "Hide Testing Config" : "Show Testing Config"}
+            label={
+              showEmulatorConfig ? 'Hide Testing Config' : 'Show Testing Config'
+            }
             onClick={() => setShowEmulatorConfig(!showEmulatorConfig)}
           />
           {showEmulatorConfig && <EmulatorConfig />}
@@ -125,7 +142,11 @@ function PleaseSignIn() {
 }
 
 const ProfileConnector: ConnectorType<
-  { uid: string; displayName: string },
+  {
+    uid: string
+    displayName: string | null
+    getFallbackDisplayName: () => Promise<string>
+  },
   [any]
 > = (props) => {
   const profileRef = firebase.database().ref('/profiles').child(props.uid)
@@ -135,8 +156,11 @@ const ProfileConnector: ConnectorType<
     if (!profile) {
       handlePromise(
         'create profile',
-        profileRef.set({
-          displayName: props.displayName,
+        Promise.resolve(
+          props.displayName || props.getFallbackDisplayName()
+        ).then(async (displayName) => {
+          await firebase.auth().currentUser?.updateProfile({ displayName })
+          return profileRef.set({ displayName })
         }),
         'User profile created.'
       )
@@ -156,7 +180,7 @@ function EmulatorConfig() {
   const handleApplySettings = () => {
     if (emulatorEnabled) {
       localStorage.setItem('USE_FIREBASE_EMULATOR', 'true')
-      
+
       const namespace = dbNamespace || `test-${Date.now()}`
       localStorage.setItem('FIREBASE_DB_NAMESPACE', namespace)
       setDbNamespace(namespace)
@@ -164,20 +188,24 @@ function EmulatorConfig() {
       localStorage.removeItem('USE_FIREBASE_EMULATOR')
       localStorage.removeItem('FIREBASE_DB_NAMESPACE')
     }
-    
+
     // Reload the app to apply emulator settings
     window.location.reload()
   }
 
-  const currentEmulatorStatus = localStorage.getItem('USE_FIREBASE_EMULATOR') === 'true'
+  const currentEmulatorStatus =
+    localStorage.getItem('USE_FIREBASE_EMULATOR') === 'true'
 
   return (
     <Box gap="small" background="light-2" pad="small" round="small">
-      <Text weight="bold" size="small">🧪 Firebase Emulator Configuration</Text>
-      
+      <Text weight="bold" size="small">
+        🧪 Firebase Emulator Configuration
+      </Text>
+
       <Text size="small">
         Current: {currentEmulatorStatus ? 'ON' : 'OFF'}
-        {currentEmulatorStatus && ` (${localStorage.getItem('FIREBASE_DB_NAMESPACE')})`}
+        {currentEmulatorStatus &&
+          ` (${localStorage.getItem('FIREBASE_DB_NAMESPACE')})`}
       </Text>
 
       <CheckBox
@@ -185,7 +213,7 @@ function EmulatorConfig() {
         label="Enable Firebase Emulator Mode"
         onChange={(event) => setEmulatorEnabled(event.target.checked)}
       />
-      
+
       {emulatorEnabled && (
         <Box gap="small">
           <Text size="small">Database Namespace:</Text>

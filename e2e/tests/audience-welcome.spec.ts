@@ -6,8 +6,7 @@ test('audience user sees welcome message when no active scenes', async ({
 }) => {
   const app = new AppTester(context)
 
-  const audience = await app.createAudience('test-user-1')
-  await audience.setupEmulatorAndAuthenticate('Test User')
+  const audience = await app.createAudience('user-1', 'Test User')
   await audience.navigateToAudience()
   await audience.expectWelcomeMessage()
 })
