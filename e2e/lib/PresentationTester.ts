@@ -17,8 +17,7 @@ export class PresentationTester {
   }
 
   async expectDisplayInterface(): Promise<void> {
-    // Verify we're on the display view by checking for display-specific elements
-    // The display view should show the current scene content
-    await expect(this.page.locator('body')).toBeVisible()
+    // Verify we're on the display view by checking for the display root element
+    await expect(this.page.getByTestId('display-root')).toBeVisible()
   }
 }

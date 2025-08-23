@@ -1,8 +1,18 @@
 import { Box, Text } from 'grommet'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { CurrentSceneContextConnector } from './SceneContext'
 
 export function DisplayRoot() {
+  useEffect(() => {
+    // Add data attribute to body for testing identification
+    document.body.setAttribute('data-testid', 'display-root')
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.removeAttribute('data-testid')
+    }
+  }, [])
+
   return (
     <CurrentSceneContextConnector
       renderFallback={() => <DisplayFallbackView />}

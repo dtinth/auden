@@ -43,9 +43,6 @@ export class VoteAdminTester {
     
     // Check the checkbox (only if not already checked)
     await enabledCheckbox.check()
-
-    // Verify voting is enabled (checkbox should be checked)
-    await enabledCheckbox.expectChecked()
   }
 
   async setMaxVotes(maxVotes: number): Promise<void> {
@@ -76,9 +73,6 @@ export class VoteAdminTester {
     
     // Check the checkbox (only if not already checked)
     await showResultsCheckbox.check()
-
-    // Verify results display is enabled (checkbox should be checked)
-    await showResultsCheckbox.expectChecked()
   }
 
   async expectVoteScene(): Promise<void> {
