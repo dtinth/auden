@@ -30,12 +30,12 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 ## Architecture
 
 ### Technology Stack
-- **Frontend**: React 16.13.1 + TypeScript, Grommet UI framework
+- **Frontend**: React 18.0.0 + TypeScript, Grommet UI framework
 - **State Management**: React Hooks with Firebase real-time updates via `fiery` library
 - **Backend**: Firebase Realtime Database
 - **Authentication**: Firebase Auth (Facebook login) + Eventpop integration via external service
-- **Build**: Create React App (react-scripts 3.4.3)
-- **Node Version**: 16.20.0 (main app), 22.18.0 (E2E tests)
+- **Build**: Create React App (react-scripts 5.0.1)
+- **Node Version**: 22.18.0 (unified for both main app and E2E tests)
 
 ### Core Routing Pattern
 Uses React Router with hash routing:
@@ -107,13 +107,16 @@ Each scene in `src/scenes/{name}/` contains:
 - Eventpop ticket authentication handled by external service: https://github.com/dtinth/auden-eventpop
 
 ### Legacy Considerations
-- Uses older React patterns and Firebase SDK v7
-- Node.js 16.20.0 required for main app (specified in `.nvmrc`)
-- Some TypeScript warnings exist (temporarily ignored in CI via `CI=false`)
-- Consider upgrading to newer React patterns and Firebase SDK v9+ during modernization
+- **Modernized**: Now uses React 18 with createRoot API and modern patterns
+- **Unified Node.js**: Single Node.js 22.18.0 version for all development (specified in `.nvmrc`)
+- **Updated Build Tools**: react-scripts 5.0.1 with webpack 5 and modern tooling
+- **TypeScript**: Updated to 4.9.5 with modern error handling (Error cause support)
+- **Browser Compatibility**: Replaced Node.js-specific modules with browser-compatible alternatives
+- **Future Upgrades**: Consider Firebase SDK v9+ migration for tree-shaking benefits
 
 ### Testing
-- E2E tests use Playwright with Node.js 22.18.0
+- E2E tests use Playwright with unified Node.js 22.18.0 environment
 - Tests run against built static files served on localhost:3000
 - CI configured with full recording (traces, screenshots, videos)
+- Simplified CI workflow with single Node.js version across all stages
 - **IMPORTANT**: Read `TESTING.md` before implementing any test-related code - it contains the established patterns for page objects, locator strategies, and architecture
