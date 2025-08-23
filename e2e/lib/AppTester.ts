@@ -1,6 +1,7 @@
 import { BrowserContext, Page, expect } from '@playwright/test'
 import { AdminTester } from './AdminTester'
 import { AudienceTester } from './AudienceTester'
+import { PresentationTester } from './PresentationTester'
 import { getOrCreateNamespace } from './namespace'
 
 export class AppTester {
@@ -90,6 +91,13 @@ export class AppTester {
     const displayName = 'Admin User'
     const page = await this.initAppUser(userId, displayName, 'admin')
     return new AdminTester(page, userId, displayName)
+  }
+
+  async createPresentation(): Promise<PresentationTester> {
+    const userId = 'presentation-user'
+    const displayName = 'Presentation Display'
+    const page = await this.initAppUser(userId, displayName, 'admin')
+    return new PresentationTester(page, userId, displayName)
   }
 
   private async setAdminStatusInDatabase(

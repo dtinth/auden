@@ -68,6 +68,19 @@ export class VoteAdminTester {
     }
   }
 
+  async showResults(): Promise<void> {
+    // Toggle the "Show results" checkbox to display results
+    const showResultsCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: 'Show results' })
+    )
+    
+    // Check the checkbox (only if not already checked)
+    await showResultsCheckbox.check()
+
+    // Verify results display is enabled (checkbox should be checked)
+    await showResultsCheckbox.expectChecked()
+  }
+
   async expectVoteScene(): Promise<void> {
     // Verify we're in a vote scene by checking for vote-specific elements
     await expect(
