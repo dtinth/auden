@@ -19,9 +19,8 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 - `yarn test` - Run tests
 
 ### E2E Testing
-- `cd e2e && yarn install` - Install E2E test dependencies
-- `cd e2e && yarn playwright install` - Install browser dependencies
-- `cd e2e && yarn playwright test` - Run E2E tests
+- `yarn test:e2e:install` - Install Playwright browser dependencies
+- `yarn test:e2e` - Run E2E tests
 
 ### Deployment
 - `yarn build` - Build for production (for Netlify hosting)
@@ -35,7 +34,7 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 - **Backend**: Firebase Realtime Database
 - **Authentication**: Firebase Auth (Facebook login) + Eventpop integration via external service
 - **Build**: Create React App (react-scripts 5.0.1)
-- **Node Version**: 22.18.0 (unified for both main app and E2E tests)
+- **Node Version**: 22.18.0 (unified workspace)
 
 ### Core Routing Pattern
 Uses React Router with hash routing:
@@ -115,8 +114,9 @@ Each scene in `src/scenes/{name}/` contains:
 - **Future Upgrades**: Consider Firebase SDK v9+ migration for tree-shaking benefits
 
 ### Testing
-- E2E tests use Playwright with unified Node.js 22.18.0 environment
+- E2E tests use Playwright in unified workspace with Node.js 22.18.0
+- Tests located in `/tests/` with supporting libraries in `/tests/lib/`
 - Tests run against built static files served on localhost:3000
 - CI configured with full recording (traces, screenshots, videos)
-- Simplified CI workflow with single Node.js version across all stages
+- Simplified single-workspace CI workflow
 - **IMPORTANT**: Read `TESTING.md` before implementing any test-related code - it contains the established patterns for page objects, locator strategies, and architecture
