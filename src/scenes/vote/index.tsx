@@ -336,7 +336,7 @@ function VotePresentation() {
           weight="bold"
           color="accent-1"
         >
-          Please vote @ qz.netlify.com
+          Please vote @ qz.netlify.app
         </Text>
         <Text alignSelf="center" textAlign="center" size="64px">
           {λ(() => {

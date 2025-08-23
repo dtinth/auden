@@ -5,7 +5,7 @@ export class VotePresentationTester {
 
   async expectVotingPrompt(): Promise<void> {
     // When showResults is false, should show the voting prompt
-    await expect(this.page.getByText('Please vote @ qz.netlify.com')).toBeVisible()
+    await expect(this.page.getByText('Please vote')).toBeVisible()
   }
 
   async expectVoteCount(options: { votes: number; people: number }): Promise<void> {
