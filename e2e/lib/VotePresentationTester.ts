@@ -28,9 +28,11 @@ export class VotePresentationTester {
     await this.expectResultsVisible()
     
     for (const [optionText, voteCount] of Object.entries(expectedResults)) {
-      // Each result is displayed as option text and vote count in separate boxes
-      await expect(this.page.getByText(optionText)).toBeVisible()
-      await expect(this.page.getByText(voteCount.toString()).first()).toBeVisible()
+      // Find the specific result row for this option and verify both text and count
+      const resultRow = this.page.getByTestId(`vote-result-${optionText}`)
+      await expect(resultRow).toBeVisible()
+      await expect(resultRow.getByText(optionText)).toBeVisible()
+      await expect(resultRow.getByText(voteCount.toString())).toBeVisible()
     }
   }
 

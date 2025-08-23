@@ -405,7 +405,11 @@ function VotePresentation() {
             >
               {voteResult.map((entry) => {
                 return (
-                  <Box direction="row" pad="small">
+                  <Box 
+                    direction="row" 
+                    pad="small"
+                    data-testid={`vote-result-${entry.optionText}`}
+                  >
                     <Box flex>{entry.optionText}</Box>
                     <Box style={{ textAlign: 'right' }}>{entry.voteCount}</Box>
                   </Box>
