@@ -74,7 +74,7 @@ function PleaseSignIn() {
         'Signed in with custom token'
       )
     } catch (error) {
-      alert('Failed to sign in with custom token: ' + error.message)
+      alert('Failed to sign in with custom token: ' + String(error))
     }
   }
 

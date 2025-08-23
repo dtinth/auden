@@ -38,7 +38,7 @@ export class AdminTester {
     await this.page.getByRole('button', { name: 'Open Menu' }).click()
 
     // Select the scene type from the menu options
-    await this.page.getByRole('button', { name: sceneName }).click()
+    await this.page.getByRole('menuitem', { name: sceneName }).click()
 
     // Once the screen is created, we need to click on it to see it
     await this.page.getByRole('link', { name: sceneName }).click()
@@ -51,7 +51,9 @@ export class AdminTester {
     const url = this.page.url()
     const match = url.match(/\/admin\/screens\/([^/?#]+)/)
     if (!match) {
-      throw new Error(`Failed to create ${sceneName} scene - no screen ID found in URL`)
+      throw new Error(
+        `Failed to create ${sceneName} scene - no screen ID found in URL`
+      )
     }
 
     return match[1]

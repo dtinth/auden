@@ -23,12 +23,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    # Build main app with Node 16
-    - name: Setup Node.js for main app
+    # Setup Node.js 22 for both app and E2E tests
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
+        cache-dependency-path: |
+          yarn.lock
+          e2e/yarn.lock
     
     - name: Install main app dependencies
       run: yarn install
@@ -46,14 +49,6 @@ jobs:
       
     - name: Wait for server
       run: npx wait-on http://localhost:3000
-    
-    # Switch to Node 22 for E2E tests
-    - name: Setup Node.js for E2E tests
-      uses: actions/setup-node@v4
-      with:
-        node-version-file: 'e2e/.nvmrc'
-        cache: 'yarn'
-        cache-dependency-path: 'e2e/yarn.lock'
     
     - name: Install E2E dependencies
       working-directory: ./e2e

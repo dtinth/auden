@@ -29,8 +29,8 @@ export function flashSuccess(text: string) {
   }).show()
 }
 
-export class ErrorBoundary extends React.Component<{}, { error?: Error }> {
-  constructor(props: {}) {
+export class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error?: Error }> {
+  constructor(props: { children: React.ReactNode }) {
     super(props)
     this.state = {}
   }
@@ -57,10 +57,10 @@ export function ErrorMessage(props: { message: string }) {
 }
 
 export class InlineErrorBoundary extends React.Component<
-  { description: string },
+  { description: string; children: React.ReactNode },
   { error?: Error }
 > {
-  constructor(props: { description: string }) {
+  constructor(props: { description: string; children: React.ReactNode }) {
     super(props)
     this.state = {}
   }
@@ -153,7 +153,7 @@ export function useActionRunner(): [
   ) => Promise<T>
 ] {
   const [running, setRunning] = useState(false)
-  const run = useCallback(async (description, f, successMessage) => {
+  const run = useCallback(async (description: string, f: () => Promise<any>, successMessage?: string) => {
     let failed = false
     setRunning(true)
     try {
@@ -178,20 +178,20 @@ export function ActionButton(
     }
 ) {
   const [running, run] = useActionRunner()
-  const onClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const onClick = async (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     e.persist()
     e.preventDefault()
     if (props.onClick) {
-      const onClick = props.onClick
+      const originalOnClick = props.onClick
       run(
         props.description || 'run',
-        async () => onClick(e),
+        async () => originalOnClick(e as any),
         props.successMessage
       )
     }
   }
   return (
-    <Button {...props} onClick={onClick} disabled={props.disabled || running} />
+    <Button {...props as any} onClick={onClick} disabled={props.disabled || running} />
   )
 }
 

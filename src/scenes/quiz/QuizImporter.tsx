@@ -3,13 +3,12 @@ import toml from 'toml'
 import { Box, TextArea, Button } from 'grommet'
 import React, { useCallback, useRef } from 'react'
 import { useActionRunner } from '../../core/ui'
-import { VError } from 'verror'
 const md = MarkdownIt({ html: true })
 
 export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
   const [running, run] = useActionRunner()
   const ref = useRef<HTMLTextAreaElement | null>(null)
-  const submit = useCallback((e) => {
+  const submit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     run(
       'import questions',
@@ -40,7 +39,7 @@ export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
               throw new Error('No correct answer!')
             }
           } catch (e) {
-            throw new VError(e, 'Cannot process question "%s"', key)
+            throw new Error(`Cannot process question "${key}"`, { cause: e })
           }
           qs++
         }
