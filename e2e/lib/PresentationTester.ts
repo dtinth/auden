@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import { QuizPresentationTester } from './QuizPresentationTester'
 import { VotePresentationTester } from './VotePresentationTester'
 
 export class PresentationTester {
@@ -7,6 +8,10 @@ export class PresentationTester {
     public readonly uid: string,
     public readonly name: string
   ) {}
+
+  get quiz(): QuizPresentationTester {
+    return new QuizPresentationTester(this.page)
+  }
 
   get vote(): VotePresentationTester {
     return new VotePresentationTester(this.page)

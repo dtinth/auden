@@ -74,6 +74,14 @@ export function QuizQuestionPresentation(props: {
               <Box
                 key={index}
                 background={`neutral-${index + 1}`}
+                data-testid={`quiz-answer-${String.fromCharCode(65 + index)}`}
+                data-state={
+                  props.answerRevealed
+                    ? entry.val.correct
+                      ? 'correct'
+                      : 'incorrect'
+                    : 'unrevealed'
+                }
                 style={{
                   color: 'white',
                   position: 'relative',

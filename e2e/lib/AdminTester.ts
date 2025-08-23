@@ -1,6 +1,7 @@
 import { Page, expect } from '@playwright/test'
-import { VoteAdminTester } from './VoteAdminTester'
 import { GrommetCheckbox } from './GrommetCheckbox'
+import { QuizAdminTester } from './QuizAdminTester'
+import { VoteAdminTester } from './VoteAdminTester'
 
 export class AdminTester {
   constructor(
@@ -8,6 +9,10 @@ export class AdminTester {
     public readonly uid: string,
     public readonly name: string
   ) {}
+
+  get quiz(): QuizAdminTester {
+    return new QuizAdminTester(this.page)
+  }
 
   get vote(): VoteAdminTester {
     return new VoteAdminTester(this.page)
@@ -18,17 +23,25 @@ export class AdminTester {
   }
 
   async createVoteScene(): Promise<string> {
+    return this.createScene('vote')
+  }
+
+  async createQuizScene(): Promise<string> {
+    return this.createScene('quiz')
+  }
+
+  private async createScene(sceneName: 'vote' | 'quiz'): Promise<string> {
     // Navigate to admin panel first
     await this.navigateToAdmin()
 
     // Click the Add button to create a new scene
     await this.page.getByRole('button', { name: 'Open Menu' }).click()
 
-    // Select 'vote' from the menu options
-    await this.page.getByRole('button', { name: 'vote' }).click()
+    // Select the scene type from the menu options
+    await this.page.getByRole('button', { name: sceneName }).click()
 
     // Once the screen is created, we need to click on it to see it
-    await this.page.getByRole('link', { name: 'vote' }).click()
+    await this.page.getByRole('link', { name: sceneName }).click()
 
     // Wait for the scene to be created and navigate to it
     // This should automatically redirect to the new scene's admin page
@@ -38,7 +51,7 @@ export class AdminTester {
     const url = this.page.url()
     const match = url.match(/\/admin\/screens\/([^/?#]+)/)
     if (!match) {
-      throw new Error('Failed to create vote scene - no screen ID found in URL')
+      throw new Error(`Failed to create ${sceneName} scene - no screen ID found in URL`)
     }
 
     return match[1]
