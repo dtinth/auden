@@ -163,9 +163,33 @@ export class AudienceTester extends PageObject {
 Following [Playwright best practices](https://playwright.dev/docs/locators#quick-guide), we prioritize semantic locators:
 
 1. `getByRole()` - Most reliable, accessibility-friendly
-2. `getByTestId()` - Explicit test targeting
+2. `getByTestId()` - Explicit test targeting  
 3. `getByText()` - Content-based selection
 4. `locator()` - CSS/XPath as last resort
+
+#### Specific Patterns
+
+**Semantic Regions**: Use `getByRole('region', { name: 'Section Title' })` for page sections:
+```typescript
+// Target specific form sections
+await page.getByRole('region', { name: 'Question' }).getByRole('textbox')
+await page.getByRole('region', { name: 'Available options' }).getByRole('textbox')
+```
+
+**Table Assertions**: Use table structure to avoid strict mode violations:
+```typescript
+// ❌ Avoid - ambiguous when multiple elements match
+await expect(page.getByText('0')).toBeVisible() // Fails if multiple "0"s exist
+
+// ✅ Correct - use table row structure  
+await expect(page.getByRole('row', { name: 'Python 0' })).toBeVisible()
+```
+
+**First/Nth Selection**: Use `.first()` when multiple similar elements exist:
+```typescript
+// When multiple options might match, target the first one
+await expect(page.getByText(option).first()).toBeVisible()
+```
 
 ## Test Structure
 
@@ -216,20 +240,50 @@ test('complete vote flow', async ({ browser }) => {
 })
 ```
 
-### Current Test Implementation (Simplified)
+### Implemented Vote Test
+
+Complete multi-user vote flow with real-time synchronization:
 
 ```typescript
-test('audience welcome flow', async ({ browser }) => {
-  const app = new AppTester(browser)
+test('complete vote flow: admin creates vote, audience participates', async ({ context }) => {
+  const app = new AppTester(context)
+
+  // Create users (all using shared namespace via WeakMap)
+  const [admin, user1, user2] = await Promise.all([
+    app.createAdmin('admin-user', 'Admin User'),
+    app.createAudience('user-1', 'Alice'),
+    app.createAudience('user-2', 'Bob'),
+  ])
+
+  // Admin workflow using getter pattern
+  const screenId = await admin.createVoteScene()
+  await admin.vote.expectVoteScene()
+  await admin.vote.setQuestionText('What is your favorite programming language?')
+  await admin.vote.setVoteOptions(['JavaScript', 'TypeScript', 'Python', 'Go'])
+  await admin.activateScene(screenId)
+  await admin.vote.enableVoting()
+
+  // Audience workflow using getter pattern
+  await user1.navigateToAudience()
+  await user2.navigateToAudience()
   
-  const audience = await app.createAudience('test-user-1')
+  await user1.vote.expectVotingInterface(questionText)
+  await user1.vote.selectOption('TypeScript')
+  await user2.vote.selectOption('JavaScript')
   
-  // Uses UI to configure emulator mode, authenticate, and test
-  await audience.setupEmulatorAndAuthenticate('Test User')
-  await audience.navigateToAudience()
-  await audience.expectWelcomeMessage()
+  // Verify real-time results
+  await admin.vote.expectResults({
+    TypeScript: 1, JavaScript: 1, Python: 0, Go: 0
+  })
 })
 ```
+
+**Key Features Tested**:
+- Multi-user real-time synchronization
+- Admin scene creation and configuration  
+- Audience voting participation
+- Live result updates
+- Database namespace isolation per test
 
 ## Visual Testing
 
@@ -344,9 +398,9 @@ Tests run in GitHub Actions with:
 - [x] Runtime configuration setup
 - [x] Page Object framework design
 
-### Phase 2: Core Testing (Next)
-- [ ] Authentication flow implementation
-- [ ] Vote scene multi-user testing
+### Phase 2: Core Testing ✅
+- [x] Authentication flow implementation  
+- [x] Vote scene multi-user testing
 - [ ] Quiz scene multi-user testing
 - [ ] Freestyle scene testing
 
