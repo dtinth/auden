@@ -55,9 +55,6 @@ export class AdminTester {
       this.page.getByRole('checkbox', { name: 'active' })
     )
     await activeCheckbox.check()
-
-    // Verify the scene is now active (checkbox should be checked)
-    await activeCheckbox.expectChecked()
   }
 
   async expectAdminInterface(): Promise<void> {

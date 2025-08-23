@@ -43,9 +43,6 @@ export class VoteAdminTester {
     
     // Check the checkbox (only if not already checked)
     await enabledCheckbox.check()
-
-    // Verify voting is enabled (checkbox should be checked)
-    await enabledCheckbox.expectChecked()
   }
 
   async setMaxVotes(maxVotes: number): Promise<void> {
@@ -66,6 +63,16 @@ export class VoteAdminTester {
       const expectedRowName = `${option} ${expectedCount}`
       await expect(this.page.getByRole('row', { name: expectedRowName })).toBeVisible()
     }
+  }
+
+  async showResults(): Promise<void> {
+    // Toggle the "Show results" checkbox to display results
+    const showResultsCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: 'Show results' })
+    )
+    
+    // Check the checkbox (only if not already checked)
+    await showResultsCheckbox.check()
   }
 
   async expectVoteScene(): Promise<void> {

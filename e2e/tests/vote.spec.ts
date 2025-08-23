@@ -1,16 +1,17 @@
 import { test } from '@playwright/test'
 import { AppTester } from '../lib/AppTester'
 
-test('complete vote flow: admin creates vote, audience participates', async ({
+test('complete vote flow: admin creates vote, audience participates, presentation displays results', async ({
   context,
 }) => {
   const app = new AppTester(context)
 
   // Create users (all using shared namespace)
-  const [admin, user1, user2] = await Promise.all([
+  const [admin, user1, user2, presentation] = await Promise.all([
     app.createAdmin(),
     app.createAudience('alice'),
     app.createAudience('bob'),
+    app.createPresentation(),
   ])
 
   // Admin: Create a vote scene
@@ -27,6 +28,14 @@ test('complete vote flow: admin creates vote, audience participates', async ({
 
   // Admin: Activate the scene so audience can see it
   await admin.activateScene(screenId)
+
+  // Presentation: Navigate to display view
+  await presentation.navigateToDisplay()
+
+  // Presentation: Initially results should be hidden, showing voting prompt
+  await presentation.vote.expectResultsHidden()
+  await presentation.vote.expectVotingPrompt()
+  await presentation.vote.expectVoteCount({ votes: 0, people: 0 })
 
   // Admin: Enable voting
   await admin.vote.enableVoting()
@@ -50,8 +59,22 @@ test('complete vote flow: admin creates vote, audience participates', async ({
   await user1.vote.expectVoteSubmitted()
   await user2.vote.expectVoteSubmitted()
 
+  // Presentation: Vote count should update to show 2 votes from 2 people
+  await presentation.vote.expectVoteCount({ votes: 2, people: 2 })
+
   // Admin: Check vote results
   await admin.vote.expectResults({
+    TypeScript: 1,
+    JavaScript: 1,
+    Python: 0,
+    Go: 0,
+  })
+
+  // Admin: Enable results display
+  await admin.vote.showResults()
+
+  // Presentation: Should now show the voting results
+  await presentation.vote.expectResults({
     TypeScript: 1,
     JavaScript: 1,
     Python: 0,
