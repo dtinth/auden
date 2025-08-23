@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { AppTester } from '../lib/AppTester'
+import { AppTester } from './lib/AppTester'
 
 test('complete vote flow: admin creates vote, audience participates, presentation displays results', async ({
   context,

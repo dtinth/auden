@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { AppTester } from '../lib/AppTester'
+import { AppTester } from './lib/AppTester'
 
 test('audience user sees welcome message when no active scenes', async ({
   context,

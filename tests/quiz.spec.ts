@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { AppTester } from '../lib/AppTester'
+import { AppTester } from './lib/AppTester'
 
 test('complete quiz flow: admin imports questions, audience answers, presentation displays results and leaderboard', async ({
   context,

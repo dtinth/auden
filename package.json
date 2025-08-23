@@ -32,6 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,6 +46,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "@types/webpack-env": "^1.15.3",
     "firebase-tools": "^13.6.0"
   },
