@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test'
+import { Locator, expect } from '@playwright/test'
 
 /**
  * Helper class for interacting with Grommet checkbox components.
@@ -54,12 +54,5 @@ export class GrommetCheckbox {
    */
   async expectUnchecked(): Promise<void> {
     await expect(this.locator).not.toBeChecked()
-  }
-
-  /**
-   * Assert that the checkbox is visible
-   */
-  async expectVisible(): Promise<void> {
-    await expect(this.locator).toBeVisible()
   }
 }
