@@ -8,9 +8,9 @@ test('complete vote flow: admin creates vote, audience participates', async ({
 
   // Create users (all using shared namespace)
   const [admin, user1, user2] = await Promise.all([
-    app.createAdmin('admin-user', 'Admin User'),
-    app.createAudience('user-1', 'Alice'),
-    app.createAudience('user-2', 'Bob'),
+    app.createAdmin(),
+    app.createAudience('alice'),
+    app.createAudience('bob'),
   ])
 
   // Admin: Create a vote scene

@@ -1,5 +1,6 @@
 import { Page, expect } from '@playwright/test'
 import { VoteAdminTester } from './VoteAdminTester'
+import { GrommetCheckbox } from './GrommetCheckbox'
 
 export class AdminTester {
   constructor(
@@ -35,7 +36,7 @@ export class AdminTester {
 
     // Extract the screen ID from the URL
     const url = this.page.url()
-    const match = url.match(/\/admin\/screens\/(.+)/)
+    const match = url.match(/\/admin\/screens\/([^/?#]+)/)
     if (!match) {
       throw new Error('Failed to create vote scene - no screen ID found in URL')
     }
@@ -50,11 +51,13 @@ export class AdminTester {
     )
 
     // Toggle the "active" checkbox to make this scene the current one
-    // Use getByText for Grommet checkbox components
-    await this.page.getByText('active').click()
+    const activeCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: 'active' })
+    )
+    await activeCheckbox.check()
 
     // Verify the scene is now active (checkbox should be checked)
-    await expect(this.page.getByText('active')).toBeVisible()
+    await activeCheckbox.expectChecked()
   }
 
   async expectAdminInterface(): Promise<void> {

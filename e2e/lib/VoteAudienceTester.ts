@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import { GrommetCheckbox } from './GrommetCheckbox'
 
 export class VoteAudienceTester {
   constructor(private page: Page) {}
@@ -20,21 +21,24 @@ export class VoteAudienceTester {
 
   async selectOption(optionText: string): Promise<void> {
     // Click on the option to vote for it
-    // Use getByText since Grommet checkboxes don't work well with getByRole
-    await this.page.getByText(optionText).click()
+    const optionCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: optionText })
+    )
+    await optionCheckbox.check()
     
     // Verify the option appears selected (this might take a moment for the UI to update)
     await this.expectSelectedOption(optionText)
   }
 
   async expectSelectedOption(optionText: string): Promise<void> {
-    // Verify that the option is visually selected
-    // This might require checking for a checked state or visual indicator
-    const optionElement = this.page.getByText(optionText)
-    await expect(optionElement).toBeVisible()
+    // Find the checkbox associated with this option text
+    const optionCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: optionText })
+    )
     
-    // The checkbox should be checked - we can verify this by looking for the checkbox input that's associated with this option
-    // Since Grommet might hide the actual checkbox, we'll look for visual indicators or the presence of the option text
+    // Verify the option is visible and checked
+    await optionCheckbox.expectVisible()
+    await optionCheckbox.expectChecked()
   }
 
   async expectWaitingMessage(): Promise<void> {
@@ -56,11 +60,16 @@ export class VoteAudienceTester {
   }
 
   async unselectOption(optionText: string): Promise<void> {
-    // Click on the option again to unselect it
-    await this.page.getByText(optionText).click()
+    // Find the checkbox associated with this option text
+    const optionCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: optionText })
+    )
+    
+    // Uncheck the checkbox (only if currently checked)
+    await optionCheckbox.uncheck()
     
     // Verify the option is no longer selected
-    // This is the opposite of expectSelectedOption
+    await optionCheckbox.expectUnchecked()
   }
 
   async expectNoVotingInterface(): Promise<void> {
@@ -70,13 +79,21 @@ export class VoteAudienceTester {
   }
 
   async getSelectedOptions(): Promise<string[]> {
-    // Return a list of currently selected options
-    // This is useful for verifying the state without making assertions
-    // Implementation would depend on how Grommet renders checked checkboxes
+    // Find all checkboxes that are checked
+    const checkedCheckboxes = this.page.getByRole('checkbox', { checked: true })
+    
+    // Get the accessible name (label text) of each checked checkbox
+    const checkboxCount = await checkedCheckboxes.count()
     const selectedOptions: string[] = []
     
-    // This is a placeholder - the actual implementation would need to inspect
-    // the DOM to find which checkboxes are checked
+    for (let i = 0; i < checkboxCount; i++) {
+      const checkbox = checkedCheckboxes.nth(i)
+      const accessibleName = await checkbox.getAttribute('aria-label') || await checkbox.getAttribute('name')
+      if (accessibleName) {
+        selectedOptions.push(accessibleName)
+      }
+    }
+    
     return selectedOptions
   }
 }

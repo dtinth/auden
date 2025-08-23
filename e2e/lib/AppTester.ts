@@ -74,19 +74,22 @@ export class AppTester {
   }
 
   async createAudience(
-    userId: string,
-    displayName: string
+    profile: 'alice' | 'bob'
   ): Promise<AudienceTester> {
+    const profiles: Record<typeof profile, { userId: string; displayName: string }> = {
+      alice: { userId: 'audience-alice', displayName: 'Alice' },
+      bob: { userId: 'audience-bob', displayName: 'Bob' }
+    }
+    const { userId, displayName } = profiles[profile]
     const page = await this.initAppUser(userId, displayName, 'audience')
     return new AudienceTester(page, userId, displayName)
   }
 
-  async createAdmin(
-    adminId: string,
-    displayName: string
-  ): Promise<AdminTester> {
-    const page = await this.initAppUser(adminId, displayName, 'admin')
-    return new AdminTester(page, adminId, displayName)
+  async createAdmin(): Promise<AdminTester> {
+    const userId = 'admin-user'
+    const displayName = 'Admin User'
+    const page = await this.initAppUser(userId, displayName, 'admin')
+    return new AdminTester(page, userId, displayName)
   }
 
   private async setAdminStatusInDatabase(

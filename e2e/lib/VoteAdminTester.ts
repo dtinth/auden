@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import { GrommetCheckbox } from './GrommetCheckbox'
 
 export class VoteAdminTester {
   constructor(private page: Page) {}
@@ -36,19 +37,23 @@ export class VoteAdminTester {
 
   async enableVoting(): Promise<void> {
     // Toggle the "Enabled" checkbox to enable voting
-    // Use getByText because Grommet checkboxes don't work well with getByRole
-    await this.page.getByText('Enabled').click()
+    const enabledCheckbox = new GrommetCheckbox(
+      this.page.getByRole('checkbox', { name: 'Enabled' })
+    )
+    
+    // Check the checkbox (only if not already checked)
+    await enabledCheckbox.check()
 
     // Verify voting is enabled (checkbox should be checked)
-    await expect(this.page.getByText('Enabled')).toBeVisible()
+    await enabledCheckbox.expectChecked()
   }
 
   async setMaxVotes(maxVotes: number): Promise<void> {
+    // Handle the browser prompt dialog before clicking to avoid race condition
+    this.page.once('dialog', (dialog) => dialog.accept(maxVotes.toString()))
+    
     // Click the "Max votes" button to open the prompt
     await this.page.getByRole('button', { name: /Max votes:/ }).click()
-
-    // Handle the browser prompt dialog
-    this.page.on('dialog', (dialog) => dialog.accept(maxVotes.toString()))
   }
 
   async expectResults(expectedResults: {
