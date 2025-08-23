@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import { VoteAudienceTester } from './VoteAudienceTester'
 
 export class AudienceTester {
   constructor(
@@ -6,6 +7,10 @@ export class AudienceTester {
     public readonly uid: string, 
     public readonly name: string
   ) {}
+
+  get vote(): VoteAudienceTester {
+    return new VoteAudienceTester(this.page)
+  }
 
   async navigateToAudience(): Promise<void> {
     await this.page.goto(`http://${this.uid}.localhost:3000/#/`)

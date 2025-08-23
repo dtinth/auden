@@ -1,11 +1,16 @@
 import { Page, expect } from '@playwright/test'
+import { VoteAdminTester } from './VoteAdminTester'
 
 export class AdminTester {
   constructor(
-    public readonly page: Page, 
-    public readonly uid: string, 
+    public readonly page: Page,
+    public readonly uid: string,
     public readonly name: string
   ) {}
+
+  get vote(): VoteAdminTester {
+    return new VoteAdminTester(this.page)
+  }
 
   async navigateToAdmin(): Promise<void> {
     await this.page.goto(`http://${this.uid}.localhost:3000/#/admin`)
@@ -16,10 +21,13 @@ export class AdminTester {
     await this.navigateToAdmin()
 
     // Click the Add button to create a new scene
-    await this.page.locator('[aria-label="Menu"]').click()
+    await this.page.getByRole('button', { name: 'Open Menu' }).click()
 
     // Select 'vote' from the menu options
-    await this.page.getByText('vote').click()
+    await this.page.getByRole('button', { name: 'vote' }).click()
+
+    // Once the screen is created, we need to click on it to see it
+    await this.page.getByRole('link', { name: 'vote' }).click()
 
     // Wait for the scene to be created and navigate to it
     // This should automatically redirect to the new scene's admin page
@@ -54,5 +62,4 @@ export class AdminTester {
     await expect(this.page.getByText('Global')).toBeVisible()
     await expect(this.page.getByText('Screens')).toBeVisible()
   }
-
 }
