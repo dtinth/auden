@@ -518,23 +518,45 @@ await checkbox.check()
 **Solution**: Use semantic locators to target the correct Save button associated with each form field. The `fill()` method works perfectly when targeting the right elements.
 
 ### Semantic Locator Strategy  
-**Challenge**: Targeting specific Save buttons when multiple exist on the page.
+**Challenge**: Targeting specific elements when multiple similar elements exist on the page.
 
-**Anti-pattern**: Using fragile `.nth()` indexing
+**Anti-patterns**: Fragile selectors that break with UI changes
 ```typescript
-// ❌ Fragile - breaks if UI changes
+// ❌ Index-based targeting (fragile)
 const saveButton = section.getByRole('button', { name: 'Save' }).nth(1)
-```
 
-**Best practice**: Use accessible names with React 18 useId() hook
-```typescript
-// ✅ Most robust - uses aria-label for direct targeting
-const textarea = page.getByRole('textbox', { name: 'Presentation Arbitrary HTML' })
+// ❌ Parent navigation (fragile)
 const saveButton = textarea.locator('..').getByRole('button', { name: 'Save' })
 
-// Alternative - traverse DOM semantically from labels (less preferred)
-const textarea = section.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
+// ❌ CSS class selectors (fragile)
+const questionItem = page.locator('.QuestionView__item').filter({ hasText: text })
+
+// ❌ Button order assumptions (fragile)
+await questionItem.getByRole('button').first().click()
 ```
+
+**Best practices**: Semantic targeting with proper accessibility markup
+```typescript
+// ✅ Field groups with proper label association
+const fieldGroup = section.getByRole('group', { name: 'Arbitrary HTML' })
+const saveButton = fieldGroup.getByRole('button', { name: 'Save' })
+
+// ✅ Data test IDs for component targeting
+const questionItem = page.getByTestId('question').filter({ hasText: questionText })
+
+// ✅ Semantic button roles with accessible names
+await questionItem.getByRole('button', { name: 'Like' }).click()
+
+// ✅ Proper label→input association with useId()
+const textarea = section.getByRole('textbox', { name: 'Arbitrary HTML' })
+```
+
+**Implementation pattern**: Enhance components for testability
+1. Add `role="group"` with `aria-labelledby` to Field components
+2. Use `data-testid` for repeating component instances  
+3. Add `aria-label` to action buttons (Like, Save)
+4. Generate stable IDs with React 18 `useId()` hook
+5. Connect labels to inputs with `htmlFor`/`id` association
 
 ### CI Testing Best Practices
 - Always use `CI=true` flag to prevent test stalling on failures
