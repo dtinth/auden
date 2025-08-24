@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(CI=true yarn test:e2e *.spec.ts --retries=0)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

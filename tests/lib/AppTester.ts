@@ -83,6 +83,10 @@ export class AppTester {
     }
     const { userId, displayName } = profiles[profile]
     const page = await this.initAppUser(userId, displayName, 'audience')
+    
+    // Set mobile viewport for audience users (iPhone 12 dimensions)
+    await page.setViewportSize({ width: 390, height: 844 })
+    
     return new AudienceTester(page, userId, displayName)
   }
 

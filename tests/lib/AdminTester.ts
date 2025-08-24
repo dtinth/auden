@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import { FreestyleAdminTester } from './FreestyleAdminTester'
 import { GrommetCheckbox } from './GrommetCheckbox'
 import { QuizAdminTester } from './QuizAdminTester'
 import { VoteAdminTester } from './VoteAdminTester'
@@ -18,6 +19,10 @@ export class AdminTester {
     return new VoteAdminTester(this.page)
   }
 
+  get freestyle(): FreestyleAdminTester {
+    return new FreestyleAdminTester(this.page)
+  }
+
   async navigateToAdmin(): Promise<void> {
     await this.page.goto(`http://${this.uid}.localhost:3000/#/admin`)
   }
@@ -30,7 +35,11 @@ export class AdminTester {
     return this.createScene('quiz')
   }
 
-  private async createScene(sceneName: 'vote' | 'quiz'): Promise<string> {
+  async createFreestyleScene(): Promise<string> {
+    return this.createScene('freestyle')
+  }
+
+  private async createScene(sceneName: 'vote' | 'quiz' | 'freestyle'): Promise<string> {
     // Navigate to admin panel first
     await this.navigateToAdmin()
 
