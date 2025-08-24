@@ -149,6 +149,7 @@ const ProfileConnector: ConnectorType<
   },
   [any]
 > = (props) => {
+  const { displayName, getFallbackDisplayName } = props
   const profileRef = firebase.database().ref('/profiles').child(props.uid)
   const profileState = useFirebaseDatabase(profileRef)
   const profile = profileState.unstable_read()
@@ -157,7 +158,7 @@ const ProfileConnector: ConnectorType<
       handlePromise(
         'create profile',
         Promise.resolve(
-          props.displayName || props.getFallbackDisplayName()
+          displayName || getFallbackDisplayName()
         ).then(async (displayName) => {
           await firebase.auth().currentUser?.updateProfile({ displayName })
           return profileRef.set({ displayName })
@@ -165,7 +166,7 @@ const ProfileConnector: ConnectorType<
         'User profile created.'
       )
     }
-  }, [profile])
+  }, [profile, profileRef, displayName, getFallbackDisplayName])
   return <>{props.children(profile)}</>
 }
 

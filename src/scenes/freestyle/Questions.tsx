@@ -179,7 +179,7 @@ function QuestionSubmitter() {
       .child(eventRef.key!)
       .set(true)
     textarea.current!.value = ''
-  }, [dataRef])
+  }, [dataRef, uid])
   return (
     <Box direction="row">
       <TextArea

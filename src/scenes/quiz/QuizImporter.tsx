@@ -8,6 +8,7 @@ const md = MarkdownIt({ html: true })
 export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
   const [running, run] = useActionRunner()
   const ref = useRef<HTMLTextAreaElement | null>(null)
+  const { import: importData } = props
   const submit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     run(
@@ -46,11 +47,11 @@ export function QuizImporter(props: { import: (data: any) => Promise<any> }) {
         if (!qs) {
           throw new Error('No questions found.')
         }
-        await props.import(output)
+        await importData(output)
       },
       'Done importing questions!'
     )
-  }, [])
+  }, [run, importData])
   return (
     <form onSubmit={submit}>
       <Box>
