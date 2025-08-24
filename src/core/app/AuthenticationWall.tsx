@@ -166,7 +166,7 @@ const ProfileConnector: ConnectorType<
         'User profile created.'
       )
     }
-  }, [profile, profileRef, displayName, getFallbackDisplayName])
+  }, [profile])
   return <>{props.children(profile)}</>
 }
 
