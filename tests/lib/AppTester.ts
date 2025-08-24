@@ -107,7 +107,7 @@ export class AppTester {
     // Use the browser console to directly set the admin status in the Firebase database
     await page.evaluate((uid) => {
       // Access the global firebase instance that should be available in the app
-      ;(window as any).firebase.database().ref(`/admins/${uid}`).set(true)
+      return (window as any).firebase.database().ref(`/admins/${uid}`).set(true)
     }, adminId)
   }
 }
