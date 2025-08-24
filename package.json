@@ -22,7 +22,7 @@
     "react-lambda": "^1.0.0-rc.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
-    "remark": "^10.0.1",
+    "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "styled-components": "^6.1.19",
     "toml": "^3.0.0",
