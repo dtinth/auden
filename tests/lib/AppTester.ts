@@ -9,8 +9,15 @@ export class AppTester {
   constructor(private context: BrowserContext) {}
 
   async screenshot(tester: { page: Page }, name: string): Promise<void> {
+    // Enable screenshot mode (hides notifications via CSS)
+    await tester.page.evaluate(() => document.body.setAttribute('data-screenshot-mode', 'true'))
+    
+    // Take screenshot
     const filepath = path.join('visual-tests', `${name}.png`)
     await tester.page.screenshot({ path: filepath, fullPage: true, animations: 'disabled' })
+    
+    // Disable screenshot mode
+    await tester.page.evaluate(() => document.body.removeAttribute('data-screenshot-mode'))
   }
 
   /**

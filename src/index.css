@@ -14,3 +14,9 @@ code {
   font-family: Fira Mono, source-code-pro, Menlo, Monaco, Consolas,
     'Courier New', monospace;
 }
+
+/* Hide notifications and warnings during screenshot mode */
+[data-screenshot-mode] .noty_bar,
+[data-screenshot-mode] .firebase-emulator-warning {
+  display: none !important;
+}

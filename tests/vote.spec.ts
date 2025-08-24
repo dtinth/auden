@@ -52,7 +52,6 @@ test('complete vote flow: admin creates vote, audience participates, presentatio
 
   await user2.vote.expectVotingInterface(questionText)
   await user2.vote.expectVotingOptions(voteOptions)
-  await app.screenshot(user2, 'vote-bob-mobile-voting')
 
   // Audience: Cast votes
   await user1.vote.selectOption('TypeScript')

@@ -36,13 +36,10 @@ test('complete freestyle flow: admin configures scene, audience interacts, prese
     // Presentation: Navigate to display view
     await presentation.navigateToDisplay()
     await presentation.freestyle.expectDisplayReady()
-    await app.screenshot(presentation, 'freestyle-presentation-initial')
 
     // Audience: Navigate to audience view
     await alice.navigateToAudience()
     await bob.navigateToAudience()
-    await app.screenshot(alice, 'freestyle-alice-mobile-initial')
-    await app.screenshot(bob, 'freestyle-bob-mobile-initial')
   })
 
   await test.step('Custom HTML/CSS Content: Admin injects content, audience and presentation display it', async () => {
@@ -73,7 +70,6 @@ test('complete freestyle flow: admin configures scene, audience interacts, prese
     await alice.freestyle.expectCustomContent('Audience: Ready to participate?')
     await bob.freestyle.expectCustomContent('Audience: Ready to participate?')
     await app.screenshot(alice, 'freestyle-alice-custom-content')
-    await app.screenshot(bob, 'freestyle-bob-custom-content')
   })
 
   await test.step('Chat Functionality: Admin enables chat, users send messages, presentation shows chat', async () => {
@@ -174,7 +170,6 @@ test('complete freestyle flow: admin configures scene, audience interacts, prese
     await alice.freestyle.expectQuestion('Bob', BOB_Q1)
     await alice.freestyle.expectQuestion('Bob', BOB_Q2)
     await app.screenshot(alice, 'freestyle-alice-questions-with-votes')
-    await app.screenshot(bob, 'freestyle-bob-questions-mode')
   })
 
   await test.step('Both Mode: Admin enables both chat and questions, users can switch between them', async () => {

@@ -95,7 +95,6 @@ answers = [
 
     await user2.quiz.selectAnswer('A') // Also correct, but slower
     await user2.quiz.expectAnswerSubmitted()
-    await app.screenshot(user2, 'quiz-bob-mobile-answered')
 
     // Admin: Check answer counts
     await admin.quiz.expectQuestionAnswerCount('question001', 2, 2)
@@ -118,7 +117,6 @@ answers = [
       Alice: 100,
       Bob: 99,
     })
-    await app.screenshot(presentation, 'quiz-presentation-leaderboard-1')
   })
 
   await test.step('Question 2: CSS Grid (Alice=0, Bob=100)', async () => {
