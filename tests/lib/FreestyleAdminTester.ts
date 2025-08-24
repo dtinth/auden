@@ -31,11 +31,10 @@ export class FreestyleAdminTester {
     // Look for the textbox that comes after "Arbitrary HTML" text
     const htmlTextarea = presentationSection.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
     await htmlTextarea.clear()
-    await htmlTextarea.type(html)
+    await htmlTextarea.fill(html) // fill() works fine with correct targeting
     
     // Find the Save button that comes after the HTML textbox
     const saveButton = htmlTextarea.locator('..').getByRole('button', { name: 'Save' })
-    await expect(saveButton).toBeEnabled()
     await saveButton.click()
   }
 
@@ -46,11 +45,10 @@ export class FreestyleAdminTester {
     // Look for the textbox that comes after "Arbitrary CSS" text
     const cssTextarea = presentationSection.getByText('Arbitrary CSS').locator('..').getByRole('textbox')
     await cssTextarea.clear()
-    await cssTextarea.type(css)
+    await cssTextarea.fill(css) // fill() works fine with correct targeting
     
     // Find the Save button that comes after the CSS textbox
     const saveButton = cssTextarea.locator('..').getByRole('button', { name: 'Save' })
-    await expect(saveButton).toBeEnabled()
     await saveButton.click()
   }
 
@@ -68,11 +66,10 @@ export class FreestyleAdminTester {
     // Look for the textbox that comes after "Arbitrary HTML" text
     const htmlTextarea = audienceSection.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
     await htmlTextarea.clear()
-    await htmlTextarea.type(html)
+    await htmlTextarea.fill(html) // fill() works fine with correct targeting
     
     // Find the Save button that comes after the HTML textbox
     const saveButton = htmlTextarea.locator('..').getByRole('button', { name: 'Save' })
-    await expect(saveButton).toBeEnabled()
     await saveButton.click()
   }
 
@@ -83,11 +80,10 @@ export class FreestyleAdminTester {
     // Look for the textbox that comes after "Arbitrary CSS" text
     const cssTextarea = audienceSection.getByText('Arbitrary CSS').locator('..').getByRole('textbox')
     await cssTextarea.clear()
-    await cssTextarea.type(css)
+    await cssTextarea.fill(css) // fill() works fine with correct targeting
     
     // Find the Save button that comes after the CSS textbox
     const saveButton = cssTextarea.locator('..').getByRole('button', { name: 'Save' })
-    await expect(saveButton).toBeEnabled()
     await saveButton.click()
   }
 

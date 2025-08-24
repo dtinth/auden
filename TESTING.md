@@ -206,14 +206,15 @@ await expect(page.getByText(option).first()).toBeVisible()
 
 ### File Organization
 
-Simple flat structure in `e2e/tests/`:
+Simple flat structure in `tests/`:
 
 ```
-e2e/tests/
-├── vote.spec.ts       # Multi-user voting scenarios
-├── quiz.spec.ts       # Multi-user quiz scenarios  
-├── freestyle.spec.ts  # Chat and custom content
-└── auth.spec.ts       # Authentication flows
+tests/
+├── vote.spec.ts              # Multi-user voting scenarios
+├── quiz.spec.ts              # Multi-user quiz scenarios  
+├── freestyle.spec.ts         # Chat, questions, and custom content ✅
+├── audience-welcome.spec.ts  # Welcome message when no active scenes
+└── example.spec.ts           # Basic title verification
 ```
 
 ### Multi-User Test Pattern
@@ -432,13 +433,16 @@ For exploratory testing and debugging:
 firebase emulators:start
 
 # Run all tests
-cd e2e && yarn playwright test
+yarn test:e2e
 
 # Run specific test
-cd e2e && yarn playwright test vote.spec.ts
+yarn test:e2e vote.spec.ts
 
 # Debug mode
-cd e2e && yarn playwright test --debug
+yarn test:e2e --debug
+
+# Prevent stalling on failures in CI
+CI=true yarn test:e2e
 ```
 
 ### CI/CD Integration
@@ -460,7 +464,7 @@ Tests run in GitHub Actions with:
 - [x] Authentication flow implementation  
 - [x] Vote scene multi-user testing
 - [x] Quiz scene multi-user testing
-- [ ] Freestyle scene testing
+- [x] Freestyle scene testing
 
 ### Phase 3: Advanced Testing
 - [ ] Visual regression testing
@@ -485,6 +489,64 @@ Tests run in GitHub Actions with:
 - Test suite designed for additional scenes
 - Extensible page object architecture
 - Performance testing for larger audiences
+
+## Lessons Learned & Implementation Notes
+
+### Grommet UI Component Testing
+**Challenge**: Grommet components often hide actual input elements (checkboxes, radio buttons) making them invisible to standard Playwright selectors.
+
+**Solutions**:
+- **Checkboxes**: Use `GrommetCheckbox` helper class instead of direct `.check()` calls
+- **Radio buttons**: Click on text labels (`getByText(mode).click()`) instead of targeting radio inputs
+- **Draft components**: Use semantic locators to target the correct Save buttons, `fill()` works fine
+
+**Example**:
+```typescript
+// ❌ Doesn't work - hidden input
+await page.getByRole('checkbox', { name: 'Show chat' }).check()
+
+// ✅ Works - uses helper class
+const checkbox = new GrommetCheckbox(page.getByRole('checkbox', { name: 'Show chat' }))
+await checkbox.check()
+```
+
+### Draft Component Interaction Pattern
+**Challenge**: Freestyle scene uses Draft components where Save buttons are disabled until content changes.
+
+**Root Cause**: The actual issue was targeting the wrong Save button using fragile `.nth()` indexing, not a problem with `fill()` vs `type()`.
+
+**Solution**: Use semantic locators to target the correct Save button associated with each form field. The `fill()` method works perfectly when targeting the right elements.
+
+### Semantic Locator Strategy  
+**Challenge**: Targeting specific Save buttons when multiple exist on the page.
+
+**Anti-pattern**: Using fragile `.nth()` indexing
+```typescript
+// ❌ Fragile - breaks if UI changes
+const saveButton = section.getByRole('button', { name: 'Save' }).nth(1)
+```
+
+**Best practice**: Traverse DOM semantically from labels
+```typescript
+// ✅ Robust - finds Save button after "Arbitrary HTML" text
+const textarea = section.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
+const saveButton = textarea.locator('..').getByRole('button', { name: 'Save' })
+```
+
+### CI Testing Best Practices
+- Always use `CI=true` flag to prevent test stalling on failures
+- Use `--retries=0` during debugging to see immediate feedback
+- Use aria snapshots (`page.locator("body").ariaSnapshot()`) for debugging complex UI states
+
+### Multi-User Testing Architecture
+- Firebase emulator with unique namespaces per test ensures complete isolation
+- Use `Promise.all()` to create users concurrently for faster test execution
+- `test.step()` organization provides clear test structure and better error reporting
+
+### Performance Considerations
+- `fill()` is faster than `type()` and works perfectly when elements are targeted correctly
+- Always wait for save operations before moving to next steps
+- Use specific waits (`expectCustomContent`) rather than generic timeouts
 
 ## References
 
