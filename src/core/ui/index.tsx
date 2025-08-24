@@ -15,7 +15,7 @@ import {
 import Noty from 'noty'
 import 'noty/lib/noty.css'
 import 'noty/lib/themes/mint.css'
-import React, { ReactNode, Suspense, useCallback, useState } from 'react'
+import React, { ReactNode, Suspense, useCallback, useId, useState } from 'react'
 
 export function flashError(text: string) {
   new Noty({ text, type: 'error' }).show()
@@ -29,7 +29,10 @@ export function flashSuccess(text: string) {
   }).show()
 }
 
-export class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error?: Error }> {
+export class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error?: Error }
+> {
   constructor(props: { children: React.ReactNode }) {
     super(props)
     this.state = {}
@@ -153,20 +156,27 @@ export function useActionRunner(): [
   ) => Promise<T>
 ] {
   const [running, setRunning] = useState(false)
-  const run = useCallback(async (description: string, f: () => Promise<any>, successMessage?: string) => {
-    let failed = false
-    setRunning(true)
-    try {
-      return await f()
-    } catch (e) {
-      failed = true
-      flashError(`Failed to ${description}: ${e}`)
-      throw e
-    } finally {
-      if (!failed && successMessage) flashSuccess(successMessage)
-      setRunning(false)
-    }
-  }, [])
+  const run = useCallback(
+    async (
+      description: string,
+      f: () => Promise<any>,
+      successMessage?: string
+    ) => {
+      let failed = false
+      setRunning(true)
+      try {
+        return await f()
+      } catch (e) {
+        failed = true
+        flashError(`Failed to ${description}: ${e}`)
+        throw e
+      } finally {
+        if (!failed && successMessage) flashSuccess(successMessage)
+        setRunning(false)
+      }
+    },
+    []
+  )
   return [running, run]
 }
 
@@ -178,7 +188,9 @@ export function ActionButton(
     }
 ) {
   const [running, run] = useActionRunner()
-  const onClick = async (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+  const onClick = async (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => {
     e.persist()
     e.preventDefault()
     if (props.onClick) {
@@ -191,7 +203,11 @@ export function ActionButton(
     }
   }
   return (
-    <Button {...props as any} onClick={onClick} disabled={props.disabled || running} />
+    <Button
+      {...(props as any)}
+      onClick={onClick}
+      disabled={props.disabled || running}
+    />
   )
 }
 
@@ -271,18 +287,21 @@ export type ConnectorType<
   }
 >
 
-export function Field(props: { 
+export function Field(props: {
   label: ReactNode
   children: ReactNode
-  htmlFor?: string 
+  htmlFor?: string
 }) {
+  const id = useId()
   return (
-    <Box direction="row">
+    <Box direction="row" role="group" aria-labelledby={id}>
       <Box width="10rem">
         {props.htmlFor ? (
-          <label htmlFor={props.htmlFor}>{props.label}</label>
+          <label htmlFor={props.htmlFor} id={id}>
+            {props.label}
+          </label>
         ) : (
-          props.label
+          <span id={id}>{props.label}</span>
         )}
       </Box>
       <Box flex>{props.children}</Box>

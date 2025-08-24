@@ -104,7 +104,7 @@ test('complete freestyle flow: admin configures scene, audience interacts, prese
     await user1.freestyle.switchToTopQuestions()
     
     // Verify explicit ordering: Bob's question (2 likes) should be first, Alice's (1 like) second
-    const questionItems = user1.page.locator('.QuestionView__item')
+    const questionItems = user1.page.getByTestId('question')
     await expect(questionItems).toHaveCount(2, { timeout: 5000 })
     
     // First item should be Bob's question with higher likes

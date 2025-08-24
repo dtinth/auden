@@ -56,7 +56,7 @@ export class FreestyleAudienceTester {
 
   async expectQuestion(userName: string, questionText: string): Promise<void> {
     const questionView = this.page.locator('.QuestionView')
-    const questionItem = questionView.locator('.QuestionView__item').filter({
+    const questionItem = questionView.getByTestId('question').filter({
       hasText: questionText
     })
     await expect(questionItem.getByText(userName)).toBeVisible()
@@ -64,14 +64,14 @@ export class FreestyleAudienceTester {
   }
 
   async likeQuestion(questionText: string): Promise<void> {
-    const questionItem = this.page.locator('.QuestionView__item').filter({
+    const questionItem = this.page.getByTestId('question').filter({
       hasText: questionText
     })
-    await questionItem.getByRole('button').first().click() // Like button is the first button
+    await questionItem.getByRole('button', { name: 'Like' }).click()
   }
 
   async expectQuestionLikes(questionText: string, likeCount: number): Promise<void> {
-    const questionItem = this.page.locator('.QuestionView__item').filter({
+    const questionItem = this.page.getByTestId('question').filter({
       hasText: questionText
     })
     await expect(questionItem.getByText(likeCount.toString())).toBeVisible()

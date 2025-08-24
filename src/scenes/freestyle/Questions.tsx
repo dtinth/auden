@@ -110,6 +110,8 @@ const QuestionItem = React.memo(function QuestionItem(props: {
         className="QuestionView__item"
         direction="row"
         gap="small"
+        data-testid="question"
+        role="group"
       >
         <Box alignSelf="center">{likeButton}</Box>
         <Box flex>{questionBody}</Box>
@@ -128,6 +130,7 @@ function LikeButton(props: {
   return (
     <Box>
       <Button
+        aria-label="Like"
         icon={<Upgrade color={props.liked ? 'status-ok' : undefined} />}
         plain
         style={{ padding: '0.5ex' }}

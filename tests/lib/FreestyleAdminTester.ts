@@ -30,8 +30,9 @@ export class FreestyleAdminTester {
     const htmlTextarea = presentationSection.getByRole('textbox', { name: 'Arbitrary HTML' })
     await htmlTextarea.fill(html)
     
-    // Find the Save button that comes after the HTML textbox
-    const saveButton = htmlTextarea.locator('..').getByRole('button', { name: 'Save' })
+    // Find the Save button within the Arbitrary HTML field group
+    const fieldGroup = presentationSection.getByRole('group', { name: 'Arbitrary HTML' })
+    const saveButton = fieldGroup.getByRole('button', { name: 'Save' })
     await saveButton.click()
   }
 
@@ -41,8 +42,9 @@ export class FreestyleAdminTester {
     const cssTextarea = presentationSection.getByRole('textbox', { name: 'Arbitrary CSS' })
     await cssTextarea.fill(css)
     
-    // Find the Save button that comes after the CSS textbox
-    const saveButton = cssTextarea.locator('..').getByRole('button', { name: 'Save' })
+    // Find the Save button within the Arbitrary CSS field group
+    const fieldGroup = presentationSection.getByRole('group', { name: 'Arbitrary CSS' })
+    const saveButton = fieldGroup.getByRole('button', { name: 'Save' })
     await saveButton.click()
   }
 
@@ -59,8 +61,9 @@ export class FreestyleAdminTester {
     const htmlTextarea = audienceSection.getByRole('textbox', { name: 'Arbitrary HTML' })
     await htmlTextarea.fill(html)
     
-    // Find the Save button that comes after the HTML textbox
-    const saveButton = htmlTextarea.locator('..').getByRole('button', { name: 'Save' })
+    // Find the Save button within the Arbitrary HTML field group
+    const fieldGroup = audienceSection.getByRole('group', { name: 'Arbitrary HTML' })
+    const saveButton = fieldGroup.getByRole('button', { name: 'Save' })
     await saveButton.click()
   }
 
@@ -70,8 +73,9 @@ export class FreestyleAdminTester {
     const cssTextarea = audienceSection.getByRole('textbox', { name: 'Arbitrary CSS' })
     await cssTextarea.fill(css)
     
-    // Find the Save button that comes after the CSS textbox
-    const saveButton = cssTextarea.locator('..').getByRole('button', { name: 'Save' })
+    // Find the Save button within the Arbitrary CSS field group
+    const fieldGroup = audienceSection.getByRole('group', { name: 'Arbitrary CSS' })
+    const saveButton = fieldGroup.getByRole('button', { name: 'Save' })
     await saveButton.click()
   }
 
