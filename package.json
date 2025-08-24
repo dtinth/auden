@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@types/jest": "^30.0.0",
-    "@types/markdown-it": "^0.0.7",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
@@ -15,7 +15,7 @@
     "firebase-bolt": "^0.8.4",
     "grommet": "^2.15.0",
     "grommet-icons": "^4.4.0",
-    "markdown-it": "^12.3.2",
+    "markdown-it": "^14.1.0",
     "noty": "^3.2.0-beta",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
