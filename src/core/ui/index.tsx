@@ -271,10 +271,20 @@ export type ConnectorType<
   }
 >
 
-export function Field(props: { label: ReactNode; children: ReactNode }) {
+export function Field(props: { 
+  label: ReactNode
+  children: ReactNode
+  htmlFor?: string 
+}) {
   return (
     <Box direction="row">
-      <Box width="10rem">{props.label}</Box>
+      <Box width="10rem">
+        {props.htmlFor ? (
+          <label htmlFor={props.htmlFor}>{props.label}</label>
+        ) : (
+          props.label
+        )}
+      </Box>
       <Box flex>{props.children}</Box>
     </Box>
   )

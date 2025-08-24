@@ -125,6 +125,8 @@ function FreestylePresentation() {
 }
 
 function FreestyleBackstage() {
+  const baseId = useId()
+  
   return (
     <Box gap="medium">
       <Panel title="Presentation view">
@@ -146,24 +148,24 @@ function FreestyleBackstage() {
             </SceneDataConnector>
           </Field>
 
-          <Field label="Class names">
+          <Field label="Class names" htmlFor={`${baseId}-presentationClass`}>
             <FreestyleStringSettingEditor
               path={[...PRESENTATION_SETTINGS_PATH, 'className']}
-              label="Presentation Class names"
+              inputId={`${baseId}-presentationClass`}
             />
           </Field>
 
-          <Field label="Arbitrary HTML">
+          <Field label="Arbitrary HTML" htmlFor={`${baseId}-presentationHtml`}>
             <FreestyleTextSettingEditor
               path={[...PRESENTATION_ARBITRARY_PATH, 'html']}
-              label="Presentation Arbitrary HTML"
+              inputId={`${baseId}-presentationHtml`}
             />
           </Field>
 
-          <Field label="Arbitrary CSS">
+          <Field label="Arbitrary CSS" htmlFor={`${baseId}-presentationCss`}>
             <FreestyleTextSettingEditor
               path={[...PRESENTATION_ARBITRARY_PATH, 'css']}
-              label="Presentation Arbitrary CSS"
+              inputId={`${baseId}-presentationCss`}
             />
           </Field>
         </Box>
@@ -186,17 +188,17 @@ function FreestyleBackstage() {
             </SceneDataConnector>
           </Field>
 
-          <Field label="Arbitrary HTML">
+          <Field label="Arbitrary HTML" htmlFor={`${baseId}-audienceHtml`}>
             <FreestyleTextSettingEditor
               path={[...AUDIENCE_ARBITRARY_PATH, 'html']}
-              label="Audience Arbitrary HTML"
+              inputId={`${baseId}-audienceHtml`}
             />
           </Field>
 
-          <Field label="Arbitrary CSS">
+          <Field label="Arbitrary CSS" htmlFor={`${baseId}-audienceCss`}>
             <FreestyleTextSettingEditor
               path={[...AUDIENCE_ARBITRARY_PATH, 'css']}
-              label="Audience Arbitrary CSS"
+              inputId={`${baseId}-audienceCss`}
             />
           </Field>
         </Box>
@@ -205,16 +207,17 @@ function FreestyleBackstage() {
   )
 }
 
-function FreestyleTextSettingEditor(props: { path: string[]; label: string }) {
-  const id = useId()
+function FreestyleTextSettingEditor(props: { 
+  path: string[]
+  inputId?: string
+}) {
   return (
     <SceneDataConnector path={props.path}>
       {(text) => (
         <Draft value={text.value || ''} onSave={(value) => text.ref.set(value)}>
           {(draft, setDraft) => (
             <TextArea
-              id={id}
-              aria-label={props.label}
+              id={props.inputId}
               rows={8}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -226,8 +229,10 @@ function FreestyleTextSettingEditor(props: { path: string[]; label: string }) {
   )
 }
 
-function FreestyleStringSettingEditor(props: { path: string[]; label: string }) {
-  const id = useId()
+function FreestyleStringSettingEditor(props: { 
+  path: string[]
+  inputId?: string
+}) {
   return (
     <SceneDataConnector path={props.path}>
       {(text) => (
@@ -238,8 +243,7 @@ function FreestyleStringSettingEditor(props: { path: string[]; label: string }) 
         >
           {(draft, setDraft) => (
             <TextInput
-              id={id}
-              aria-label={props.label}
+              id={props.inputId}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
             />

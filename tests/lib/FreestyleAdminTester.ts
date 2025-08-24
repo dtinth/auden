@@ -25,8 +25,9 @@ export class FreestyleAdminTester {
   }
 
   async setPresentationHTML(html: string): Promise<void> {
-    // Use semantic selector with accessible name
-    const htmlTextarea = this.page.getByRole('textbox', { name: 'Presentation Arbitrary HTML' })
+    // Use semantic selector within Presentation view section
+    const presentationSection = this.page.getByRole('region', { name: 'Presentation view' })
+    const htmlTextarea = presentationSection.getByRole('textbox', { name: 'Arbitrary HTML' })
     await htmlTextarea.clear()
     await htmlTextarea.fill(html)
     
@@ -36,8 +37,9 @@ export class FreestyleAdminTester {
   }
 
   async setPresentationCSS(css: string): Promise<void> {
-    // Use semantic selector with accessible name
-    const cssTextarea = this.page.getByRole('textbox', { name: 'Presentation Arbitrary CSS' })
+    // Use semantic selector within Presentation view section
+    const presentationSection = this.page.getByRole('region', { name: 'Presentation view' })
+    const cssTextarea = presentationSection.getByRole('textbox', { name: 'Arbitrary CSS' })
     await cssTextarea.clear()
     await cssTextarea.fill(css)
     
@@ -54,8 +56,9 @@ export class FreestyleAdminTester {
   }
 
   async setAudienceHTML(html: string): Promise<void> {
-    // Use semantic selector with accessible name
-    const htmlTextarea = this.page.getByRole('textbox', { name: 'Audience Arbitrary HTML' })
+    // Use semantic selector within Audience view section
+    const audienceSection = this.page.getByRole('region', { name: 'Audience view' })
+    const htmlTextarea = audienceSection.getByRole('textbox', { name: 'Arbitrary HTML' })
     await htmlTextarea.clear()
     await htmlTextarea.fill(html)
     
@@ -65,8 +68,9 @@ export class FreestyleAdminTester {
   }
 
   async setAudienceCSS(css: string): Promise<void> {
-    // Use semantic selector with accessible name
-    const cssTextarea = this.page.getByRole('textbox', { name: 'Audience Arbitrary CSS' })
+    // Use semantic selector within Audience view section
+    const audienceSection = this.page.getByRole('region', { name: 'Audience view' })
+    const cssTextarea = audienceSection.getByRole('textbox', { name: 'Arbitrary CSS' })
     await cssTextarea.clear()
     await cssTextarea.fill(css)
     
