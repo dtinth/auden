@@ -10,7 +10,7 @@ export class AppTester {
 
   async screenshot(tester: { page: Page }, name: string): Promise<void> {
     const filepath = path.join('visual-tests', `${name}.png`)
-    await tester.page.screenshot({ path: filepath, fullPage: true })
+    await tester.page.screenshot({ path: filepath, fullPage: true, animations: 'disabled' })
   }
 
   /**

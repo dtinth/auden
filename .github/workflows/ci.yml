@@ -63,7 +63,15 @@ jobs:
       run: yarn percy upload visual-tests/
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      if: always() && hashFiles('visual-tests/*.png') != '' && env.PERCY_TOKEN != ''
+    
+    - name: Upload visual tests as artifact (fallback for forks)
+      uses: actions/upload-artifact@v4
       if: always() && hashFiles('visual-tests/*.png') != ''
+      with:
+        name: visual-tests
+        path: visual-tests/
+        retention-days: 7
     
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}

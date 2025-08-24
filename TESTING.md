@@ -347,16 +347,26 @@ test('complete quiz flow with 4 expert questions', async ({ context }) => {
 
 ### Screenshot Strategy
 
-- **Generation**: Dump screenshots to `e2e/screenshots/` organized by scene/viewport/user-type
-- **Integration**: [Percy](https://percy.io/) for visual regression testing
+- **Generation**: Screenshots saved to `visual-tests/` with flat directory structure
+- **Integration**: [Percy](https://percy.io/) for visual regression testing via CI upload
+- **Fallback**: CI artifacts for local inspection when Percy is unavailable (e.g., in forks)
 - **Mobile Testing**: iPhone/Android viewports for audience interface testing
 
 ### Implementation
 
 ```typescript
-// Component-specific screenshots
-await audienceTester.takeScreenshot('vote-mobile-view')
-await presentationTester.takeScreenshot('vote-results-display')
+// Visual regression testing with app.screenshot()
+const app = new AppTester(context)
+const [admin, alice, presentation] = await Promise.all([
+  app.createAdmin(),
+  app.createAudience('alice'), 
+  app.createPresentation()
+])
+
+// Capture key visual moments
+await app.screenshot(admin, 'vote-admin-setup')
+await app.screenshot(alice, 'vote-alice-mobile-voting') 
+await app.screenshot(presentation, 'vote-presentation-results')
 ```
 
 ## Performance Testing
