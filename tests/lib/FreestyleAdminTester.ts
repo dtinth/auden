@@ -28,7 +28,6 @@ export class FreestyleAdminTester {
     // Use semantic selector within Presentation view section
     const presentationSection = this.page.getByRole('region', { name: 'Presentation view' })
     const htmlTextarea = presentationSection.getByRole('textbox', { name: 'Arbitrary HTML' })
-    await htmlTextarea.clear()
     await htmlTextarea.fill(html)
     
     // Find the Save button that comes after the HTML textbox
@@ -40,7 +39,6 @@ export class FreestyleAdminTester {
     // Use semantic selector within Presentation view section
     const presentationSection = this.page.getByRole('region', { name: 'Presentation view' })
     const cssTextarea = presentationSection.getByRole('textbox', { name: 'Arbitrary CSS' })
-    await cssTextarea.clear()
     await cssTextarea.fill(css)
     
     // Find the Save button that comes after the CSS textbox
@@ -59,7 +57,6 @@ export class FreestyleAdminTester {
     // Use semantic selector within Audience view section
     const audienceSection = this.page.getByRole('region', { name: 'Audience view' })
     const htmlTextarea = audienceSection.getByRole('textbox', { name: 'Arbitrary HTML' })
-    await htmlTextarea.clear()
     await htmlTextarea.fill(html)
     
     // Find the Save button that comes after the HTML textbox
@@ -71,7 +68,6 @@ export class FreestyleAdminTester {
     // Use semantic selector within Audience view section
     const audienceSection = this.page.getByRole('region', { name: 'Audience view' })
     const cssTextarea = audienceSection.getByRole('textbox', { name: 'Arbitrary CSS' })
-    await cssTextarea.clear()
     await cssTextarea.fill(css)
     
     // Find the Save button that comes after the CSS textbox
