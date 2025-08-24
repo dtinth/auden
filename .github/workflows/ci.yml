@@ -59,6 +59,12 @@ jobs:
     - name: Run Playwright tests
       run: yarn test:e2e
     
+    - name: Upload visual tests to Percy
+      run: yarn percy upload visual-tests/
+      env:
+        PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      if: always() && hashFiles('visual-tests/*.png') != ''
+    
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

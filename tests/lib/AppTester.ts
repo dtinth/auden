@@ -1,4 +1,5 @@
 import { BrowserContext, Page, expect } from '@playwright/test'
+import path from 'path'
 import { AdminTester } from './AdminTester'
 import { AudienceTester } from './AudienceTester'
 import { PresentationTester } from './PresentationTester'
@@ -6,6 +7,11 @@ import { getOrCreateNamespace } from './namespace'
 
 export class AppTester {
   constructor(private context: BrowserContext) {}
+
+  async screenshot(tester: { page: Page }, name: string): Promise<void> {
+    const filepath = path.join('visual-tests', `${name}.png`)
+    await tester.page.screenshot({ path: filepath, fullPage: true })
+  }
 
   /**
    * Initialize a user with emulator setup and authentication.
