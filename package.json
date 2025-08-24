@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "^24.0.0",
+    "@types/jest": "^30.0.0",
     "@types/markdown-it": "^0.0.7",
     "@types/node": "^22.0.0",
     "@types/react": "^18.0.0",
