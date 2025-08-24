@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import { FreestylePresentationTester } from './FreestylePresentationTester'
 import { QuizPresentationTester } from './QuizPresentationTester'
 import { VotePresentationTester } from './VotePresentationTester'
 
@@ -15,6 +16,10 @@ export class PresentationTester {
 
   get vote(): VotePresentationTester {
     return new VotePresentationTester(this.page)
+  }
+
+  get freestyle(): FreestylePresentationTester {
+    return new FreestylePresentationTester(this.page)
   }
 
   async navigateToDisplay(): Promise<void> {
