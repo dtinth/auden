@@ -526,17 +526,24 @@ await checkbox.check()
 const saveButton = section.getByRole('button', { name: 'Save' }).nth(1)
 ```
 
-**Best practice**: Traverse DOM semantically from labels
+**Best practice**: Use accessible names with React 18 useId() hook
 ```typescript
-// ✅ Robust - finds Save button after "Arbitrary HTML" text
-const textarea = section.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
+// ✅ Most robust - uses aria-label for direct targeting
+const textarea = page.getByRole('textbox', { name: 'Presentation Arbitrary HTML' })
 const saveButton = textarea.locator('..').getByRole('button', { name: 'Save' })
+
+// Alternative - traverse DOM semantically from labels (less preferred)
+const textarea = section.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
 ```
 
 ### CI Testing Best Practices
 - Always use `CI=true` flag to prevent test stalling on failures
 - Use `--retries=0` during debugging to see immediate feedback
-- Use aria snapshots (`page.locator("body").ariaSnapshot()`) for debugging complex UI states
+- **Debugging test failures**: Read `error-context.md` files in test results directories
+  - Located at `test-results/{test-name}/error-context.md`
+  - Contains complete ARIA snapshots of the page when test failed
+  - Much better than manual `afterEach` aria snapshot hacks
+  - Example: `test-results/freestyle-complete-freesty-0a7fb-esentation-displays-content-chromium/error-context.md`
 
 ### Multi-User Testing Architecture
 - Firebase emulator with unique namespaces per test ensures complete isolation

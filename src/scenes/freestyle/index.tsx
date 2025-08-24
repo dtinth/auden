@@ -1,5 +1,5 @@
 import { Box, Button, RadioButtonGroup, TextArea, TextInput } from 'grommet'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useState, useId } from 'react'
 import { SceneDataConnector } from '../../core/app/SceneContext'
 import { IScene } from '../../core/model'
 import { ActionCheckbox, Draft, Field, Panel } from '../../core/ui'
@@ -149,18 +149,21 @@ function FreestyleBackstage() {
           <Field label="Class names">
             <FreestyleStringSettingEditor
               path={[...PRESENTATION_SETTINGS_PATH, 'className']}
+              label="Presentation Class names"
             />
           </Field>
 
           <Field label="Arbitrary HTML">
             <FreestyleTextSettingEditor
               path={[...PRESENTATION_ARBITRARY_PATH, 'html']}
+              label="Presentation Arbitrary HTML"
             />
           </Field>
 
           <Field label="Arbitrary CSS">
             <FreestyleTextSettingEditor
               path={[...PRESENTATION_ARBITRARY_PATH, 'css']}
+              label="Presentation Arbitrary CSS"
             />
           </Field>
         </Box>
@@ -186,12 +189,14 @@ function FreestyleBackstage() {
           <Field label="Arbitrary HTML">
             <FreestyleTextSettingEditor
               path={[...AUDIENCE_ARBITRARY_PATH, 'html']}
+              label="Audience Arbitrary HTML"
             />
           </Field>
 
           <Field label="Arbitrary CSS">
             <FreestyleTextSettingEditor
               path={[...AUDIENCE_ARBITRARY_PATH, 'css']}
+              label="Audience Arbitrary CSS"
             />
           </Field>
         </Box>
@@ -200,13 +205,16 @@ function FreestyleBackstage() {
   )
 }
 
-function FreestyleTextSettingEditor(props: { path: string[] }) {
+function FreestyleTextSettingEditor(props: { path: string[]; label: string }) {
+  const id = useId()
   return (
     <SceneDataConnector path={props.path}>
       {(text) => (
         <Draft value={text.value || ''} onSave={(value) => text.ref.set(value)}>
           {(draft, setDraft) => (
             <TextArea
+              id={id}
+              aria-label={props.label}
               rows={8}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -218,7 +226,8 @@ function FreestyleTextSettingEditor(props: { path: string[] }) {
   )
 }
 
-function FreestyleStringSettingEditor(props: { path: string[] }) {
+function FreestyleStringSettingEditor(props: { path: string[]; label: string }) {
+  const id = useId()
   return (
     <SceneDataConnector path={props.path}>
       {(text) => (
@@ -229,6 +238,8 @@ function FreestyleStringSettingEditor(props: { path: string[] }) {
         >
           {(draft, setDraft) => (
             <TextInput
+              id={id}
+              aria-label={props.label}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
             />

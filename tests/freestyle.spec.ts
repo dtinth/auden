@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { AppTester } from './lib/AppTester'
 
 test('complete freestyle flow: admin configures scene, audience interacts, presentation displays content', async ({
@@ -102,9 +102,20 @@ test('complete freestyle flow: admin configures scene, audience interacts, prese
 
     // Switch to Top Questions view and verify order
     await user1.freestyle.switchToTopQuestions()
-    // Bob's question should appear first (2 likes) followed by Alice's (1 like)
-    await user1.freestyle.expectQuestion('Bob', 'How do I handle async operations in TypeScript?')
-    await user1.freestyle.expectQuestion('Alice', 'What IDE should I use for JavaScript development?')
+    
+    // Verify explicit ordering: Bob's question (2 likes) should be first, Alice's (1 like) second
+    const questionItems = user1.page.locator('.QuestionView__item')
+    await expect(questionItems).toHaveCount(2, { timeout: 5000 })
+    
+    // First item should be Bob's question with higher likes
+    const firstQuestion = questionItems.nth(0)
+    await expect(firstQuestion).toContainText('Bob', { timeout: 5000 })
+    await expect(firstQuestion).toContainText('How do I handle async operations in TypeScript?')
+    
+    // Second item should be Alice's question with lower likes  
+    const secondQuestion = questionItems.nth(1)
+    await expect(secondQuestion).toContainText('Alice', { timeout: 5000 })
+    await expect(secondQuestion).toContainText('What IDE should I use for JavaScript development?')
   })
 
   await test.step('Both Mode: Admin enables both chat and questions, users can switch between them', async () => {

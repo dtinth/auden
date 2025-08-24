@@ -25,13 +25,10 @@ export class FreestyleAdminTester {
   }
 
   async setPresentationHTML(html: string): Promise<void> {
-    // Find the "Arbitrary HTML" section under "Presentation view"
-    const presentationSection = this.page.getByRole('region', { name: 'Presentation view' })
-    
-    // Look for the textbox that comes after "Arbitrary HTML" text
-    const htmlTextarea = presentationSection.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
+    // Use semantic selector with accessible name
+    const htmlTextarea = this.page.getByRole('textbox', { name: 'Presentation Arbitrary HTML' })
     await htmlTextarea.clear()
-    await htmlTextarea.fill(html) // fill() works fine with correct targeting
+    await htmlTextarea.fill(html)
     
     // Find the Save button that comes after the HTML textbox
     const saveButton = htmlTextarea.locator('..').getByRole('button', { name: 'Save' })
@@ -39,13 +36,10 @@ export class FreestyleAdminTester {
   }
 
   async setPresentationCSS(css: string): Promise<void> {
-    // Find the "Arbitrary CSS" section under "Presentation view"  
-    const presentationSection = this.page.getByRole('region', { name: 'Presentation view' })
-    
-    // Look for the textbox that comes after "Arbitrary CSS" text
-    const cssTextarea = presentationSection.getByText('Arbitrary CSS').locator('..').getByRole('textbox')
+    // Use semantic selector with accessible name
+    const cssTextarea = this.page.getByRole('textbox', { name: 'Presentation Arbitrary CSS' })
     await cssTextarea.clear()
-    await cssTextarea.fill(css) // fill() works fine with correct targeting
+    await cssTextarea.fill(css)
     
     // Find the Save button that comes after the CSS textbox
     const saveButton = cssTextarea.locator('..').getByRole('button', { name: 'Save' })
@@ -60,13 +54,10 @@ export class FreestyleAdminTester {
   }
 
   async setAudienceHTML(html: string): Promise<void> {
-    // Find the "Arbitrary HTML" section under "Audience view"
-    const audienceSection = this.page.getByRole('region', { name: 'Audience view' })
-    
-    // Look for the textbox that comes after "Arbitrary HTML" text
-    const htmlTextarea = audienceSection.getByText('Arbitrary HTML').locator('..').getByRole('textbox')
+    // Use semantic selector with accessible name
+    const htmlTextarea = this.page.getByRole('textbox', { name: 'Audience Arbitrary HTML' })
     await htmlTextarea.clear()
-    await htmlTextarea.fill(html) // fill() works fine with correct targeting
+    await htmlTextarea.fill(html)
     
     // Find the Save button that comes after the HTML textbox
     const saveButton = htmlTextarea.locator('..').getByRole('button', { name: 'Save' })
@@ -74,13 +65,10 @@ export class FreestyleAdminTester {
   }
 
   async setAudienceCSS(css: string): Promise<void> {
-    // Find the "Arbitrary CSS" section under "Audience view"
-    const audienceSection = this.page.getByRole('region', { name: 'Audience view' })
-    
-    // Look for the textbox that comes after "Arbitrary CSS" text
-    const cssTextarea = audienceSection.getByText('Arbitrary CSS').locator('..').getByRole('textbox')
+    // Use semantic selector with accessible name
+    const cssTextarea = this.page.getByRole('textbox', { name: 'Audience Arbitrary CSS' })
     await cssTextarea.clear()
-    await cssTextarea.fill(css) // fill() works fine with correct targeting
+    await cssTextarea.fill(css)
     
     // Find the Save button that comes after the CSS textbox
     const saveButton = cssTextarea.locator('..').getByRole('button', { name: 'Save' })

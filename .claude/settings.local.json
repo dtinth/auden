@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(CI=true yarn test:e2e freestyle-debug.spec.ts)",
+      "Bash(CI=true yarn test:e2e freestyle-debug.spec.ts --retries=0)",
+      "Bash(CI=true yarn test:e2e freestyle.spec.ts --retries=0)",
+      "Bash(CI=true yarn test:e2e freestyle-simple.spec.ts --retries=0)",
+      "Bash(CI=true yarn test:e2e example.spec.ts --retries=0)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
