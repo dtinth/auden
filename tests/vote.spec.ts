@@ -25,6 +25,7 @@ test('complete vote flow: admin creates vote, audience participates, presentatio
 
   await admin.vote.setQuestionText(questionText)
   await admin.vote.setVoteOptions(voteOptions)
+  await app.screenshot(admin, 'vote-admin-setup')
 
   // Admin: Activate the scene so audience can see it
   await admin.activateScene(screenId)
@@ -47,6 +48,7 @@ test('complete vote flow: admin creates vote, audience participates, presentatio
   // Audience: Verify voting interface is displayed
   await user1.vote.expectVotingInterface(questionText)
   await user1.vote.expectVotingOptions(voteOptions)
+  await app.screenshot(user1, 'vote-alice-mobile-voting')
 
   await user2.vote.expectVotingInterface(questionText)
   await user2.vote.expectVotingOptions(voteOptions)
@@ -54,6 +56,7 @@ test('complete vote flow: admin creates vote, audience participates, presentatio
   // Audience: Cast votes
   await user1.vote.selectOption('TypeScript')
   await user2.vote.selectOption('JavaScript')
+  await app.screenshot(user1, 'vote-alice-voted')
 
   // Verify votes were recorded
   await user1.vote.expectVoteSubmitted()
@@ -80,4 +83,5 @@ test('complete vote flow: admin creates vote, audience participates, presentatio
     Python: 0,
     Go: 0,
   })
+  await app.screenshot(presentation, 'vote-presentation-results')
 })

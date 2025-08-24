@@ -59,6 +59,7 @@ answers = [
 `
 
     await admin.quiz.importQuestions(expertQuizTOML)
+    await app.screenshot(admin, 'quiz-admin-import-complete')
 
     // Admin: Activate the scene so others can see it
     await admin.activateScene(screenId)
@@ -81,6 +82,7 @@ answers = [
     // Presentation: Should show the question
     await presentation.quiz.expectQuestionInterface('JavaScript Closures')
     await presentation.quiz.expectAnswersNotRevealed()
+    await app.screenshot(presentation, 'quiz-presentation-question-1')
 
     // Audience: Should see the question and answer choices
     await user1.quiz.expectQuestionInterface('question001')
@@ -89,6 +91,7 @@ answers = [
     // Audience: Alice answers correctly first (gets 100 points), Bob answers correctly second (gets 99 points)
     await user1.quiz.selectAnswer('A') // Correct answer: 8
     await user1.quiz.expectAnswerSubmitted()
+    await app.screenshot(user1, 'quiz-alice-mobile-answered')
 
     await user2.quiz.selectAnswer('A') // Also correct, but slower
     await user2.quiz.expectAnswerSubmitted()
@@ -163,6 +166,7 @@ answers = [
       Alice: 200, // 100 + 0 + 100
       Bob: 298, // 99 + 100 + 99
     })
+    await app.screenshot(presentation, 'quiz-presentation-leaderboard-final')
   })
 
   await test.step('Question 4: Time Complexity (Alice=0, Bob=100)', async () => {

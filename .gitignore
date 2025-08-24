@@ -27,3 +27,6 @@ yarn-error.log*
 # playwright
 /playwright-report/
 /test-results/
+
+# visual testing
+/visual-tests/
