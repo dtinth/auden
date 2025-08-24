@@ -13,17 +13,17 @@ Auden is an open-source, hackable audience engagement platform for events, suppo
 ## Development Commands
 
 ### Main Application
-- `yarn install` - Install dependencies
-- `yarn start` - Start development server on localhost:3000
-- `yarn build` - Build for production
-- `yarn test` - Run tests
+- `pnpm install` - Install dependencies
+- `pnpm start` - Start development server on localhost:3000
+- `pnpm build` - Build for production
+- `pnpm test` - Run tests
 
 ### E2E Testing
-- `yarn test:e2e:install` - Install Playwright browser dependencies
-- `yarn test:e2e` - Run E2E tests
+- `pnpm test:e2e:install` - Install Playwright browser dependencies
+- `pnpm test:e2e` - Run E2E tests
 
 ### Deployment
-- `yarn build` - Build for production (for Netlify hosting)
+- `pnpm build` - Build for production (for Netlify hosting)
 - `firebase deploy` - Deploy Firebase database rules only
 
 ## Architecture
@@ -108,6 +108,7 @@ Each scene in `src/scenes/{name}/` contains:
 ### Legacy Considerations
 - **Modernized**: Now uses React 18 with createRoot API and modern patterns
 - **Unified Node.js**: Single Node.js 22.18.0 version for all development (specified in `.nvmrc`)
+- **Package Manager**: Uses pnpm via Corepack for improved performance and strict dependency management
 - **Updated Build Tools**: react-scripts 5.0.1 with webpack 5 and modern tooling
 - **TypeScript**: Updated to 4.9.5 with modern error handling (Error cause support)
 - **Browser Compatibility**: Replaced Node.js-specific modules with browser-compatible alternatives

@@ -15,6 +15,7 @@
     "firebase-bolt": "^0.8.4",
     "grommet": "^2.15.0",
     "grommet-icons": "^4.4.0",
+    "history": "^4.10.1",
     "markdown-it": "^12.3.2",
     "noty": "^3.2.0-beta",
     "react": "^18.0.0",
@@ -47,10 +48,11 @@
   ],
   "devDependencies": {
     "@playwright/test": "^1.55.0",
+    "@types/history": "4.7.11",
     "@types/webpack-env": "^1.15.3",
     "firebase-tools": "^13.6.0"
   },
-  "resolutions": {
+  "overrides": {
     "@types/react": "^18.0.0"
   },
   "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"

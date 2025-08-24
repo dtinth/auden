@@ -415,7 +415,7 @@ await presentationTester.takeScreenshot('vote-results-display')
 For exploratory testing and debugging:
 
 1. **Start Firebase Emulators**: `firebase emulators:start` or use the dockerized version
-2. **Start Development Server**: `yarn start` (serves on `localhost:3000`)
+2. **Start Development Server**: `pnpm start` (serves on `localhost:3000`)
 3. **Navigate to Application**: Open `http://localhost:3000` in browser
 4. **Configure Testing**:
    - Click "Show Testing Config" on login page
@@ -432,13 +432,13 @@ For exploratory testing and debugging:
 firebase emulators:start
 
 # Run all tests
-cd e2e && yarn playwright test
+cd e2e && pnpm playwright test
 
 # Run specific test
-cd e2e && yarn playwright test vote.spec.ts
+cd e2e && pnpm playwright test vote.spec.ts
 
 # Debug mode
-cd e2e && yarn playwright test --debug
+cd e2e && pnpm playwright test --debug
 ```
 
 ### CI/CD Integration
