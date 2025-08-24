@@ -228,6 +228,7 @@ function AdminPreviewer(props: { screenId?: string }) {
           <iframe
             ref={previewFrame}
             src={screenId ? '/#/display/' + screenId : '/#/display'}
+            title="Presentation Display Preview"
             style={{
               width: '1280px',
               border: '0',
@@ -242,6 +243,7 @@ function AdminPreviewer(props: { screenId?: string }) {
       <Panel title="Audience">
         <iframe
           src={screenId ? '/#/audience/' + screenId : '/#/'}
+          title="Audience View Preview"
           style={{ width: '100%', border: '0', height: '480px' }}
         ></iframe>
       </Panel>

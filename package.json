@@ -5,7 +5,7 @@
   "dependencies": {
     "@types/jest": "^30.0.0",
     "@types/markdown-it": "^14.1.2",
-    "@types/node": "^24.3.0",
+    "@types/node": "^22.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.3.3",
@@ -34,6 +34,7 @@
     "test": "react-scripts test",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install",
+    "typecheck": "tsc --noEmit",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
