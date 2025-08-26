@@ -1,4 +1,3 @@
-/// <reference types="react-scripts" />
+/// <reference types="vite/client" />
 
 declare module 'grommet/utils'
-declare module 'enable-hot-reload'
