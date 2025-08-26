@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   test:
@@ -14,68 +14,105 @@ jobs:
       firebase-emulator:
         image: ghcr.io/dtinth/firebase-emulator-suite:main
         ports:
-          - 9099:9099  # Authentication
-          - 9000:9000  # Realtime Database
-          - 8080:8080  # Firestore
-          - 8085:8085  # Pub/Sub
-          - 9199:9199  # Storage
-          - 4000:4000  # Emulator UI
+          - 9099:9099 # Authentication
+          - 9000:9000 # Realtime Database
+          - 8080:8080 # Firestore
+          - 8085:8085 # Pub/Sub
+          - 9199:9199 # Storage
+          - 4000:4000 # Emulator UI
     steps:
-    - uses: actions/checkout@v4
-    
-    # Setup Node.js 22
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-        cache: 'yarn'
-    
-    - name: Install dependencies
-      run: yarn install
-    
-    - name: Type check
-      run: yarn typecheck
-    
-    - name: Build main app
-      run: yarn build
-      env:
-        CI: false  # TODO: Remove when warnings are fixed during modernization
-    
-    - name: Install http-server
-      run: npm install -g http-server
-    
-    - name: Start static server
-      run: http-server build -p 3000 &
-      
-    - name: Wait for server
-      run: npx wait-on http://localhost:3000
-    
-    - name: Install Playwright Browsers
-      run: yarn test:e2e:install --with-deps
-    
-    - name: Wait for Firebase emulator
-      run: npx wait-on http://localhost:9099
-    
-    - name: Run Playwright tests
-      run: yarn test:e2e
-    
-    - name: Upload visual tests to Percy
-      run: yarn percy upload visual-tests/
-      env:
-        PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      if: always() && hashFiles('visual-tests/*.png') != '' && env.PERCY_TOKEN != ''
-    
-    - name: Upload visual tests as artifact (fallback for forks)
-      uses: actions/upload-artifact@v4
-      if: always() && hashFiles('visual-tests/*.png') != ''
-      with:
-        name: visual-tests
-        path: visual-tests/
-        retention-days: 7
-    
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - uses: actions/checkout@v4
+
+      # Setup Node.js 22
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Type check
+        run: yarn typecheck
+
+      - name: Build main app
+        run: yarn build
+        env:
+          CI: false # TODO: Remove when warnings are fixed during modernization
+
+      - name: Install http-server
+        run: npm install -g http-server
+
+      - name: Start static server
+        run: http-server build -p 3000 &
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: Install Playwright Browsers
+        run: yarn test:e2e:install --with-deps
+
+      - name: Wait for Firebase emulator
+        run: npx wait-on http://localhost:9099
+
+      - name: Run Playwright tests
+        run: yarn test:e2e
+
+      - name: Upload visual tests to Percy
+        run: yarn percy upload visual-tests/
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+        if:
+          always() && hashFiles('visual-tests/*.png') != '' && env.PERCY_TOKEN
+          != ''
+
+      - name: Upload visual tests as artifact (fallback for forks)
+        uses: actions/upload-artifact@v4
+        if: always() && hashFiles('visual-tests/*.png') != ''
+        with:
+          name: visual-tests
+          path: visual-tests/
+          retention-days: 7
+
+      - name: Install Rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+        if: always() && hashFiles('playwright-report/**/*') != ''
+
+      - name: Publish test results to S3
+        continue-on-error: true
+        run: |
+          # Upload playwright report to S3
+          rclone copy playwright-report/ publish:$PUBLISH_BUCKET/$PUBLISH_KEY/playwright-report/ --progress
+
+          # Generate preview URL and add to step summary
+          echo "## 📊 Test Results Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Run:** ${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **[View Test Report](https://$PUBLISH_BUCKET.t3.storage.dev/$PUBLISH_KEY/playwright-report/)**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Fallback: Download artifacts below if S3 link is unavailable" >> $GITHUB_STEP_SUMMARY
+        env:
+          PUBLISH_BUCKET: ghartifacts
+          PUBLISH_KEY:
+            ${{ github.repository }}/${{ github.run_id }}-${{ github.run_attempt
+            }}
+          RCLONE_CONFIG_PUBLISH_TYPE: s3
+          RCLONE_CONFIG_PUBLISH_PROVIDER: Other
+          RCLONE_CONFIG_PUBLISH_REGION: auto
+          RCLONE_CONFIG_PUBLISH_ACL: public-read
+          RCLONE_CONFIG_PUBLISH_ENDPOINT: https://t3.storage.dev
+          RCLONE_CONFIG_PUBLISH_ACCESS_KEY_ID: tid_cSOEHB_PmmikvcZXYmTwKZWglaA_IajHkmhTLQPMhMPZlArFpZ
+          RCLONE_CONFIG_PUBLISH_SECRET_ACCESS_KEY:
+            ${{ secrets.RCLONE_CONFIG_PUBLISH_SECRET_ACCESS_KEY }}
+        if: always() && hashFiles('playwright-report/**/*') != ''
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
