@@ -1,0 +1,10 @@
+[build]
+  # Vite outputs to 'dist' directory, not 'build'
+  publish = "dist"
+  command = "yarn build"
+
+# SPA redirect rules for hash-based routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
