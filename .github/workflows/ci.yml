@@ -38,14 +38,12 @@ jobs:
 
       - name: Build main app
         run: yarn build
-        env:
-          CI: false # TODO: Remove when warnings are fixed during modernization
 
       - name: Install http-server
         run: npm install -g http-server
 
       - name: Start static server
-        run: http-server build -p 3000 &
+        run: http-server dist -p 3000 &
 
       - name: Wait for server
         run: npx wait-on http://localhost:3000

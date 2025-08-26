@@ -22,7 +22,3 @@ export function initializeApp() {
   
   Object.assign(global, { firebase })
 }
-
-if (module.hot) {
-  module.hot.accept()
-}
