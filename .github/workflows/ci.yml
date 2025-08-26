@@ -84,6 +84,10 @@ jobs:
         run: |
           # Upload playwright report to S3
           rclone copy playwright-report/ publish:$PUBLISH_BUCKET/$PUBLISH_KEY/playwright-report/ --progress
+          
+          # Print report URL for CI logs
+          REPORT_URL="https://$PUBLISH_BUCKET.t3.storage.dev/$PUBLISH_KEY/playwright-report/index.html"
+          echo "📊 Test report published: $REPORT_URL"
 
           # Generate preview URL and add to step summary
           echo "## 📊 Test Results Published" >> $GITHUB_STEP_SUMMARY
@@ -92,7 +96,7 @@ jobs:
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Run:** ${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 **[View Test Report](https://$PUBLISH_BUCKET.t3.storage.dev/$PUBLISH_KEY/playwright-report/)**" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **[View Test Report]($REPORT_URL)**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📦 Fallback: Download artifacts below if S3 link is unavailable" >> $GITHUB_STEP_SUMMARY
         env:
