@@ -17,6 +17,8 @@ export default defineConfig({
       // The ESM version expects Firebase in CommonJS format, but Vite optimizes Firebase
       // to ES modules, causing compatibility issues
       fiery: 'fiery/umd/fiery.js',
+      // Force Firebase to use UMD version for compatibility with fiery UMD
+      firebase: 'firebase/firebase.js',
     },
   },
   build: {
@@ -27,7 +29,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           // Bundle fiery with firebase to maintain their interdependency
-          firebase: ['firebase', 'fiery'],
+          firebase: ['firebase'],
           grommet: ['grommet', 'grommet-icons'],
           router: ['react-router-dom'],
         },
