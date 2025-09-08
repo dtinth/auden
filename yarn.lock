@@ -3150,10 +3150,10 @@ firebase-token-generator@^2.0.0:
   resolved "https://registry.yarnpkg.com/firebase-token-generator/-/firebase-token-generator-2.0.0.tgz#9767d759ec13abdc99ba115fd5ea99d8b93d1206"
   integrity sha512-EX/Rw6C0NLF6StuszW9Pn4zGUU8dw0UdHY6u8zP5t/CsbYRwWVh0CwN6INFE5U4IizZtgqbWQhcAQNkBtNkyfQ==
 
-firebase-tools@^14.15.1:
-  version "14.15.1"
-  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-14.15.1.tgz#bc057de5d6b0cd8fb28c85cb439b061be683745c"
-  integrity sha512-GoBOnmo3+lXvIob4XuezFVCn6sKT3ZDvlYnmfSPFax4VuqrK6CXzbIjFdpjM4D1MD4rqpYm/VlcvlBtEiP0Z1w==
+firebase-tools@^14.15.2:
+  version "14.15.2"
+  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-14.15.2.tgz#bdd18d02ddca14432ce0211aa60476c20992874d"
+  integrity sha512-6wyA9F3tXToAKJR8IkDyHOlOwAOL6j9qoA1inF6psiC8lzMwJ9/t+Lc7HmvIgOb1KDdj82vxL3llX28wcHwonw==
   dependencies:
     "@electric-sql/pglite" "^0.3.3"
     "@electric-sql/pglite-tools" "^0.2.8"
