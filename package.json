@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "fiery": "^0.5.0",
-    "firebase": "^7.24.0",
+    "firebase": "^12.2.1",
     "firebase-bolt": "^0.8.4",
     "grommet": "^2.49.0",
     "grommet-icons": "^4.4.0",
