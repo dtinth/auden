@@ -46,7 +46,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^5.0.3",
+    "@vitejs/plugin-react": "^5.0.4",
     "firebase-tools": "^14.16.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.6"
