@@ -39,7 +39,7 @@
   ],
   "devDependencies": {
     "@percy/cli": "^1.31.3",
-    "@playwright/test": "^1.56.0",
+    "@playwright/test": "^1.56.1",
     "@types/jest": "^30.0.0",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^24.7.2",
