@@ -3293,10 +3293,10 @@ firebase-token-generator@^2.0.0:
   resolved "https://registry.yarnpkg.com/firebase-token-generator/-/firebase-token-generator-2.0.0.tgz#9767d759ec13abdc99ba115fd5ea99d8b93d1206"
   integrity sha512-EX/Rw6C0NLF6StuszW9Pn4zGUU8dw0UdHY6u8zP5t/CsbYRwWVh0CwN6INFE5U4IizZtgqbWQhcAQNkBtNkyfQ==
 
-firebase-tools@^14.26.0:
-  version "14.26.0"
-  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-14.26.0.tgz#9a7f10d7392e1c3b2e771b4cec6ed1ad4cb40c39"
-  integrity sha512-pjVNDvmY4s3HkBe0iI5mum4hGpNzVwrf0J68KP51XRvhU/tYDXzMr6N+FBjdJtkJM6I7wx1KqgHsqvJurCun/A==
+firebase-tools@^14.27.0:
+  version "14.27.0"
+  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-14.27.0.tgz#762a2de407f9df188952cd942ef67a144776a053"
+  integrity sha512-HrucHJ69mLM9pQhZFO1rb0N/QMpZD4iznoOtKd2lctEELPtbSMN5JHgdgzLlf+EXn5aQy87u5zlPd/0xwwyYTQ==
   dependencies:
     "@apphosting/build" "^0.1.6"
     "@apphosting/common" "^0.0.8"
@@ -7375,12 +7375,7 @@ zip-stream@^6.0.1:
     compress-commons "^6.0.2"
     readable-stream "^4.0.0"
 
-zod-to-json-schema@^3.24.5:
-  version "3.24.6"
-  resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.24.6.tgz#5920f020c4d2647edfbb954fa036082b92c9e12d"
-  integrity sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==
-
-zod-to-json-schema@^3.25.0:
+zod-to-json-schema@^3.24.5, zod-to-json-schema@^3.25.0:
   version "3.25.0"
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.25.0.tgz#df504c957c4fb0feff467c74d03e6aab0b013e1c"
   integrity sha512-HvWtU2UG41LALjajJrML6uQejQhNJx+JBO9IflpSja4R03iNWfKXrj6W2h7ljuLyc1nKS+9yDyL/9tD1U/yBnQ==
