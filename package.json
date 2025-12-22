@@ -13,7 +13,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-lambda": "^1.0.0-rc.0",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^7.11.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "styled-components": "^6.1.19",
