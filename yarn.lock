@@ -3288,10 +3288,10 @@ firebase-token-generator@^2.0.0:
   resolved "https://registry.yarnpkg.com/firebase-token-generator/-/firebase-token-generator-2.0.0.tgz#9767d759ec13abdc99ba115fd5ea99d8b93d1206"
   integrity sha512-EX/Rw6C0NLF6StuszW9Pn4zGUU8dw0UdHY6u8zP5t/CsbYRwWVh0CwN6INFE5U4IizZtgqbWQhcAQNkBtNkyfQ==
 
-firebase-tools@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-15.0.0.tgz#b9a7c99dd8633729b055a570dd0a92c7f01100ed"
-  integrity sha512-6HSF3meQwMNzDK5BIEFEq4jVMPqR6PBdqpuSLBE+3zpLlcmLknMVBDhdN32jhd2lj/wvfHBZV6ZSqTCNF7AtWw==
+firebase-tools@^15.1.0:
+  version "15.1.0"
+  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-15.1.0.tgz#42e53fcb75856c08ab9439f9097ebb87f046437c"
+  integrity sha512-sVDiFTXiRd2tszJzttb6e5yzhJdljIVm8Q0Atg6MyHMirJrvrOJzxPis9MAg/R6RrfLo/+oYgx83suZfAAimPw==
   dependencies:
     "@apphosting/build" "^0.1.6"
     "@apphosting/common" "^0.0.8"
